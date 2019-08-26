@@ -5,9 +5,10 @@ from celery_tasks.tasks import send_email_active_email, send_register_email
 from user.models import User
 from django.conf import settings
 from django.http import JsonResponse, HttpResponse
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer, SignatureExpired
 import re
+import json
 
 # /user/login 用户登录页面
 class LoginView(View):
@@ -20,30 +21,31 @@ class LoginView(View):
         else:
             username = ''
             checked = ''
-        return render(request, 'login.html')
+
+        return render(request, 'user/login.html', {'username':username, 'checked':checked})
 
     def post(self, request):
         """ 登陆校验 """
         # 接收数据
         username = request.POST.get('username')
         password = request.POST.get('pwd')
-        print(username)
-        print(password)
-        # 验证数据完整
+        # 校验数据
         if not all([username, password]):
-            return JsonResponse({'res':1, 'errmsg':'数据不完整'})
-
+            return render(request, 'user/login.html', {'errmsg':'数据不完整'})
+        # 业务处理:登录校验
         user = authenticate(username=username, password=password)
-        print(user)
-        # 检验用户是否存在
         if user is not None:
-            # 验证用户是否激活
+            # 用户名密码正确
             if user.is_active:
+                # 用户已激活
+                # 记录用户的登录状态
                 login(request, user)
-                # 获取记得密码的CheckBox值
+                # 获取登陆之后要跳转的地址，默认返回首页
+                next_url = request.GET.get('next', reverse('index:index')) 
+                # 跳转next_url
+                response = redirect(next_url)
+                # 判断是否需要记得用户名
                 remember = request.POST.get('remember')
-                response = HttpResponse(json.dumps({'res':4}), content_type="application/json")
-                # 添加cookie
                 if remember == 'on':
                     # 记得用户名
                     response.set_cookie('username', username, max_age=7*24*3600)
@@ -51,19 +53,19 @@ class LoginView(View):
                     response.delete_cookie('username')
                 return response
 
-            # 账号未激活
             else:
-                return JsonResponse({'res':3, 'errmsg':'账号未激活'})
-
-        # 没有此账号，密码错误       
+                # 用户未激活
+                return render(request, 'user/login.html', {'errmsg':'账号未激活'})
+                
         else:
-            return JsonResponse({'res':2, 'errmsg':'用户名或者密码错误'})
+            # 用户名或密码错误
+            return render(request, 'user/login.html', {'errmsg':'用户名或者密码错误'})
 
 # /user/register 用户注册页面
 class RegisterView(View):
     def get(self, request):
         """ 显示页面 """
-        return render(request, 'register.html')
+        return render(request, 'user/register.html')
 
     def post(self, request):
         """ 进行注册处理 """
@@ -78,32 +80,27 @@ class RegisterView(View):
         # 校验是否同意协议
         if allow != 'on':
             return JsonResponse({'res':1, 'errmsg':'请同意协议'})
-            # return render(request, 'register.html', {'errmsg':'请同意协议'})
 
         # 进行数据校验
         if not all([username, password, email]):
             return JsonResponse({'res':2, 'errmsg':'数据不完整'})
-            # return render(request, 'register.html', {'errmsg':'数据不完整'})
             
         # 校验密码组成
         if not re.match(r'^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{6,20}$', password):
             return JsonResponse({'res':3, 'errmsg':'密码不符合要求'})
-            # return render(request, 'register.html', {'errmsg':'邮箱格式不正确'})
 
         # 检验密码是否一样
         if password != repassword:
             return JsonResponse({'res':4, 'errmsg':'两次密码不一样'})
-            # return render(request, 'register.html', {'errmsg':'两次密码不一样'})
 
         # 校验邮箱
         if not re.match(r'^[a-z0-9][\w\.\-]*@[a-z0-9\-]+(\.[a-z]{2,5}){1,2}$', email):
             return JsonResponse({'res':5, 'errmsg':'邮箱格式不正确'})
-            # return render(request, 'register.html', {'errmsg':'邮箱格式不正确'})
 
         # 检验是否使用hufcor.com的电邮
-        if not email.endswith('hufcor.com'):
-            return JsonResponse({'res':6, 'errmsg':'请使用公司电邮注册'})
-            # return render(request, 'register.html', {'errmsg':'请使用公司电邮注册'})
+        # 测试期间关闭
+        # if not email.endswith('hufcor.com'):
+            # return JsonResponse({'res':6, 'errmsg':'请使用公司电邮注册'})
 
         # 检验用户名是否重复
         try:
@@ -113,7 +110,6 @@ class RegisterView(View):
             user = None
         if user:
             return JsonResponse({'res':7, 'errmsg':'用户名已经存在'})
-            # return render(request, 'register.html', {'errmsg':'用户名已经存在'})
 
         # 检验邮箱是否重复
         try:
@@ -123,7 +119,6 @@ class RegisterView(View):
             email_add = None
         if email_add:
             return JsonResponse({'res':8, 'errmsg':'此邮箱已经存在'})
-            # return render(request, 'register.html', {'errmsg':'此邮箱已经存在'})
 
         """ 业务处理 """
         user = User.objects.create_user(username, email, password)
@@ -154,7 +149,7 @@ class EmailActiveView(View):
             # 获取用户id
             user_id = info['comfirm']
             # 激活用户
-            user = User.objects.get(id=use_id)
+            user = User.objects.get(id=user_id)
             user.email_activate = 1
             # 获取用户资料 名字及电邮
             username = user.username
@@ -165,7 +160,7 @@ class EmailActiveView(View):
             send_register_email.delay(email, username, user_id)
 
             # 返回应答
-            return HttpResponse('<h1>用户激活成功，还需要管理员激活。</h1><a href="http://192.168.1.192:8000/user/login">点击登录</a>', content_type='text/html;charset=utf-8')
+            return HttpResponse('<h1>用户激活成功，还需要管理员激活。</h1><a href="http://10.147.20.115:8000/user/login">点击登录</a>', content_type='text/html;charset=utf-8')
         except SignatureExpired as e:
             return HttpResponse('激活邮件已经过期')
 
@@ -181,5 +176,19 @@ class ActiveView(View):
         user.is_active = 1
         user.save()
         # 跳转到登陆页面
+        return redirect(reverse('user:login'))
+
+class MemberListView(View):
+    """ 用户管理 """
+    def get(self, request):
+        return render(request, 'user/member-list.html')
+
+# /user/logout
+class LogoutView(View):
+    def get(self, request):
+        """ 退出登录 """
+        # 清除用户的session信息
+        logout(request)
+        # 跳转到登陆页
         return redirect(reverse('user:login'))
 

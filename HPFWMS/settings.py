@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'project',
     'PDS',
     'standard',
+    'index',
 ]
 
 MIDDLEWARE = [
@@ -143,3 +144,21 @@ EMAIL_FROM = 'hufcor_server<hufcor_server@163.com>'
 
 # 登陆配置
 AUTHENTICATION_BACKENDS = ['django.contrib.auth.backends.AllowAllUsersModelBackend']
+
+# django缓存配置
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379/9",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
+    }
+}
+
+# 配置session
+SESSION_ENGINE = "django.contrib.sessions.backends.cache"
+SESSION_CACHE_ALIAS = "default"
+
+# 配置登录url地址
+LOGIN_URL='/user/login' 

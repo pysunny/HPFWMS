@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% block titlename %}HPFWMS-用户登录{% endblock titlename %}
+{% block topfiles %}
+<link rel="stylesheet" href="{% static 'css/login.css' %}">
+{% endblock topfiles %}
+{% block bodyclass %}login-bg{% endblock bodyclass %}
+{% block boby %}
+  <div class="login layui-anim layui-anim-up">
+    <div class="message">HPFWMS-用户登录</div>
+    <div id="darkbannerwrap"></div>
+    <form method="post" class="layui-form">
+      {% csrf_token %}
+      <div class="layui-form-item">
+        <input name="username" value="{{ user.username }}" placeholder="请输入用户名"  type="text" lay-verify="required" class="layui-input" >
+      </div>
+      <div class="layui-form-item">
+        <input name="pwd" lay-verify="required" placeholder="请输入密码"  type="password" class="layui-input">
+      </div>
+      <div class="layui-form-item">
+        <input type="checkbox" name="remember" lay-skin="primary" title="记住密码" {{checked}}>
+      </div>
+      <div class="layui-form-item">
+        <input value="登录" lay-submit lay-filter="login" style="width:100%;" type="submit">
+      </div>
+      <div align="center">
+        <a href="#">忘记密码了？</a> | <a href="{% url 'user:register' %}">注册一个新账号</a>
+      </div>
+      <div align="center">
+        {{ errmsg }}
+      </div>
+    </form>
+  </div>
+{% endblock boby %}
+{# 网页主体右侧文件块 #}
+
+{% block bottomfiles %}
+  <script>
+    $(function  () {
+      layui.use('form', function(){
+        var form = layui.form;
+      });
+    })
+  </script>
+{% endblock bottomfiles %}
+{# 网页底部引入文件块 #}
