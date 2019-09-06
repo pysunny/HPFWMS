@@ -5,4 +5,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('index.urls', namespace='index')), #主框架
     path('user/', include('user.urls', namespace='user')), #用户
+    path('project/', include('project.urls', namespace='project')), #项目
 ]

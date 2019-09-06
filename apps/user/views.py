@@ -2,11 +2,13 @@ from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.views.generic import View
 from celery_tasks.tasks import send_email_active_email, send_register_email
-from user.models import User
 from django.conf import settings
+from user.models import User
 from django.http import JsonResponse, HttpResponse
 from django.contrib.auth import authenticate, login, logout
-from itsdangerous import TimedJSONWebSignatureSerializer as Serializer, SignatureExpired
+from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
+from itsdangerous import SignatureExpired
+from utils.ComplexEncoder import ComplexEncoder
 import re
 import json
 
@@ -183,7 +185,7 @@ class MemberListView(View):
     def get(self, request):
         return render(request, 'user/member-list.html')
 
-# /user/logout
+# /user/logout  登出
 class LogoutView(View):
     def get(self, request):
         """ 退出登录 """
@@ -192,3 +194,20 @@ class LogoutView(View):
         # 跳转到登陆页
         return redirect(reverse('user:login'))
 
+#/user/data layui数据接口
+class UserDataView(View):
+    def get(self, request):
+        # 获取全部用户的数据
+        ret = User.objects.all()
+        # 转化数据
+        users = ret.values()
+        # 获取数据数量
+        count = ret.count()
+        data = list(users)
+        # 组织上下文
+        context = {"code":0,
+                    "msg":"",
+                    "count":count,
+                    "data":data}
+        # 使用ComplexEncoder格式化jason
+        return HttpResponse(json.dumps(context, cls=ComplexEncoder))

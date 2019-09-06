@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% block titlename %}HPFWMS-项目列表{% endblock titlename %}
+
+{% block nav %}
+    <div class="x-nav">
+        <span class="layui-breadcrumb">
+            <a href="">首页</a>
+            <a href="">项目管理</a>
+            <a><cite>项目列表</cite></a>
+        </span>
+        <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right" onclick="location.reload()" title="刷新">
+            <i class="layui-icon layui-icon-refresh" style="line-height:30px"></i>
+        </a>
+    </div>
+{% endblock nav %}
+{# 网页主体上侧块 #}
+
+{% block boby %}
+    <div class="layui-fluid">
+        <div class="layui-row layui-col-space15">
+            <div class="layui-col-md12">
+                <div class="layui-card">
+                    <div class="layui-card-body ">
+                        <form class="layui-form layui-col-space5">
+                            <div class="layui-inline layui-show-xs-block">
+                                <input class="layui-input" autocomplete="off" placeholder="开始日" name="start" id="start"></div>
+                            <div class="layui-inline layui-show-xs-block">
+                                <input class="layui-input" autocomplete="off" placeholder="截止日" name="end" id="end"></div>
+                            <div class="layui-inline layui-show-xs-block">
+                                <input type="text" name="username" placeholder="请输入项目名称" autocomplete="off" class="layui-input"></div>
+                            <div class="layui-inline layui-show-xs-block">
+                                <button class="layui-btn" lay-submit="" lay-filter="sreach">
+                                    <i class="layui-icon">&#xe615;</i></button>
+                            </div>
+                        </form>
+                        <table id="demo" lay-filter="test"></table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock boby %}
+{# 网页主体块 #}
+
+{% block bottomfiles %}
+    <script>
+        layui.use('table', function(){
+            var table = layui.table;
+            table.render({
+                elem: '#demo'
+                ,height: 500
+                ,url: "{% url 'project:data' %}" //数据接口
+                ,page: true //开启分页
+                ,cols: [[ //表头
+                    {field:'xieliehao', width:80, title: '序列号',type:'numbers'}
+                    ,{field: 'id', title: '工程编号'}
+                    ,{field: 'name', title: '项目名称'}
+                    ,{field: 'user_id', title: '用户'}
+                    ,{field: 'request_time', title: '出厂时间'}
+                    ,{field: 'is_public', title: '是否公开'}
+                    ,{field: 'create_time', title: '创建时间'}
+                    ,{field: 'update_time', title: '更新时间'}
+                    ,{fixed: 'right', title: '操作',width:200, align:'center', toolbar: '#barDemo'} 
+                    ]]
+                ,toolbar: '#toolbarDemo'
+            });
+        });
+    </script>
+
+    <!-- 操作列 -->
+    <script type="text/html" id="barDemo">
+        <a class="layui-btn layui-btn-xs" lay-event="detail">查看</a>
+        <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+        <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+    </script>
+
+    <script type="text/html" id="toolbarDemo">
+        <div class = "layui-btn-container" > 
+            <button class = "layui-btn layui-btn-sm" lay-event = "getCheckData" onclick="xadmin.open('新建项目','{% url 'project:add' %}',600,500)"> 新建项目 </button>
+        </div > 
+    </script>
+
+    <script>layui.use('laydate',
+        function() {
+            var laydate = layui.laydate;
+
+            //执行一个laydate实例
+            laydate.render({
+                elem: '#start' //指定元素
+            });
+
+            //执行一个laydate实例
+            laydate.render({
+                elem: '#end' //指定元素
+            });
+
+        });</script>
+
+{% endblock bottomfiles %}
+{# 网页底部引入块 #}

@@ -2,9 +2,9 @@
 {% load staticfiles %}
 {% block titlename %}HPFWMS-用户注册{% endblock titlename %}
 {% block topfiles %}
-<link rel="stylesheet" href="{% static 'css/login.css' %}">
+  <link rel="stylesheet" href="{% static 'css/login.css' %}">
 {% endblock topfiles %}
-{% block bodyclass %}login-bg{% endblock bodyclass %}
+{% block bodyclass %}class="login-bg"{% endblock bodyclass %}
 {% block boby %}
   <div class="login layui-anim layui-anim-up">
     <div class="message">HPFWMS-用户注册</div>
@@ -35,7 +35,6 @@
     </form>
   </div>
 {% endblock boby %}
-{# 网页主体右侧文件块 #}
 
 {% block bottomfiles %}
   <script>

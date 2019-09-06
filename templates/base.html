@@ -1,4 +1,3 @@
-{# 主框架 #}
 {% load staticfiles %}
 <!doctype html>
 <html class="x-admin-sm">
@@ -14,18 +13,18 @@
         {% block topfiles %}{% endblock topfiles %}
         {# 网页顶部引入文件块 #}
     </head>
-    <body class="{% block bodyclass %}{% endblock bodyclass %}">
-    {% block topcont %}{% endblock topcont %}
-    {# 网页顶部文件块 #}
-    {% block leftcont %}{% endblock leftcont %}
-    {# 网页主体左侧文件块 #}
-    {% block nav %}{% endblock nav %}
-    {# 网页主体上侧文件块 #}
-    {% block boby %}{% endblock boby %}
-    {# 网页主体右侧文件块 #}
-    {% block bottomcont %}{% endblock bottomcont %}
-    {# 网页底部文件块 #}
-    {% block bottomfiles %}{% endblock bottomfiles %}
-    {# 网页底部引入文件块 #}
+    <body {% block bodyclass %}{% endblock bodyclass %}{# 主体class类型预留块 #}>
+        {% block topcont %}{% endblock topcont %}
+        {# 网页顶部块 #}
+        {% block leftcont %}{% endblock leftcont %}
+        {# 网页主体左侧块 #}
+        {% block nav %}{% endblock nav %}
+        {# 网页主体上侧块 #}
+        {% block boby %}{% endblock boby %}
+        {# 网页主体块 #}
+        {% block bottomcont %}{% endblock bottomcont %}
+        {# 网页底部块 #}
+        {% block bottomfiles %}{% endblock bottomfiles %}
+        {# 网页底部引入文件块 #}
     </body>
 </html>
