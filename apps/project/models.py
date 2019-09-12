@@ -10,7 +10,7 @@ class Projects(BaseModel):
     is_public = models.BooleanField(default=False, verbose_name='是否公开')
 
     class Meta:
-        db_table = 'df_project_list'
+        db_table = 'df_projects'
         verbose_name = '项目列表'
         verbose_name_plural = verbose_name
 

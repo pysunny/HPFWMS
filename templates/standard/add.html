@@ -1,0 +1,155 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% block titlename %}HPFWMS-新建项目{% endblock titlename %}
+{% block bodyclass %} {% endblock bodyclass %}
+{% block boby %}
+    <div class="layui-fluid">
+        <div class="layui-row">
+            <form method="post" class="layui-form"> 
+                {% csrf_token %}
+                <div class="layui-form-item layui-inline">
+                  <label class="layui-form-label">型号名称</label>
+                  <div class="layui-input-block">
+                    <input type="text" name="name" placeholder="请输入" autocomplete="off" class="layui-input">
+                  </div>
+                </div>
+                <div class="layui-form-item layui-inline">
+                    <label class="layui-form-label">系列</label>
+                    <div class="layui-input-block" style="width: 160px;">
+                        <select name="series" lay-filter="series">
+                            <option value=""></option>
+                            <option value="0">CT680</option>
+                            <option value="1">5000</option>
+                            <option value="2">600</option>
+                        </select>
+                    </div>
+                </div>
+                <p></p>
+                <div class="layui-form-item layui-inline">
+                    <label class="layui-form-label">顶部虚位</label>
+                    <div class="layui-input-block">
+                    <input type="text" name="top_clearance" placeholder="请输入" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item layui-inline">
+                  <label class="layui-form-label">顶胶</label>
+                  <div class="layui-input-block" style="width: 160px;">
+                    <input type="radio" name="top_seal" value="1" title="有" checked>
+                    <input type="radio" name="top_seal" value="0" title="无">
+                  </div>
+                </div>
+                <div class="layui-form-item layui-inline">
+                  <label class="layui-form-label">顶撑</label>
+                  <div class="layui-input-block" style="width: 160px;">
+                    <input type="radio" name="top_mechanism" value="1" title="有" checked>
+                    <input type="radio" name="top_mechanism" value="0" title="无">
+                  </div>
+                </div>
+                <div class="layui-form-item layui-inline">
+                    <label class="layui-form-label">基本板材</label>
+                    <div class="layui-input-block" style="width: 160px;">
+                        <select name="basic_material" lay-filter="basic_material">
+                            <option value=""></option>
+                            <option value="0">石膏板</option>
+                            <option value="1">木夹板</option>
+                            <option value="2">无</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="layui-form-item layui-inline">
+                    <label class="layui-form-label">钢板</label>
+                    <div class="layui-input-block" style="width: 160px;">
+                        <select name="steel_plate" lay-filter="steel_plate">
+                            <option value=""></option>
+                            <option value="0">内</option>
+                            <option value="1">外</option>
+                            <option value="2">无</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="layui-form-item layui-inline">
+                  <label class="layui-form-label">岩棉</label>
+                  <div class="layui-input-block"style="width: 160px;">
+                    <input type="radio" name="rockwool" value="1" title="有" checked>
+                    <input type="radio" name="rockwool" value="0" title="无">
+                  </div>
+                </div>
+                <p></p>
+                <div class="layui-form-item layui-inline">
+                    <label class="layui-form-label">底部虚位</label>
+                    <div class="layui-input-block">
+                    <input type="text" name="bottom_clearance" placeholder="请输入" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item layui-inline">
+                  <label class="layui-form-label">底胶</label>
+                  <div class="layui-input-block"style="width: 160px;">
+                    <input type="radio" name="bottom_seal" value="1" title="有" checked>
+                    <input type="radio" name="bottom_seal" value="0" title="无">
+                  </div>
+                </div>
+                <div class="layui-form-item layui-inline">
+                  <label class="layui-form-label">底撑</label>
+                  <div class="layui-input-block"style="width: 160px;">
+                    <input type="radio" name="bottom_mechanism" value="1" title="有" checked>
+                    <input type="radio" name="bottom_mechanism" value="0" title="无">
+                  </div>
+                </div>
+                <div class="layui-form-item layui-form-text">
+                  <label class="layui-form-label">填写描述</label>
+                  <div class="layui-input-block"style="width: 650px;">
+                    <textarea name="desc" placeholder="请输入内容" class="layui-textarea"></textarea>
+                  </div>
+                </div>
+                <div class="layui-form-item">
+                  <div class="layui-input-block">
+                    <button class="layui-btn" lay-submit lay-filter="add">立即提交</button>
+                    <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                  </div>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock boby %}
+{# 网页主体块 #}
+
+{% block bottomfiles %}
+<script>layui.use(['form', 'layer','jquery'],
+    function() {
+        $ = layui.jquery;
+        var form = layui.form,
+        layer = layui.layer;
+
+        //监听提交
+        form.on('submit(add)',
+        function(data) {
+            data.field.csrfmiddlewaretoken = $("[name='csrfmiddlewaretoken']").val()
+            //ajax请求
+            $.post("{% url 'standard:add' %}", data.field, function (data) {
+                if(data.res == 2){
+                    layer.alert("增加成功", {
+                        icon: 6
+                    },
+                    function() {
+                        //关闭当前frame
+                        xadmin.close();
+
+                        // 可以对父窗口进行刷新 
+                        xadmin.father_reload();
+                    });
+                }
+                else{
+                    // 数据验证有问题
+                    layer.msg(data.errmsg, {
+                        time: 2000, //2s后自动关闭
+                    });
+                }
+                
+            })
+            return false;
+        });
+
+    });</script>
+{% endblock bottomfiles %}
+{# 网页底部引入块 #}
+

@@ -7,13 +7,13 @@ import json
 
 # Create your views here.
 # /project/list 项目列表
-class ListView(View):
+class ProjectListView(View):
     def get(self, request):
         """ 显示页面 """
         return render(request, 'project/list.html')
 
 #/project/add 新建项目
-class AddView(View):
+class ProjectAddView(View):
     def get(self, request):
         """ 显示页面 """
         return render(request, 'project/add.html')
@@ -54,10 +54,12 @@ class ProjectDataView(View):
         count = ret.count()
         data = list(projects)
         # 组织上下文
-        context = {"code":0,
-                    "msg":"",
-                    "count":count,
-                    "data":data}
+        context = {
+            "code":0,
+            "msg":"",
+            "count":count,
+            "data":data
+            }
         # 使用ComplexEncoder格式化jason
         return HttpResponse(json.dumps(context, cls=ComplexEncoder))
     

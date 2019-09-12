@@ -205,9 +205,11 @@ class UserDataView(View):
         count = ret.count()
         data = list(users)
         # 组织上下文
-        context = {"code":0,
-                    "msg":"",
-                    "count":count,
-                    "data":data}
+        context = {
+            "code":0,
+            "msg":"",
+            "count":count,
+            "data":data
+            }
         # 使用ComplexEncoder格式化jason
         return HttpResponse(json.dumps(context, cls=ComplexEncoder))
