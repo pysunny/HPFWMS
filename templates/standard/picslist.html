@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% block titlename %}HPFWMS-项目列表{% endblock titlename %}
+
+{% block nav %}
+    <div class="x-nav">
+        <span class="layui-breadcrumb">
+            <a href="">首页</a>
+            <a href="">产品标准</a>
+            <a><cite>屏风图元</cite></a>
+        </span>
+        <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right" onclick="location.reload()" title="刷新">
+            <i class="layui-icon layui-icon-refresh" style="line-height:30px"></i>
+        </a>
+    </div>
+{% endblock nav %}
+{# 网页主体上侧块 #}
+z{% block boby %}
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md12">
+                <svg>
+                    <use xlink:href="#icon-pre"></use>
+                </svg>
+                <svg>
+                    <symbol  id="icon-pre" width="125" height="125" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
+                        <g>
+                            <polyline points="20.073,66.669 22.583,66.669 22.583,70.5 25.126,70.5 25.126,70.821 20.105,70.821  " stroke-miterlimit="10" stroke-linecap="square" stroke-width="1.5" stroke="#212830" fill="none"/>
+                            <polyline points="17.788,70.821 17.82,71.111 17.949,71.4 18.142,71.627 18.367,71.819 18.657,71.947 18.946,71.981 19.236,71.947 19.526,71.819 19.751,71.627 19.943,71.4 20.073,71.111 20.105,70.821  " stroke-miterlimit="10" stroke-linecap="square" stroke-width="1.5" stroke="#212830" fill="none"/>
+                            <line y2="66.669" x2="17.755" y1="70.821" x1="17.755" stroke-miterlimit="10" stroke-linecap="square" stroke-width="1.5" stroke="#212830" fill="none"/>
+                            <polyline points="20.105,66.669 20.073,66.379 19.943,66.089 19.751,65.863 19.526,65.671 19.236,65.542 18.946,65.51 18.657,65.542 18.367,65.671 18.142,65.863 17.949,66.089 17.82,66.379 17.788,66.669  " stroke-miterlimit="10" stroke-linecap="square" stroke-width="1.5" stroke="#212830" fill="none"/>
+                            <polyline points="20.073,58.332 22.583,58.332 22.583,54.5 25.126,54.5 25.126,54.21 20.105,54.21  " stroke-miterlimit="10" stroke-linecap="square" stroke-width="1.5" stroke="#212830" fill="none"/>
+                            <polyline points="20.105,54.21 20.073,53.921 19.943,53.63 19.751,53.405 19.526,53.213 19.236,53.083 18.946,53.052 18.657,53.083 18.367,53.213 18.142,53.405 17.949,53.63 17.82,53.921 17.788,54.21  " stroke-miterlimit="10" stroke-linecap="square" stroke-width="1.5" stroke="#212830" fill="none"/>
+                            <line y2="58.332" x2="17.755" y1="54.21" x1="17.755" stroke-miterlimit="10" stroke-linecap="square" stroke-width="1.5" stroke="#212830" fill="none"/>
+                            <polyline points="17.788,58.332    17.82,58.62 17.949,58.911 18.142,59.136 18.367,59.33 18.657,59.458 18.946,59.489 19.236,59.458 19.526,59.33 19.751,59.136 19.943,58.911 20.073,58.62 20.105,58.332  " stroke-miterlimit="10" stroke-linecap="square" stroke-width="1.5" stroke="#212830" fill="none"/>
+                            <polyline points="22.583,70.5 22.583,67.217 25.802,66.701 25.802,58.332 22.583,57.816 22.583,54.5  " stroke-miterlimit="10" stroke-linecap="square" stroke-width="1.5" stroke="#212830" fill="none"/>
+                        </g>
+                    </symbol>
+                    <symbol  id="icon-next" width="125" height="125" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
+                        <g>
+                            <polyline points="   29.753,114.437 22.508,112.505 29.753,110.572  " stroke-miterlimit="10" stroke-linecap="square" stroke-width="1.5" stroke="#212830" fill="none"/>
+                            <polyline points="   95.248,114.437 102.492,112.505 95.248,110.572  " stroke-miterlimit="10" stroke-linecap="square" stroke-width="1.5" stroke="#212830" fill="none"/>
+                            <line y2="54.471" x2="102.492" y1="54.471" x1="22.508" stroke-miterlimit="10" stroke-linecap="square" stroke-width="1.5" stroke="#212830" fill="none"/>
+                            <line y2="70.477" x2="22.508" y1="70.477" x1="102.492" stroke-miterlimit="10" stroke-linecap="square" stroke-width="1.5" stroke="#212830" fill="none"/>
+                            <polyline points="   102.492,74.471 102.492,112.505 22.508,112.505 22.508,74.471  " stroke-miterlimit="10" stroke-linecap="square" stroke-width="1.5" stroke="#212830" fill="none"/>
+                        </g>
+                    </symbol>
+                </svg>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock boby %}
+{# 网页主体块 #}

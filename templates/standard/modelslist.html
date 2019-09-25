@@ -38,7 +38,7 @@
             table.render({
                 elem: '#demo'
                 ,height: 500
-                ,url: "{% url 'standard:data' %}" //数据接口
+                ,url: "{% url 'standard:modelsdata' %}" //数据接口
                 ,page: true //开启分页
                 ,cols: [[ //表头
                     {field:'xieliehao', width:80, title: '序列号',type:'numbers'}
@@ -70,7 +70,7 @@
 
     <script type="text/html" id="toolbarDemo">
         <div class = "layui-btn-container" > 
-            <button class = "layui-btn layui-btn-sm" lay-event = "getCheckData" onclick="xadmin.open('添加型号','{% url 'standard:add' %}',900,460)"> 添加型号 </button>
+            <button class = "layui-btn layui-btn-sm" lay-event = "getCheckData" onclick="xadmin.open('添加型号','{% url 'standard:modelsadd' %}',900,460)"> 添加型号 </button>
         </div > 
     </script>
 

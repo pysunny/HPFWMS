@@ -125,7 +125,7 @@
         function(data) {
             data.field.csrfmiddlewaretoken = $("[name='csrfmiddlewaretoken']").val()
             //ajax请求
-            $.post("{% url 'standard:add' %}", data.field, function (data) {
+            $.post("{% url 'standard:modelsadd' %}", data.field, function (data) {
                 if(data.res == 2){
                     layer.alert("增加成功", {
                         icon: 6

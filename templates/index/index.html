@@ -59,9 +59,15 @@
                         <i class="iconfont nav_right">&#xe697;</i></a>
                     <ul class="sub-menu">
                         <li>
-                            <a onclick="xadmin.add_tab('屏风型号','{% url 'standard:list' %}')">
+                            <a onclick="xadmin.add_tab('屏风型号','{% url 'standard:modelslist' %}')">
                                 <i class="iconfont">&#xe6a7;</i>
                                 <cite>屏风型号</cite>
+                            </a>
+                        </li>
+                        <li>
+                            <a onclick="xadmin.add_tab('屏风图元','{% url 'standard:picslist' %}')">
+                                <i class="iconfont">&#xe6a7;</i>
+                                <cite>屏风图元</cite>
                             </a>
                         </li>
                     </ul>

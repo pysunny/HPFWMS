@@ -6,14 +6,20 @@ from utils.ComplexEncoder import ComplexEncoder
 import json
 
 # Create your views here.
-#/standard/list 屏风型号
-class StandardListView(View):
+#/standard/modelslist 屏风型号
+class ModelsListView(View):
     def get(self, request):
         """ 显示页面 """
-        return render(request, 'standard/list.html')
+        return render(request, 'standard/modelslist.html')
+
+#/standard/modelslist 屏风图元
+class PicsListView(View):
+    def get(self, request):
+        """ 显示页面 """
+        return render(request, 'standard/picslist.html')
     
-#/standard/data 数据接口
-class StandardDataView(View):
+#/standard/modelsdata 数据接口
+class ModelsDataView(View):
     def get(self, request):
         # 获取全部用户的数据
         ret = PanelModels.objects.all()
@@ -33,10 +39,10 @@ class StandardDataView(View):
         return HttpResponse(json.dumps(context, cls=ComplexEncoder))
 
 #/standard/add 新建型号
-class StandardAddView(View):
+class ModelsAddView(View):
     def get(self, request):
         """ 显示页面 """
-        return render(request, 'standard/add.html')
+        return render(request, 'standard/modelsadd.html')
     
     def post(self, request):
         """ 添加新项目 """
