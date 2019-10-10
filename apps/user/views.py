@@ -76,6 +76,7 @@ class RegisterView(View):
         password = request.POST.get('pwd')
         repassword = request.POST.get('repwd')
         email = request.POST.get('email')
+        location = request.POST.get('location')
         allow = request.POST.get('allow')
 
         """ 检验数据 """
@@ -84,7 +85,7 @@ class RegisterView(View):
             return JsonResponse({'res':1, 'errmsg':'请同意协议'})
 
         # 进行数据校验
-        if not all([username, password, email]):
+        if not all([username, password, email, location]):
             return JsonResponse({'res':2, 'errmsg':'数据不完整'})
             
         # 校验密码组成
@@ -125,6 +126,7 @@ class RegisterView(View):
         """ 业务处理 """
         user = User.objects.create_user(username, email, password)
         user.is_active = 0
+        user.location = location
         user.save()
 
         """ 发送激活邮件 """
@@ -162,7 +164,7 @@ class EmailActiveView(View):
             send_register_email.delay(email, username, user_id)
 
             # 返回应答
-            return HttpResponse('<h1>用户激活成功，还需要管理员激活。</h1><a href="http://10.147.20.115:8000/user/login">点击登录</a>', content_type='text/html;charset=utf-8')
+            return HttpResponse('<h1>用户激活成功，还需要管理员激活。</h1><a href="http://hufcor.xyz/user/login">点击登录</a>', content_type='text/html;charset=utf-8')
         except SignatureExpired as e:
             return HttpResponse('激活邮件已经过期')
 
@@ -201,6 +203,7 @@ class UserDataView(View):
         ret = User.objects.all()
         # 转化数据
         users = ret.values()
+        print(users)
         # 获取数据数量
         count = ret.count()
         data = list(users)

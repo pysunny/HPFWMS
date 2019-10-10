@@ -24,6 +24,16 @@
         <input name="email" placeholder="请输入电邮地址(公司电邮)"  type="text" lay-verify="required|email" class="layui-input" >
       </div>
       <div class="layui-form-item">
+        <select name="location" lay-verify="required">
+          <option value="">请选择所在区域</option>
+          <option value="0">番禺厂部(HPF)</option>
+          <option value="1">香港总部(HHKD)</option>
+          <option value="2">广州公司(HGZ)</option>
+          <option value="3">上海办事处(HSH)</option>
+          <option value="4">大连公司(HDL)</option>
+        </select>
+      </div>
+      <div class="layui-form-item">
         <input type="checkbox" name="allow" lay-skin="primary" title="我同意注册协议">
       </div>
       <div class="layui-form-item">

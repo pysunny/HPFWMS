@@ -14,10 +14,9 @@
                         <input type="text" id="projectname" name="projectname" placeholder="项目名称"  lay-verify="required" autocomplete="off" class="layui-input"></div>
                 </div>
                 <div class="layui-form-item">
-                    <label for="request_time" class="layui-form-label">
-                        <span class="x-red">*</span>出厂时间</label>
+                    <label for="request_time" class="layui-form-label">工程地址</label>
                     <div class="layui-input-inline">
-                        <input type="text" class="layui-input" autocomplete="off" placeholder="出厂时间" name="request_time" id="request_time" lay-verify="data|required"></div>
+                        <input type="text" class="layui-input" autocomplete="off" placeholder="工程地址" name="address" id="address" ></div>
                 </div>
                 <div class="layui-form-item">
                     <label for="L_repass" class="layui-form-label"></label>
@@ -66,18 +65,7 @@
             });
 
         });</script>
-
-    <script>layui.use('laydate',
-        function() {
-            var laydate = layui.laydate;
-
-            //执行一个laydate实例
-            laydate.render({
-                elem: '#request_time' //指定元素
-            });
-
-        });
-    </script>
+        
 {% endblock bottomfiles %}
 {# 网页底部引入块 #}
 

@@ -3,6 +3,7 @@ from django.views.generic import View
 from project.models import Projects
 from django.http import JsonResponse, HttpResponse
 from utils.ComplexEncoder import ComplexEncoder
+from datetime import datetime
 import json
 
 # Create your views here.
@@ -23,8 +24,7 @@ class ProjectAddView(View):
         # 接收数据
         user = request.user
         projectname = request.POST.get('projectname')
-        request_time = request.POST.get('request_time')
-        print(request_time)
+        address = request.POST.get('address')
         # 校验数据
         # 检验是否已有项目
         try:
@@ -35,10 +35,16 @@ class ProjectAddView(View):
         if project:
             return JsonResponse({'res':1, 'errmsg':'项目已经存在'})
 
-        # 检验时间是否比今天早
         
         # 业务处理
-        project = Projects.objects.create(name=projectname, user=user, request_time=request_time)
+        location = user.get_location_display()
+        project_id = location + str(user.id) + datetime.now().strftime('%Y%m%d%H%M%S')
+        project = Projects.objects.create(
+            project_id=project_id, 
+            name=projectname, 
+            user=user, 
+            address=address
+            )
 
         # 返回应答
         return JsonResponse({'res':2})
@@ -62,4 +68,11 @@ class ProjectDataView(View):
             }
         # 使用ComplexEncoder格式化jason
         return HttpResponse(json.dumps(context, cls=ComplexEncoder))
-    
+
+
+#/project/details 数据接口
+class ProjectDetailsView(View):
+    """ 查看项目详细视图类 """
+    def get(self, request):
+        """ 显示页面 """
+        return render(request, 'project/details.html')

@@ -1,0 +1,150 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% block titlename %}HPFWMS-项目列表{% endblock titlename %}
+
+{% block boby %}
+    <div class="layui-fluid">
+        <div class="layui-row layui-col-space15">
+            <div class="layui-col-md12">
+                <div class="layui-card">
+                    <div class="layui-card-body">
+                        <blockquote class="layui-elem-quote"><i><h2>项目资料</h2></i></blockquote>
+                    </div>
+                </div>
+                <div class="layui-card">
+                    <div class="layui-card-body">
+                        <blockquote class="layui-elem-quote"><i><h2>开工纸列表</h2></i></blockquote>
+                        <table id="pds_id" lay-filter="pds_if"></table>
+                    </div>
+                </div>
+                <!-- 暂时开放开工纸功能 -->
+                <!-- <div class="layui-card">
+                    <div class="layui-card-body">
+                        <blockquote class="layui-elem-quote"><i><h2>领料单列表</h2></i></blockquote>
+                        <table id="plw_id" lay-filter="plw_if"></table>
+                    </div>
+                </div> -->
+                <!-- <div class="layui-card">
+                    <div class="layui-card-body">
+                        <blockquote class="layui-elem-quote"><i><h2>非标物料，装饰面报价列表</h2></i></blockquote>
+                        <table id="quote_id" lay-filter="quote_if"></table>
+                    </div>
+                </div> -->
+            </div>
+        </div>
+    </div>
+{% endblock boby %}
+{# 网页主体块 #}
+
+{% block bottomfiles %}
+    <script>
+        layui.use('table', function(){
+            var table = layui.table;
+            table.render({
+                elem: '#pds_id'
+                ,height: 400
+                ,url: "{% url 'project:data' %}" //数据接口
+                ,page: true //开启分页
+                ,cols: [[ //表头
+                    {field:'xieliehao', width:80, title: '序列号',type:'numbers'}
+                    ,{field: 'id', title: '工程编号'}
+                    ,{field: 'name', title: '项目名称'}
+                    ,{field: 'user_id', title: '用户'}
+                    ,{field: 'request_time', title: '出厂时间'}
+                    ,{field: 'is_public', title: '是否公开'}
+                    ,{field: 'create_time', title: '创建时间'}
+                    ,{field: 'update_time', title: '更新时间'}
+                    ,{fixed: 'right', title: '操作',width:200, align:'center', toolbar: '#barPds'} 
+                    ]]
+                ,toolbar: '#toolbarPds'
+            });
+        });
+    </script>
+
+    <!-- 操作列 -->
+    <script type="text/html" id="barPds">
+        <a class="layui-btn layui-btn-xs" lay-event="detail" href="javascript:;">查看</a>
+        <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+        <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+    </script>
+    <!-- 表头工具 -->
+    <script type="text/html" id="toolbarPds">
+        <div class = "layui-btn-container" > 
+            <button class = "layui-btn layui-btn-sm" lay-event = "getCheckData" onclick="xadmin.open('新建屏风','{% url 'project:add' %}',600,500)"> 新建屏风 </button>
+        </div > 
+    </script>
+    <script>
+        layui.use('table', function(){
+            var table = layui.table;
+            table.render({
+                elem: '#plw_id'
+                ,height: 300
+                ,url: "{% url 'project:data' %}" //数据接口
+                ,page: true //开启分页
+                ,cols: [[ //表头
+                    {field:'xieliehao', width:80, title: '序列号',type:'numbers'}
+                    ,{field: 'id', title: '工程编号'}
+                    ,{field: 'name', title: '项目名称'}
+                    ,{field: 'user_id', title: '用户'}
+                    ,{field: 'request_time', title: '出厂时间'}
+                    ,{field: 'is_public', title: '是否公开'}
+                    ,{field: 'create_time', title: '创建时间'}
+                    ,{field: 'update_time', title: '更新时间'}
+                    ,{fixed: 'right', title: '操作',width:200, align:'center', toolbar: '#barPds'} 
+                    ]]
+                ,toolbar: '#toolbarPds'
+            });
+        });
+    </script>
+
+    <!-- 操作列 -->
+    <script type="text/html" id="barPds">
+        <a class="layui-btn layui-btn-xs" lay-event="detail" href="javascript:;">查看</a>
+        <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+        <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+    </script>
+
+    <script type="text/html" id="toolbarPds">
+        <div class = "layui-btn-container" > 
+            <button class = "layui-btn layui-btn-sm" lay-event = "getCheckData" onclick="xadmin.open('新建项目','{% url 'project:add' %}',600,500)"> 新建项目 </button>
+        </div > 
+    </script>
+    <script>
+        layui.use('table', function(){
+            var table = layui.table;
+            table.render({
+                elem: '#quote_id'
+                ,height: 300
+                ,url: "{% url 'project:data' %}" //数据接口
+                ,page: true //开启分页
+                ,cols: [[ //表头
+                    {field:'xieliehao', width:80, title: '序列号',type:'numbers'}
+                    ,{field: 'id', title: '工程编号'}
+                    ,{field: 'name', title: '项目名称'}
+                    ,{field: 'user_id', title: '用户'}
+                    ,{field: 'request_time', title: '出厂时间'}
+                    ,{field: 'is_public', title: '是否公开'}
+                    ,{field: 'create_time', title: '创建时间'}
+                    ,{field: 'update_time', title: '更新时间'}
+                    ,{fixed: 'right', title: '操作',width:200, align:'center', toolbar: '#barPds'} 
+                    ]]
+                ,toolbar: '#toolbarPds'
+            });
+        });
+    </script>
+
+    <!-- 操作列 -->
+    <script type="text/html" id="barPds">
+        <a class="layui-btn layui-btn-xs" lay-event="detail" href="javascript:;">查看</a>
+        <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+        <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+    </script>
+
+    <script type="text/html" id="toolbarPds">
+        <div class = "layui-btn-container" > 
+            <button class = "layui-btn layui-btn-sm" lay-event = "getCheckData" onclick="xadmin.open('新建项目','{% url 'project:add' %}',600,500)"> 新建项目 </button>
+        </div > 
+    </script>
+
+{% endblock bottomfiles %}
+{# 网页底部引入块 #}

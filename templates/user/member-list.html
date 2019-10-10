@@ -44,6 +44,13 @@
                     {field:'xieliehao', width:80, title: '序列号',type:'numbers'}
                     ,{field: 'username', title: '用户名'}
                     ,{field: 'email', title: '电邮'}
+                    ,{field: 'location', title: '区域',  templet:  function(d){
+                        if(d.location == '0'){return 'HPF'}
+                        else if(d.location == '1'){return 'HHKD'}
+                        else if(d.location == '2'){return 'HGZ'}
+                        else if(d.location == '3'){return 'HSH'}
+                        else {return 'HDL'}
+                        }}
                     ,{field: 'create_time', title: '注册时间'}
                     ,{field: 'is_active', title: '激活'}
                     ,{field: 'email_activate', title: '电邮激活'}

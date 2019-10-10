@@ -4,9 +4,10 @@ from db.base_model import BaseModel
 # Create your models here.
 class Projects(BaseModel):
     """ 项目列表模型类 """
+    project_id = models.CharField(max_length=128, primary_key=True, verbose_name='工程编号')
     name = models.CharField(max_length=256, verbose_name='工程名称')
     user = models.ForeignKey('user.User', on_delete=models.CASCADE, verbose_name='用户')
-    request_time = models.DateTimeField(verbose_name='出厂时间')
+    address = models.CharField(max_length=256, default="", verbose_name='工程地址')
     is_public = models.BooleanField(default=False, verbose_name='是否公开')
 
     class Meta:
