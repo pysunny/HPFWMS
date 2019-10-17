@@ -1,0 +1,117 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% block titlename %}HPFWMS-项目列表{% endblock titlename %}
+{% block topfiles %}
+<style type="text/css">
+    .layui-table-cell {
+        height: auto;
+        width: auto;
+    }
+</style>
+{% endblock topfiles %}
+{# 网页顶部引入文件块 #}
+{% block nav %}
+<div class="x-nav">
+    <span class="layui-breadcrumb">
+        <a href="">首页</a>
+        <a href="">产品标准</a>
+        <a><cite>屏风图元</cite></a>
+    </span>
+    <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right"
+        onclick="location.reload()" title="刷新">
+        <i class="layui-icon layui-icon-refresh" style="line-height:30px"></i>
+    </a>
+</div>
+{% endblock nav %}
+{# 网页主体上侧块 #}
+z{% block boby %}
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md12">
+            <div class="layui-card">
+                <div class="layui-card-body ">
+                    <table id="demo" lay-filter="test"></table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock boby %}
+{# 网页主体块 #}
+
+{% block bottomfiles %}
+
+<script>
+    layui.use('table', function () {
+        var table = layui.table;
+        table.render({
+            elem: '#demo'
+            , height: 800
+            , url: "{% url 'standard:picspartsdata' %}" //数据接口
+            , page: true //开启分页
+            , toolbar: '#toolbarDemo'
+            , cols: [[ //表头
+                { field: 'xieliehao', width: 80, title: '序列号', type: 'numbers' }
+                , { field: 'name', title: '组件名称' }
+                , { field: 'paneltype', title: '屏风种类' ,templet: function (d) {
+                        if (d.paneltype == '0') { return '普通屏风' }
+                        else if (d.paneltype == '1') { return '玻璃屏风' }
+                        else { return '收板间门' }
+                    }}
+                , { field: 'panelpart', title: '组件位置' ,templet: function (d) {
+                        if (d.panelpart == '0') { return '左边' }
+                        else if (d.panelpart == '1') { return '中间' }
+                        else if (d.panelpart == '2') { return '轮子' }
+                        else { return '右边' }
+                    }}
+                , { title: '图例显示', templet:"#svgTpl"}
+                , { field: 'create_time', title: '创建时间' }
+                , { fixed: 'right', title: '操作', width: 130, align: 'center', toolbar: '#barDemo' }
+            ]]
+        });
+
+        table.on('tool(test)', function (obj) { //注：tool 是工具条事件名，test 是 table 原始容器的属性 lay-filter="对应的值"
+            var data = obj.data; //获得当前行数据
+            var layEvent = obj.event; //获得 lay-event 对应的值（也可以是表头的 event 参数对应的值）
+
+            if (layEvent === 'del') { //删除
+                // layer.confirm('真的删除行么', function (index) {
+                    // obj.del(); //删除对应行（tr）的DOM结构，并更新缓存
+                    // layer.close(index);
+                    //向服务端发送删除指令
+                // });
+            }
+
+            else if (layEvent === 'edit') { //编辑
+                xadmin.open('编辑组件','{% url "standard:picspartsedit" %}?id='+ data.id,600,500)
+            }
+        });
+    });
+</script>
+
+<!-- 操作列 -->
+<script type="text/html" id="barDemo">
+    <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+    <!-- <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a> -->
+</script>
+
+<!-- 新建项目按钮 -->
+<script type="text/html" id="toolbarDemo">
+    <div class = "layui-btn-container" > 
+        <button class = "layui-btn layui-btn-sm" lay-event = "getCheckData" onclick="xadmin.open('新建组件','{% url 'standard:picspartsadd' %}',500,500)"> 新建组件 </button>
+    </div > 
+</script>
+
+<script type="text/html" id="svgTpl">
+    <div>
+        <svg xmlns="http://www.w3.org/2000/svg" version="1.1" height="128" width="128" >
+            <g stroke="black" stroke-width="1.5" fill="none">
+                {% verbatim %}"{{d.svgcode}}"{% endverbatim %}
+            </g>
+        </svg>
+    </div>
+</script>
+
+
+{% endblock bottomfiles %}
+{# 网页底部引入块 #}

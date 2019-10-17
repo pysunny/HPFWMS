@@ -1,30 +1,33 @@
 {% load staticfiles %}
 <!doctype html>
 <html class="x-admin-sm">
-    <head>
-        <meta charset="UTF-8">
-        <title>{% block titlename %}{% endblock titlename %}{# 标题名 #}</title>
-        <meta name="renderer" content="webkit|ie-comp|ie-stand">
-        <link rel="stylesheet" href="{% static 'css/font.css' %}">
-        <link rel="stylesheet" href="{% static 'css/xadmin.css' %}">
-        <script src="{% static 'lib/layui/layui.js' %}" charset="utf-8"></script>
-        <script type="text/javascript" src="{% static 'js/jquery.min.js' %}"></script>
-        <script type="text/javascript" src="{% static 'js/xadmin.js' %}"></script>
-        {% block topfiles %}{% endblock topfiles %}
-        {# 网页顶部引入文件块 #}
-    </head>
-    <body {% block bodyclass %}{% endblock bodyclass %}{# 主体class类型预留块 #}>
-        {% block topcont %}{% endblock topcont %}
-        {# 网页顶部块 #}
-        {% block leftcont %}{% endblock leftcont %}
-        {# 网页主体左侧块 #}
-        {% block nav %}{% endblock nav %}
-        {# 网页主体上侧块 #}
-        {% block boby %}{% endblock boby %}
-        {# 网页主体块 #}
-        {% block bottomcont %}{% endblock bottomcont %}
-        {# 网页底部块 #}
-        {% block bottomfiles %}{% endblock bottomfiles %}
-        {# 网页底部引入文件块 #}
-    </body>
+
+<head>
+    <meta charset="UTF-8">
+    <title>{% block titlename %}{% endblock titlename %}{# 标题名 #}</title>
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <link rel="stylesheet" href="{% static 'css/font.css' %}">
+    <link rel="stylesheet" href="{% static 'css/xadmin.css' %}">
+    <script src="{% static 'lib/layui/layui.js' %}" charset="utf-8"></script>
+    <script type="text/javascript" src="{% static 'js/jquery.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/xadmin.js' %}"></script>
+    {% block topfiles %}{% endblock topfiles %}
+    {# 网页顶部引入文件块 #}
+</head>
+
+<body {% block bodyclass %}{% endblock bodyclass %}{# 主体class类型预留块 #}>
+    {% block topcont %}{% endblock topcont %}
+    {# 网页顶部块 #}
+    {% block leftcont %}{% endblock leftcont %}
+    {# 网页主体左侧块 #}
+    {% block nav %}{% endblock nav %}
+    {# 网页主体上侧块 #}
+    {% block boby %}{% endblock boby %}
+    {# 网页主体块 #}
+    {% block bottomcont %}{% endblock bottomcont %}
+    {# 网页底部块 #}
+    {% block bottomfiles %}{% endblock bottomfiles %}
+    {# 网页底部引入文件块 #}
+</body>
+
 </html>

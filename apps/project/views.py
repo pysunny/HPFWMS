@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from django.views.generic import View
+from user.models import User
 from project.models import Projects
 from django.http import JsonResponse, HttpResponse
 from utils.ComplexEncoder import ComplexEncoder
@@ -13,7 +14,8 @@ class ProjectListView(View):
         """ 显示页面 """
         return render(request, 'project/list.html')
 
-#/project/add 新建项目
+# /project/add 新建项目
+
 class ProjectAddView(View):
     def get(self, request):
         """ 显示页面 """
@@ -25,6 +27,7 @@ class ProjectAddView(View):
         user = request.user
         projectname = request.POST.get('projectname')
         address = request.POST.get('address')
+        projectlocation = request.POST.get('projectlocation')
         # 校验数据
         # 检验是否已有项目
         try:
@@ -33,46 +36,65 @@ class ProjectAddView(View):
             # 用户名不存在
             project = None
         if project:
-            return JsonResponse({'res':1, 'errmsg':'项目已经存在'})
+            return JsonResponse({'res': 1, 'errmsg': '项目已经存在'})
 
-        
+        # 项目区域字典
+        location_dict = {
+            '0': 'HPF',
+            '1': 'HHKD',
+            '2': 'HGZ',
+            '3': 'HSH',
+            '4': 'HDL'
+        }
+
         # 业务处理
-        location = user.get_location_display()
-        project_id = location + str(user.id) + datetime.now().strftime('%Y%m%d%H%M%S')
+        # 获取项目区域
+        location = location_dict[projectlocation]
+        # 生产项目编号
+        project_id = location + str(user.id) + \
+            datetime.now().strftime('%Y%m%d%H%M%S')
+        # 保存数据到数据库
         project = Projects.objects.create(
-            project_id=project_id, 
-            name=projectname, 
-            user=user, 
+            project_id=project_id,
+            projectlocation=projectlocation,
+            name=projectname,
+            user=user,
             address=address
-            )
+        )
 
         # 返回应答
-        return JsonResponse({'res':2})
+        return JsonResponse({'res': 2})
 
-#/project/data 数据接口
+# /project/data 数据接口
+
+
 class ProjectDataView(View):
     def get(self, request):
         # 获取全部用户的数据
-        ret = Projects.objects.all()
+        user = request.user
+        # 获取用户所在区域
+        userlocation = user.location
+        # 获取用户区域的全部项目
+        ret = Projects.objects.filter(projectlocation=userlocation)
         # 转化数据
         projects = ret.values()
         # 获取数据数量
         count = ret.count()
         data = list(projects)
+        # 修改data数据中user_id变成name
+        for datas in data:
+            user_id = datas['user_id']
+            user = User.objects.get(id=user_id)
+            datas['user_id'] = user.username
         # 组织上下文
         context = {
-            "code":0,
-            "msg":"",
-            "count":count,
-            "data":data
-            }
+            "code": 0,
+            "msg": "",
+            "count": count,
+            "data": data
+        }
         # 使用ComplexEncoder格式化jason
         return HttpResponse(json.dumps(context, cls=ComplexEncoder))
 
 
-#/project/details 数据接口
-class ProjectDetailsView(View):
-    """ 查看项目详细视图类 """
-    def get(self, request):
-        """ 显示页面 """
-        return render(request, 'project/details.html')
+

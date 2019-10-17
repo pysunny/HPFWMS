@@ -1,54 +1,127 @@
 {% extends 'base.html' %}
 {% load staticfiles %}
 {% block titlename %}HPFWMS-项目列表{% endblock titlename %}
-
+{% block topfiles %}
+<style type="text/css">
+    .layui-table-cell {
+        height: auto;
+        width: auto;
+    }
+</style>
+{% endblock topfiles %}
+{# 网页顶部引入文件块 #}
 {% block nav %}
-    <div class="x-nav">
-        <span class="layui-breadcrumb">
-            <a href="">首页</a>
-            <a href="">产品标准</a>
-            <a><cite>屏风图元</cite></a>
-        </span>
-        <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right" onclick="location.reload()" title="刷新">
-            <i class="layui-icon layui-icon-refresh" style="line-height:30px"></i>
-        </a>
-    </div>
+<div class="x-nav">
+    <span class="layui-breadcrumb">
+        <a href="">首页</a>
+        <a href="">产品标准</a>
+        <a><cite>屏风图元</cite></a>
+    </span>
+    <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right"
+        onclick="location.reload()" title="刷新">
+        <i class="layui-icon layui-icon-refresh" style="line-height:30px"></i>
+    </a>
+</div>
 {% endblock nav %}
 {# 网页主体上侧块 #}
 z{% block boby %}
 <div class="layui-fluid">
     <div class="layui-row layui-col-space15">
         <div class="layui-col-md12">
-                <svg>
-                    <use xlink:href="#icon-pre"></use>
-                </svg>
-                <svg>
-                    <symbol  id="icon-pre" width="125" height="125" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
-                        <g>
-                            <polyline points="20.073,66.669 22.583,66.669 22.583,70.5 25.126,70.5 25.126,70.821 20.105,70.821  " stroke-miterlimit="10" stroke-linecap="square" stroke-width="1.5" stroke="#212830" fill="none"/>
-                            <polyline points="17.788,70.821 17.82,71.111 17.949,71.4 18.142,71.627 18.367,71.819 18.657,71.947 18.946,71.981 19.236,71.947 19.526,71.819 19.751,71.627 19.943,71.4 20.073,71.111 20.105,70.821  " stroke-miterlimit="10" stroke-linecap="square" stroke-width="1.5" stroke="#212830" fill="none"/>
-                            <line y2="66.669" x2="17.755" y1="70.821" x1="17.755" stroke-miterlimit="10" stroke-linecap="square" stroke-width="1.5" stroke="#212830" fill="none"/>
-                            <polyline points="20.105,66.669 20.073,66.379 19.943,66.089 19.751,65.863 19.526,65.671 19.236,65.542 18.946,65.51 18.657,65.542 18.367,65.671 18.142,65.863 17.949,66.089 17.82,66.379 17.788,66.669  " stroke-miterlimit="10" stroke-linecap="square" stroke-width="1.5" stroke="#212830" fill="none"/>
-                            <polyline points="20.073,58.332 22.583,58.332 22.583,54.5 25.126,54.5 25.126,54.21 20.105,54.21  " stroke-miterlimit="10" stroke-linecap="square" stroke-width="1.5" stroke="#212830" fill="none"/>
-                            <polyline points="20.105,54.21 20.073,53.921 19.943,53.63 19.751,53.405 19.526,53.213 19.236,53.083 18.946,53.052 18.657,53.083 18.367,53.213 18.142,53.405 17.949,53.63 17.82,53.921 17.788,54.21  " stroke-miterlimit="10" stroke-linecap="square" stroke-width="1.5" stroke="#212830" fill="none"/>
-                            <line y2="58.332" x2="17.755" y1="54.21" x1="17.755" stroke-miterlimit="10" stroke-linecap="square" stroke-width="1.5" stroke="#212830" fill="none"/>
-                            <polyline points="17.788,58.332    17.82,58.62 17.949,58.911 18.142,59.136 18.367,59.33 18.657,59.458 18.946,59.489 19.236,59.458 19.526,59.33 19.751,59.136 19.943,58.911 20.073,58.62 20.105,58.332  " stroke-miterlimit="10" stroke-linecap="square" stroke-width="1.5" stroke="#212830" fill="none"/>
-                            <polyline points="22.583,70.5 22.583,67.217 25.802,66.701 25.802,58.332 22.583,57.816 22.583,54.5  " stroke-miterlimit="10" stroke-linecap="square" stroke-width="1.5" stroke="#212830" fill="none"/>
-                        </g>
-                    </symbol>
-                    <symbol  id="icon-next" width="125" height="125" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
-                        <g>
-                            <polyline points="   29.753,114.437 22.508,112.505 29.753,110.572  " stroke-miterlimit="10" stroke-linecap="square" stroke-width="1.5" stroke="#212830" fill="none"/>
-                            <polyline points="   95.248,114.437 102.492,112.505 95.248,110.572  " stroke-miterlimit="10" stroke-linecap="square" stroke-width="1.5" stroke="#212830" fill="none"/>
-                            <line y2="54.471" x2="102.492" y1="54.471" x1="22.508" stroke-miterlimit="10" stroke-linecap="square" stroke-width="1.5" stroke="#212830" fill="none"/>
-                            <line y2="70.477" x2="22.508" y1="70.477" x1="102.492" stroke-miterlimit="10" stroke-linecap="square" stroke-width="1.5" stroke="#212830" fill="none"/>
-                            <polyline points="   102.492,74.471 102.492,112.505 22.508,112.505 22.508,74.471  " stroke-miterlimit="10" stroke-linecap="square" stroke-width="1.5" stroke="#212830" fill="none"/>
-                        </g>
-                    </symbol>
-                </svg>
+            <div class="layui-card">
+                <div class="layui-card-body ">
+                    <table id="demo" lay-filter="test"></table>
+                </div>
             </div>
         </div>
     </div>
 </div>
 {% endblock boby %}
 {# 网页主体块 #}
+
+{% block bottomfiles %}
+
+<script>
+    layui.use('table', function () {
+        var table = layui.table;
+        table.render({
+            elem: '#demo'
+            , height: 800
+            , url: "{% url 'standard:picsdata' %}" //数据接口
+            // , page: true //开启分页
+            , toolbar: '#toolbarDemo'
+            , cols: [[ //表头
+                { field: 'xieliehao', width: 80, title: '序列号', type: 'numbers' }
+                , { field: 'name', title: '组件名称' }
+                , { field: 'paneltype', title: '屏风种类' ,templet: function (d) {
+                        if (d.paneltype == '0') { return '普通屏风' }
+                        else if (d.paneltype == '1') { return '玻璃屏风' }
+                        else { return '收板间门' }
+                    }}
+                , { field: 'wheeltype', title: '轮子分类' ,templet: function (d) {
+                        if (d.wheeltype == '0') { return '多向式' }
+                        else { return '单向式' }
+                    }}
+                , { field: 'pictype', title: '图元种类' ,templet: function (d) {
+                        if (d.pictype == '0') { return 'BP' }
+                        if (d.pictype == '1') { return 'LCP' }
+                        if (d.pictype == '2') { return 'BSP' }
+                        if (d.pictype == '3') { return 'WJ' }
+                        if (d.pictype == '4') { return 'UIPD' }
+                        if (d.pictype == '5') { return 'LIPD' }
+                        else { return 'FP' }
+                    }}
+                , { title: '图例显示', templet:"#svgTpl"}
+                , { field: 'create_time', title: '创建时间' }
+                , { fixed: 'right', title: '操作', width: 130, align: 'center', toolbar: '#barDemo' }
+            ]]
+        });
+
+        table.on('tool(test)', function (obj) { //注：tool 是工具条事件名，test 是 table 原始容器的属性 lay-filter="对应的值"
+            var data = obj.data; //获得当前行数据
+            var layEvent = obj.event; //获得 lay-event 对应的值（也可以是表头的 event 参数对应的值）
+
+            if (layEvent === 'del') { //删除
+                // layer.confirm('真的删除行么', function (index) {
+                    // obj.del(); //删除对应行（tr）的DOM结构，并更新缓存
+                    // layer.close(index);
+                    //向服务端发送删除指令
+                // });
+            }
+
+            else if (layEvent === 'edit') { //编辑
+                xadmin.open('编辑组件','{% url "standard:picsedit" %}?id='+ data.id,600,500)
+            }
+        });
+    });
+</script>
+
+<!-- 操作列 -->
+<script type="text/html" id="barDemo">
+    <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+    <!-- <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a> -->
+</script>
+
+<!-- 新建项目按钮 -->
+<script type="text/html" id="toolbarDemo">
+    <div class = "layui-btn-container" > 
+        <button class = "layui-btn layui-btn-sm" lay-event = "getCheckData" onclick="xadmin.open('新建图元','{% url 'standard:picsadd' %}',600,500)"> 新建图元 </button>
+    </div > 
+</script>
+
+<script type="text/html" id="svgTpl">
+    <div>
+        <svg xmlns="http://www.w3.org/2000/svg" version="1.1" height="128" width="128" >
+            <g stroke="black" stroke-width="1.5" fill="none">
+                {% verbatim %}"{{d.leftsidecode}}"{% endverbatim %}
+                {% verbatim %}"{{d.middlecode}}"{% endverbatim %}
+                {% verbatim %}"{{d.wheelcode}}"{% endverbatim %}
+                {% verbatim %}"{{d.rightsidecode}}"{% endverbatim %}
+            </g>
+        </svg>
+    </div>
+</script>
+
+
+{% endblock bottomfiles %}
+{# 网页底部引入块 #}

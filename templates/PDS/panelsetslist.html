@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% block titlename %}HPFWMS-项目列表{% endblock titlename %}
+
+{% block boby %}
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md12">
+            <div class="layui-card">
+                <div class="layui-card-header">项目资料</div>
+                <div class="layui-card-body">
+                    <table class="layui-table">
+                        <tbody>
+                            <tr>
+                                <td width="12.5%">工程编号</td>
+                                <td>{{project.project_id}}</td>
+                                <td width="12.5%">用户</td>
+                                <td>{{project.user.username}}</td></tr>
+                            <tr>
+                                <td>工程名称</td>
+                                <td>{{project.name}}</td>
+                                <td>区域</td>
+                                <td>{{project.location}}</td></tr>
+                            <tr>
+                                <td>工程地址</td>
+                                <td>{{project.address}}</td>
+                                <td>创建时间</td>
+                                <td>{{project.create_time}}</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="layui-card">
+                    <div class="layui-card-header">开工纸</div>
+                <div class="layui-card-body">
+                    <table id="pds_id" lay-filter="pds_if"></table>
+                </div>
+            </div>
+            <!-- 暂时开放开工纸功能 -->
+            <!-- <div class="layui-card">
+                    <div class="layui-card-body">
+                        <blockquote class="layui-elem-quote"><i><h2>领料单列表</h2></i></blockquote>
+                        <table id="plw_id" lay-filter="plw_if"></table>
+                    </div>
+                </div> -->
+            <!-- <div class="layui-card">
+                    <div class="layui-card-body">
+                        <blockquote class="layui-elem-quote"><i><h2>非标物料，装饰面报价列表</h2></i></blockquote>
+                        <table id="quote_id" lay-filter="quote_if"></table>
+                    </div>
+                </div> -->
+        </div>
+    </div>
+</div>
+{% endblock boby %}
+{# 网页主体块 #}
+
+{% block bottomfiles %}
+<script>
+    layui.use('table', function () {
+        var table = layui.table;
+        table.render({
+            elem: '#pds_id'
+            , height: 400
+            , url: "{% url 'PDS:panelsetsdata' %}" //数据接口
+            , page: true //开启分页
+            , cols: [[ //表头
+                { field: 'xieliehao', width: 80, title: '序列号', type: 'numbers' }
+                , { field: 'mark', title: '编号' }
+                , { field: 'sets', title: '组数' }
+                , { field: 'production_time', title: '型号' }
+                , { field: 'model', title: '出厂时间' }
+                , { field: 'height', title: '高度' }
+                , { field: 'width', title: '宽度' }
+                , { field: 'wheel', title: '轮子' }
+                , { fixed: 'right', title: '操作', width: 200, align: 'center', toolbar: '#barPds' }
+            ]]
+            , toolbar: '#toolbarPds'
+        });
+    });
+</script>
+
+<!-- 操作列 -->
+<script type="text/html" id="barPds">
+        <a class="layui-btn layui-btn-xs" lay-event="detail" href="javascript:;">查看</a>
+        <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+        <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+    </script>
+<!-- 表头工具 -->
+<script type="text/html" id="toolbarPds">
+        <div class = "layui-btn-container" > 
+            <button class = "layui-btn layui-btn-sm" lay-event = "getCheckData" onclick="xadmin.open('新建屏风','{% url 'PDS:panelsetsadd' %}',900,700)"> 新建屏风 </button>
+        </div > 
+    </script>
+
+{% endblock bottomfiles %}
+{# 网页底部引入块 #}

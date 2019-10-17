@@ -7,4 +7,5 @@ urlpatterns = [
     path('user/', include('user.urls', namespace='user')), #用户
     path('project/', include('project.urls', namespace='project')), #项目
     path('standard/', include('standard.urls', namespace='standard')), #标准
+    path('PDS/', include('PDS.urls', namespace='PDS')), #开工纸
 ]

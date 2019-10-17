@@ -3,126 +3,132 @@
 {% block titlename %}HPFWMS-V1.0{% endblock titlename %}
 {% block bodyclass %}class="index"{% endblock bodyclass %}
 {% block topcont %}
-    <!-- 顶部开始 -->
-    <div class="container">
-        <div class="logo">
-            <a href="{% url 'index:index' %}">HPFWMS V1.0</a></div>
-        <div class="left_open">
-            <a><i title="展开左侧栏" class="iconfont">&#xe699;</i></a>
-        </div>
-        <ul class="layui-nav right" lay-filter="">
-            <li class="layui-nav-item">
-                <a href="javascript:;">{{ user.username }}</a>
-                <dl class="layui-nav-child">
-                    <!-- 二级菜单 -->
-                    <dd>
-                        <a onclick="xadmin.open('个人信息','http://www.baidu.com')">个人信息</a></dd>
-                    <dd>
-                        <a href="{% url 'user:logout' %}">退出</a></dd>
-                </dl>
-            </li>
-        </ul>
+<!-- 顶部开始 -->
+<div class="container">
+    <div class="logo">
+        <a href="{% url 'index:index' %}">HPFWMS V1.0</a></div>
+    <div class="left_open">
+        <a><i title="展开左侧栏" class="iconfont">&#xe699;</i></a>
     </div>
-    <!-- 顶部结束 -->
+    <ul class="layui-nav right" lay-filter="">
+        <li class="layui-nav-item">
+            <a href="javascript:;">{{ user.username }}</a>
+            <dl class="layui-nav-child">
+                <!-- 二级菜单 -->
+                <dd>
+                    <a onclick="xadmin.open('个人信息','http://www.baidu.com')">个人信息</a></dd>
+                <dd>
+                    <a href="{% url 'user:logout' %}">退出</a></dd>
+            </dl>
+        </li>
+    </ul>
+</div>
+<!-- 顶部结束 -->
 {% endblock topcont %}
 {# 网页顶部块 #}
 
 {% block leftcont %}
 <!-- 左侧菜单开始 -->
-    <div class="left-nav">
-        <div id="side-nav">
-            <ul id="nav">
-                <li>
-                    <a href="javascript:;">
-                        <i class="iconfont left-nav-li" lay-tips="订单管理">&#xe723;</i>
-                        <cite>项目管理</cite>
-                        <i class="iconfont nav_right">&#xe697;</i></a>
-                    <ul class="sub-menu">
-                        <li>
-                            <a onclick="xadmin.add_tab('项目列表','{% url 'project:list' %}')">
-                                <i class="iconfont">&#xe6a7;</i>
-                                <cite>项目列表</cite>
-                            </a>
-                        </li>
-                        <li>
-                            <a onclick="xadmin.add_tab('公开项目','order-list.html')">
-                                <i class="iconfont">&#xe6a7;</i>
-                                <cite>公开项目</cite>
-                            </a>
-                        </li>
-                    </ul>
-                </li>
-                <li>
-                    <a href="javascript:;">
-                        <i class="iconfont left-nav-li" lay-tips="标准管理">&#xe723;</i>
-                        <cite>产品标准</cite>
-                        <i class="iconfont nav_right">&#xe697;</i></a>
-                    <ul class="sub-menu">
-                        <li>
-                            <a onclick="xadmin.add_tab('屏风型号','{% url 'standard:modelslist' %}')">
-                                <i class="iconfont">&#xe6a7;</i>
-                                <cite>屏风型号</cite>
-                            </a>
-                        </li>
-                        <li>
-                            <a onclick="xadmin.add_tab('屏风图元','{% url 'standard:picslist' %}')">
-                                <i class="iconfont">&#xe6a7;</i>
-                                <cite>屏风图元</cite>
-                            </a>
-                        </li>
-                    </ul>
-                </li>
-                <li>
-                    <a href="javascript:;">
-                        <i class="iconfont left-nav-li" lay-tips="会员管理">&#xe6b8;</i>
-                        <cite>注册用户</cite>
-                        <i class="iconfont nav_right">&#xe697;</i></a>
-                    <ul class="sub-menu">
-                        <li>
-                            <a onclick="xadmin.add_tab('用户管理','{% url 'user:memberlist' %}')">
-                                <i class="iconfont">&#xe6a7;</i>
-                                <cite>用户管理</cite>
-                            </a>
-                        </li>
-                        <li>
-                            <a onclick="xadmin.add_tab('用户管理','{% url 'user:memberlist' %}')">
-                                <i class="iconfont">&#xe6a7;</i>
-                                <cite>用户权限表</cite>
-                            </a>
-                        </li>
-                    </ul>
-                </li>
-            </ul>
-        </div>
+<div class="left-nav">
+    <div id="side-nav">
+        <ul id="nav">
+            <li>
+                <a href="javascript:;">
+                    <i class="iconfont left-nav-li" lay-tips="订单管理">&#xe723;</i>
+                    <cite>项目管理</cite>
+                    <i class="iconfont nav_right">&#xe697;</i></a>
+                <ul class="sub-menu">
+                    <li>
+                        <a onclick="xadmin.add_tab('项目列表','{% url 'project:list' %}')">
+                            <i class="iconfont">&#xe6a7;</i>
+                            <cite>项目列表</cite>
+                        </a>
+                    </li>
+                    <li>
+                        <a onclick="xadmin.add_tab('公开项目','order-list.html')">
+                            <i class="iconfont">&#xe6a7;</i>
+                            <cite>公开项目</cite>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            <li>
+                <a href="javascript:;">
+                    <i class="iconfont left-nav-li" lay-tips="标准管理">&#xe723;</i>
+                    <cite>产品标准</cite>
+                    <i class="iconfont nav_right">&#xe697;</i></a>
+                <ul class="sub-menu">
+                    <li>
+                        <a onclick="xadmin.add_tab('屏风型号','{% url 'standard:modelslist' %}')">
+                            <i class="iconfont">&#xe6a7;</i>
+                            <cite>屏风型号</cite>
+                        </a>
+                    </li>
+                    <li>
+                        <a onclick="xadmin.add_tab('屏风图元','{% url 'standard:picslist' %}')">
+                            <i class="iconfont">&#xe6a7;</i>
+                            <cite>屏风图元</cite>
+                        </a>
+                    </li>
+                    <li>
+                        <a onclick="xadmin.add_tab('基本图元','{% url 'standard:picspartslist' %}')">
+                            <i class="iconfont">&#xe6a7;</i>
+                            <cite>基本图元</cite>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            <li>
+                <a href="javascript:;">
+                    <i class="iconfont left-nav-li" lay-tips="会员管理">&#xe6b8;</i>
+                    <cite>注册用户</cite>
+                    <i class="iconfont nav_right">&#xe697;</i></a>
+                <ul class="sub-menu">
+                    <li>
+                        <a onclick="xadmin.add_tab('用户管理','{% url 'user:memberlist' %}')">
+                            <i class="iconfont">&#xe6a7;</i>
+                            <cite>用户管理</cite>
+                        </a>
+                    </li>
+                    <li>
+                        <a onclick="xadmin.add_tab('用户权限表','{% url 'user:permissionList' %}')">
+                            <i class="iconfont">&#xe6a7;</i>
+                            <cite>用户权限表</cite>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+        </ul>
     </div>
-    <!-- 左侧菜单结束 -->
+</div>
+<!-- 左侧菜单结束 -->
 {% endblock leftcont %}
 {# 网页主体左侧块 #}
 
 {% block boby %}
-    <!-- 右侧主体开始 -->
-    <div class="page-content">
-        <div class="layui-tab tab" lay-filter="xbs_tab" lay-allowclose="false">
-            <ul class="layui-tab-title">
-                <li class="home"><i class="layui-icon">&#xe68e;</i>我的桌面</li>
-            </ul>
-            <div class="layui-unselect layui-form-select layui-form-selected" id="tab_right">
-                <dl>
-                    <dd data-type="this">关闭当前</dd>
-                    <dd data-type="other">关闭其它</dd>
-                    <dd data-type="all">关闭全部</dd>
-                </dl>
-            </div>
-            <div class="layui-tab-content">
-                <div class="layui-tab-item layui-show">
-                    <iframe src='{% url 'index:welcome' %}' frameborder="0" scrolling="yes" class="x-iframe"></iframe>
-                </div>
-            </div>
-            <div id="tab_show"></div>
+<!-- 右侧主体开始 -->
+<div class="page-content">
+    <div class="layui-tab tab" lay-filter="xbs_tab" lay-allowclose="false">
+        <ul class="layui-tab-title">
+            <li class="home"><i class="layui-icon">&#xe68e;</i>我的桌面</li>
+        </ul>
+        <div class="layui-unselect layui-form-select layui-form-selected" id="tab_right">
+            <dl>
+                <dd data-type="this">关闭当前</dd>
+                <dd data-type="other">关闭其它</dd>
+                <dd data-type="all">关闭全部</dd>
+            </dl>
         </div>
+        <div class="layui-tab-content">
+            <div class="layui-tab-item layui-show">
+                <iframe src='{% url 'index:welcome' %}' frameborder="0" scrolling="yes" class="x-iframe"></iframe>
+            </div>
+        </div>
+        <div id="tab_show"></div>
     </div>
-    <div class="page-content-bg"></div>
-    <style id="theme_style"></style>
-    <!-- 右侧主体结束 -->
+</div>
+<div class="page-content-bg"></div>
+<style id="theme_style"></style>
+<!-- 右侧主体结束 -->
 {% endblock boby %}
 {# 网页主体块 #}

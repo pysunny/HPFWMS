@@ -1,13 +1,13 @@
 {% extends 'base.html' %}
 {% load staticfiles %}
-{% block titlename %}HPFWMS-用户管理{% endblock titlename %}
+{% block titlename %}HPFWMS-用户权限表{% endblock titlename %}
 
 {% block nav %}
     <div class="x-nav">
         <span class="layui-breadcrumb">
             <a href="">首页</a>
             <a href="">用户</a>
-            <a><cite>用户管理</cite></a>
+            <a><cite>用户权限表</cite></a>
         </span>
         <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right" onclick="location.reload()" title="刷新">
             <i class="layui-icon layui-icon-refresh" style="line-height:30px"></i>
@@ -38,23 +38,12 @@
             table.render({
                 elem: '#demo'
                 ,height: 500
-                ,url: "{% url 'user:data' %}" //数据接口
+                ,url: "{% url 'user:permissiondata' %}" //数据接口
                 ,page: true //开启分页
                 ,cols: [[ //表头
                     {field:'xieliehao', width:80, title: '序列号',type:'numbers'}
                     ,{field: 'username', title: '用户名'}
-                    ,{field: 'email', title: '电邮'}
-                    ,{field: 'location', title: '区域',  templet:  function(d){
-                        if(d.location == '0'){return 'HPF'}
-                        else if(d.location == '1'){return 'HHKD'}
-                        else if(d.location == '2'){return 'HGZ'}
-                        else if(d.location == '3'){return 'HSH'}
-                        else {return 'HDL'}
-                        }}
-                    ,{field: 'create_time', title: '注册时间'}
-                    ,{field: 'is_active', title: '激活'}
-                    ,{field: 'email_activate', title: '电邮激活'}
-                    ,{field: 'is_superuser', title: '管理员'}
+                    ,{field: 'location', title: '项目区域'}
                     ,{fixed: 'right', title: '操作',width:200, align:'center', toolbar: '#barDemo'} 
                     ]]
                 ,toolbar: true 
