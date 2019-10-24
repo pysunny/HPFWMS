@@ -5,8 +5,11 @@
 {% block boby %}
 <div class="layui-fluid">
   <form method="post" class="layui-form">
+    {% csrf_token %}
+    <fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
+      <legend>资料</legend>
+    </fieldset>
     <div class="layui-row">
-      {% csrf_token %}
       <div class="layui-col-xs4">
         <div class="layui-form-item">
           <label class="layui-form-label">型号名称</label>
@@ -15,11 +18,11 @@
           </div>
         </div>
       </div>
-      <div class="layui-col-xs5">
+      <div class="layui-col-xs4">
         <div class="layui-form-item">
           <label class="layui-form-label">系列</label>
-          <div class="layui-input-block" lay-verify="required">
-            <select name="series" lay-filter="series">
+          <div class="layui-input-block">
+            <select name="series" lay-filter="series" lay-verify="required">
               <option value=""></option>
               <option value="0">CT680</option>
               <option value="1">5000</option>
@@ -28,6 +31,19 @@
           </div>
         </div>
       </div>
+      <div class="layui-col-xs4">
+        <div class="layui-form-item">
+          <label class="layui-form-label">特征描述</label>
+          <div class="layui-input-block">
+            <input type="text" name="desc" placeholder="请输入" autocomplete="off" class="layui-input" lay-verify="required">
+          </div>
+        </div>
+      </div>
+    </div>
+    <fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
+        <legend>顶部</legend>
+      </fieldset>
+    <div class="layui-row">
       <div class="layui-col-xs4">
         <div class="layui-form-item">
           <label class="layui-form-label">顶部虚位</label>
@@ -39,7 +55,7 @@
       <div class="layui-col-xs4">
         <div class="layui-form-item">
           <label class="layui-form-label">顶胶</label>
-          <div class="layui-input-block" lay-verify="required">
+          <div class="layui-input-block" >
             <input type="radio" name="top_seal" value="1" title="有" checked>
             <input type="radio" name="top_seal" value="0" title="无">
           </div>
@@ -48,17 +64,22 @@
       <div class="layui-col-xs4">
         <div class="layui-form-item">
           <label class="layui-form-label">顶撑</label>
-          <div class="layui-input-block" lay-verify="required">
+          <div class="layui-input-block">
             <input type="radio" name="top_mechanism" value="1" title="有" checked>
             <input type="radio" name="top_mechanism" value="0" title="无">
           </div>
         </div>
       </div>
+    </div>
+    <fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
+        <legend>中部</legend>
+      </fieldset> 
+    <div class="layui-row">
       <div class="layui-col-xs4">
         <div class="layui-form-item">
           <label class="layui-form-label">基本板材</label>
-          <div class="layui-input-block" lay-verify="required">
-            <select name="basic_material" lay-filter="basic_material">
+          <div class="layui-input-block" >
+            <select name="basic_material" lay-verify="required">
               <option value=""></option>
               <option value="0">石膏板</option>
               <option value="1">木夹板</option>
@@ -70,8 +91,8 @@
       <div class="layui-col-xs4">
         <div class="layui-form-item">
           <label class="layui-form-label">钢板</label>
-          <div class="layui-input-block" lay-verify="required">
-            <select name="steel_plate" lay-filter="steel_plate">
+          <div class="layui-input-block" >
+            <select name="steel_plate" lay-verify="required">
               <option value=""></option>
               <option value="0">内</option>
               <option value="1">外</option>
@@ -83,12 +104,17 @@
       <div class="layui-col-xs4">
         <div class="layui-form-item">
           <label class="layui-form-label">岩棉</label>
-          <div class="layui-input-block" lay-verify="required">
+          <div class="layui-input-block">
             <input type="radio" name="rockwool" value="1" title="有" checked>
             <input type="radio" name="rockwool" value="0" title="无">
           </div>
         </div>
       </div>
+    </div>
+    <fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
+        <legend>底部</legend>
+      </fieldset> 
+    <div class="layui-row">
       <div class="layui-col-xs4">
         <div class="layui-form-item">
           <label class="layui-form-label">底部虚位</label>
@@ -100,7 +126,7 @@
       <div class="layui-col-xs4">
         <div class="layui-form-item">
           <label class="layui-form-label">底胶</label>
-          <div class="layui-input-block" lay-verify="required">
+          <div class="layui-input-block" >
             <input type="radio" name="bottom_seal" value="1" title="有" checked>
             <input type="radio" name="bottom_seal" value="0" title="无">
           </div>
@@ -109,28 +135,21 @@
       <div class="layui-col-xs4">
         <div class="layui-form-item">
           <label class="layui-form-label">底撑</label>
-          <div class="layui-input-block" lay-verify="required">
+          <div class="layui-input-block">
             <input type="radio" name="bottom_mechanism" value="1" title="有" checked>
             <input type="radio" name="bottom_mechanism" value="0" title="无">
           </div>
         </div>
       </div>
-      <div class="layui-col-xs12">
-        <div class="layui-form-item layui-form-text">
-          <label class="layui-form-label">填写描述</label>
-          <div class="layui-input-block" lay-verify="required">
-            <textarea name="desc" placeholder="请输入内容" class="layui-textarea"></textarea>
-          </div>
+    </div>
+      <div class="layui-form-item">
+        <div class="layui-input-block">
+          <button class="layui-btn" lay-submit lay-filter="add">提交</button>
+          <button type="reset" class="layui-btn layui-btn-primary">重置</button>
         </div>
       </div>
-        <div class="layui-form-item">
-          <div class="layui-input-block">
-            <button class="layui-btn" lay-submit lay-filter="add">提交</button>
-            <button type="reset" class="layui-btn layui-btn-primary">重置</button>
-          </div>
-        </div>
+    </div>
     </form>
-  </div>
 </div>
 {% endblock boby %}
 {# 网页主体块 #}

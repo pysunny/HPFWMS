@@ -2,40 +2,53 @@
 {% load staticfiles %}
 {% block titlename %}HPFWMS-项目列表{% endblock titlename %}
 
+{% block nav %}
+<div class="x-nav">
+    <span class="layui-breadcrumb">
+        <a href="">首页</a>
+        <a href="">项目</a>
+        <a><cite>项目详细</cite></a>
+    </span>
+    <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right"
+        onclick="location.reload()" title="刷新">
+        <i class="layui-icon layui-icon-refresh" style="line-height:30px"></i>
+    </a>
+</div>
+{% endblock nav %}
+{# 网页主体上侧块 #}
+
 {% block boby %}
 <div class="layui-fluid">
     <div class="layui-row layui-col-space15">
         <div class="layui-col-md12">
-            <div class="layui-card">
-                <div class="layui-card-header">项目资料</div>
-                <div class="layui-card-body">
-                    <table class="layui-table">
-                        <tbody>
-                            <tr>
-                                <td width="12.5%">工程编号</td>
-                                <td>{{project.project_id}}</td>
-                                <td width="12.5%">用户</td>
-                                <td>{{project.user.username}}</td></tr>
-                            <tr>
-                                <td>工程名称</td>
-                                <td>{{project.name}}</td>
-                                <td>区域</td>
-                                <td>{{project.location}}</td></tr>
-                            <tr>
-                                <td>工程地址</td>
-                                <td>{{project.address}}</td>
-                                <td>创建时间</td>
-                                <td>{{project.create_time}}</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-            <div class="layui-card">
-                    <div class="layui-card-header">开工纸</div>
-                <div class="layui-card-body">
-                    <table id="pds_id" lay-filter="pds_if"></table>
-                </div>
-            </div>
+            <fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
+                <legend>屏风资料</legend>
+            </fieldset>
+            <input type="hidden" name="project_id" value="{{project.project_id}}">
+            <table class="layui-table">
+                <tbody>
+                    <tr>
+                        <td width="12.5%">工程编号</td>
+                        <td>{{project.project_id}}</td>
+                        <td width="12.5%">用户</td>
+                        <td>{{project.user.username}}</td></tr>
+                    <tr>
+                        <td>工程名称</td>
+                        <td>{{project.name}}</td>
+                        <td>区域</td>
+                        <td>{{project.location}}</td></tr>
+                    <tr>
+                        <td>工程地址</td>
+                        <td>{{project.address}}</td>
+                        <td>创建时间</td>
+                        <td>{{project.create_time}}</td></tr>
+                </tbody>
+            </table>
+            <fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
+                <legend>开工纸</legend>
+            </fieldset>
+            <table id="pds_id" lay-filter="pds_if"></table>
+        </div>
             <!-- 暂时开放开工纸功能 -->
             <!-- <div class="layui-card">
                     <div class="layui-card-body">
@@ -63,13 +76,14 @@
             elem: '#pds_id'
             , height: 400
             , url: "{% url 'PDS:panelsetsdata' %}" //数据接口
+            , where:{'project_id':$("[name='project_id']").val()}
             , page: true //开启分页
             , cols: [[ //表头
                 { field: 'xieliehao', width: 80, title: '序列号', type: 'numbers' }
                 , { field: 'mark', title: '编号' }
                 , { field: 'sets', title: '组数' }
-                , { field: 'production_time', title: '型号' }
-                , { field: 'model', title: '出厂时间' }
+                , { field: 'model', title: '型号' }
+                , { field: 'production_time', title: '出厂时间' }
                 , { field: 'height', title: '高度' }
                 , { field: 'width', title: '宽度' }
                 , { field: 'wheel', title: '轮子' }
@@ -88,10 +102,10 @@
     </script>
 <!-- 表头工具 -->
 <script type="text/html" id="toolbarPds">
-        <div class = "layui-btn-container" > 
-            <button class = "layui-btn layui-btn-sm" lay-event = "getCheckData" onclick="xadmin.open('新建屏风','{% url 'PDS:panelsetsadd' %}',900,700)"> 新建屏风 </button>
-        </div > 
-    </script>
+    <div class = "layui-btn-container" > 
+        <button class = "layui-btn layui-btn-sm"  onclick="top.xadmin.add_tab('{{project.name}}-新建','{% url 'PDS:panelsetsadd' %}?id={{project.project_id}}')"> 新建组 </button>
+    </div > 
+</script>
 
 {% endblock bottomfiles %}
 {# 网页底部引入块 #}

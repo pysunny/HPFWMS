@@ -99,3 +99,7 @@ class PicsModels(BaseModel):
         db_table = 'df_pics'
         verbose_name = '图元模型'
         verbose_name_plural = verbose_name
+
+
+
+        

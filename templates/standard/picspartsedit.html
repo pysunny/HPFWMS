@@ -9,16 +9,14 @@
           {% csrf_token %}
           <input type="hidden" name="partsid" value="{{picpart.id}}">
           <div class="layui-form-item">
-              <label for="picspartsname" class="layui-form-label">
-                  <span class="x-red">*</span>组件标记</label>
-              <div class="layui-input-inline">
+              <label  class="layui-form-label"><span class="x-red">*</span>组件标记</label>
+              <div class="layui-input-block">
                   <input type="text" id="picspartsname" name="picspartsname" placeholder="组件标记" lay-verify="required" autocomplete="off" class="layui-input" value="{{picpart.name}}">
               </div>
           </div>
           <div class="layui-form-item">
-              <label for="paneltype" class="layui-form-label">
-                  <span class="x-red">*</span>屏风种类</label>
-              <div class="layui-input-inline">
+              <label class="layui-form-label"><span class="x-red">*</span>屏风种类</label>
+              <div class="layui-input-block">
                   <select name="paneltype" lay-verify="required" value="{{picpart.paneltype}}">
                       <option value="">选择屏风种类</option>
                       <option value="0" {% if picpart.paneltype == 0 %} selected="selected" {% endif %} >普通屏风</option>
@@ -28,9 +26,8 @@
               </div>
           </div>
           <div class="layui-form-item">
-              <label for="panelpart" class="layui-form-label">
-                  <span class="x-red">*</span>组件位置</label>
-              <div class="layui-input-inline">
+              <label class="layui-form-label"><span class="x-red">*</span>组件位置</label>
+              <div class="layui-input-block">
                   <select name="panelpart" lay-verify="required" >
                       <option value="" >选择组件位置</option>
                       <option value="0" {% if picpart.panelpart == 0 %} selected="selected" {% endif %} >左边</option>
@@ -40,15 +37,14 @@
                   </select>
               </div>
           </div>
-          <div class="layui-form-item layui-form-text">
-            <label for="svgcode" class="layui-form-label">
-              <span class="x-red">*</span>组件代码</label>
-            <div class="layui-input-block" style="width: 400px;">
-              <textarea name="svgcode" placeholder="请组件代码" class="layui-textarea" >{{picpart.svgcode}}</textarea>
+          <div class="layui-form-item">
+            <label class="layui-form-label"><span class="x-red">*</span>组件代码</label>
+            <div class="layui-input-block" >
+              <textarea name="svgcode" placeholder="请组件代码" class="layui-textarea" lay-verify="required">{{picpart.svgcode}}</textarea>
             </div>
           </div>
           <div class="layui-form-item">
-              <label for="L_repass" class="layui-form-label"></label>
+              <label class="layui-form-label"></label>
               <button class="layui-btn" lay-filter="add" lay-submit="">保存</button>
           </div>
       </form>

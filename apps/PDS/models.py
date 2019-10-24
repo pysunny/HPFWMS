@@ -25,10 +25,10 @@ class Panelsets(BaseModel):
         (1,'需要')
     )
     project = models.ForeignKey('project.Projects', on_delete=models.CASCADE, verbose_name='所属项目')
+    mark = models.CharField(max_length=128, verbose_name='屏风编号')
     sets = models.SmallIntegerField(default=1, verbose_name='组数')
     production_time = models.DateField(verbose_name='出厂时间')
     model = models.ForeignKey('standard.PanelModels', on_delete=models.CASCADE, verbose_name='型号')
-    mark = models.CharField(max_length=128, verbose_name='屏风编号')
     height = models.IntegerField(verbose_name='高度')
     width = models.IntegerField(verbose_name='宽度')
     wheel = models.SmallIntegerField(choices=WHEEL_CHOICES, verbose_name='轮子')
@@ -53,11 +53,12 @@ class Panles(BaseModel):
         (6,'FP')
     )
     panelset = models.ForeignKey(Panelsets, on_delete=models.CASCADE, verbose_name='所属屏风组')
-    quantity = models.SmallIntegerField(default=1, verbose_name='数量')
     panle_no = models.CharField(max_length=128, verbose_name='屏风编号')
+    quantity = models.SmallIntegerField(default=1, verbose_name='数量')
     carrier_space = models.SmallIntegerField(verbose_name='轮距')
     panel_width = models.SmallIntegerField(verbose_name='屏风长度')
     panel_type = models.SmallIntegerField(choices=PANEL_TYPE_CHOICES, verbose_name='屏风类型')
+    panel_pic = models.ForeignKey('standard.PicsModels', default=1, on_delete=models.CASCADE, verbose_name='屏风图元')
 
     class Meta:
         db_table = 'df_panels'

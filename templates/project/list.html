@@ -80,15 +80,7 @@
             var layEvent = obj.event; //获得 lay-event 对应的值（也可以是表头的 event 参数对应的值）
 
             if (layEvent === 'detail') { //查看
-                layui.use('element', function () {
-                    var element = layui.element;
-                    parent.layui.element.tabAdd('xbs_tab', {
-                        title: data.name,
-                        content: '<iframe src='+ "{% url 'PDS:panelsetslist' %}?id="+data.project_id + ' frameborder="0" scrolling="yes" class="x-iframe"></iframe>' ,
-                        id: data.project_id
-                    });
-                    parent.layui.element.tabChange('xbs_tab', data.project_id);
-                })
+                top.xadmin.add_tab(data.name,'{% url 'PDS:panelsetslist' %}?id='+data.project_id)
 
             }
 

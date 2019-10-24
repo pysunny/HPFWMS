@@ -1,19 +1,33 @@
 {% extends 'base.html' %}
 {% load staticfiles %}
 {% block titlename %}HPFWMS-新建项目{% endblock titlename %}
+{% block topfiles %}
+<style type="text/css">
+  .layui-table {
+    text-align: center;
+  }
+</style>
+<script type="text/javascript" src="{% static 'lib/layui/layui.all.js' %}" charset="utf-8"> </script>
+<script type="text/javascript" src="{% static 'lib/layui/tableSelect.js' %}" charset="utf-8"></script>
+{% endblock topfiles %}
+{# 网页顶部引入文件块 #}
 {% block bodyclass %} {% endblock bodyclass %}
 {% block boby %}
 <div class="layui-fluid">
   <form method="post" class="layui-form">
+    {% csrf_token %}
+    <input type="hidden" name="project_id" value="{{project_id}}">
+    <input type="hidden" name="panelset_id" value="">
     <fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
-        <legend>屏风资料</legend>
-      </fieldset>
+      <legend>屏风资料</legend>
+    </fieldset>
     <div class="layui-row">
       <div class="layui-col-xs4">
         <div class="layui-form-item">
           <label class="layui-form-label">屏风编号</label>
           <div class="layui-input-block">
-            <input type="text" name="mark" placeholder="请输入" autocomplete="off" class="layui-input" lay-verify="required">
+            <input type="text" name="mark" placeholder="请输入" autocomplete="off" class="layui-input"
+              lay-verify="required">
           </div>
         </div>
       </div>
@@ -21,7 +35,8 @@
         <div class="layui-form-item">
           <label class="layui-form-label">组数</label>
           <div class="layui-input-block">
-            <input type="text" name="sets" placeholder="请输入" autocomplete="off" class="layui-input" lay-verify="required">
+            <input type="text" name="sets" placeholder="请输入" autocomplete="off" class="layui-input"
+              lay-verify="required|number">
           </div>
         </div>
       </div>
@@ -29,15 +44,18 @@
         <div class="layui-form-item">
           <label class="layui-form-label">出厂时间</label>
           <div class="layui-input-block">
-            <input type="text" name="production_time" placeholder="请输入" autocomplete="off" class="layui-input" lay-verify="required">
+            <input type="text" name="production_time" placeholder="请输入" autocomplete="off" class="layui-input"
+              lay-verify="required|date" id="production_time">
           </div>
         </div>
       </div>
       <div class="layui-col-xs4">
         <div class="layui-form-item">
+          <input type="hidden" name="model_id" value="">
           <label class="layui-form-label">屏风型号</label>
           <div class="layui-input-block">
-            <input type="text" name="model" placeholder="请输入" autocomplete="off" class="layui-input" lay-verify="required">
+            <input type="text" name="model" placeholder="请输入" autocomplete="off" class="layui-input"
+              lay-verify="required" id="model_pick">
           </div>
         </div>
       </div>
@@ -45,7 +63,8 @@
         <div class="layui-form-item">
           <label class="layui-form-label">标准高度</label>
           <div class="layui-input-block">
-            <input type="text" name="name" placeholder="请输入" autocomplete="off" class="layui-input" lay-verify="required">
+            <input type="text" name="height" placeholder="请输入" autocomplete="off" class="layui-input"
+              lay-verify="required|number">
           </div>
         </div>
       </div>
@@ -53,7 +72,8 @@
         <div class="layui-form-item">
           <label class="layui-form-label">标准长度</label>
           <div class="layui-input-block">
-            <input type="text" name="name" placeholder="请输入" autocomplete="off" class="layui-input" lay-verify="required">
+            <input type="text" name="width" placeholder="请输入" autocomplete="off" class="layui-input"
+              lay-verify="required|number">
           </div>
         </div>
       </div>
@@ -61,7 +81,17 @@
         <div class="layui-form-item">
           <label class="layui-form-label">轮子</label>
           <div class="layui-input-block">
-            <input type="text" name="name" placeholder="请输入" autocomplete="off" class="layui-input" lay-verify="required">
+            <select name="wheel" lay-verify="required">
+              <option value=""></option>
+              <option value="0">26</option>
+              <option value="1">36</option>
+              <option value="2">57</option>
+              <option value="3">11</option>
+              <option value="4">38</option>
+              <option value="5">40</option>
+              <option value="6">42</option>
+              <option value="6">11T</option>
+            </select>
           </div>
         </div>
       </div>
@@ -69,7 +99,11 @@
         <div class="layui-form-item">
           <label class="layui-form-label">隔音测试</label>
           <div class="layui-input-block">
-            <input type="text" name="name" placeholder="请输入" autocomplete="off" class="layui-input" lay-verify="required">
+            <select name="sound_test" lay-verify="required">
+              <option value=""></option>
+              <option value="0">不需要</option>
+              <option value="1">需要</option>
+            </select>
           </div>
         </div>
       </div>
@@ -77,7 +111,13 @@
         <div class="layui-form-item">
           <label class="layui-form-label">屏风结构</label>
           <div class="layui-input-block">
-            <input type="text" name="name" placeholder="请输入" autocomplete="off" class="layui-input" lay-verify="required">
+            <select name="face_structure" lay-verify="required">
+              <option value=""></option>
+              <option value="0">无钢结构</option>
+              <option value="1">固面带收边</option>
+              <option value="2">易面带收边</option>
+              <option value="3">固面不带收边</option>
+            </select>
           </div>
         </div>
       </div>
@@ -85,14 +125,24 @@
         <div class="layui-form-item">
           <label class="layui-form-label">边框颜色</label>
           <div class="layui-input-block">
-            <input type="text" name="name" placeholder="请输入" autocomplete="off" class="layui-input" lay-verify="required">
+            <input type="text" name="frame_color" placeholder="请输入" autocomplete="off" class="layui-input"
+              lay-verify="required">
           </div>
         </div>
       </div>
     </div>
-      <fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
-        <legend>屏风细节</legend>
-      </fieldset>
+    <fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
+      <legend>屏风细节</legend>
+    </fieldset>
+    <div class="layui-form-item">
+      <div class="layui-input-block">
+        <!-- <button class="layui-btn" type="button"onclick="xadmin.open('新建屏风','{% url 'PDS:panelsadd' %}',900,600)">新建屏风</button> -->
+        <button class="layui-btn" lay-submit lay-filter="add_panel">新建屏风</button>
+      </div>
+    </div>
+    <div class="layui-row">
+      <div id="pic_label">
+      </div>
     </div>
   </form>
 </div>
@@ -100,41 +150,110 @@
 {# 网页主体块 #}
 
 {% block bottomfiles %}
-<script>layui.use(['form', 'layer', 'jquery'],
-    function () {
-      $ = layui.jquery;
-      var form = layui.form,
-        layer = layui.layer;
 
-      //监听提交
-      form.on('submit(add)',
-        function (data) {
-          data.field.csrfmiddlewaretoken = $("[name='csrfmiddlewaretoken']").val()
-          //ajax请求
-          $.post("{% url 'standard:modelsadd' %}", data.field, function (data) {
-            if (data.res == 2) {
-              layer.alert("增加成功", {
-                icon: 6
-              },
-                function () {
-                  //关闭当前frame
-                  xadmin.close();
+<script type="text/javascript">
+  var laydate = layui.laydate;
+  //执行一个laydate实例
+  laydate.render({
+    elem: '#production_time' //指定元素
+  });
+</script>
 
-                  // 可以对父窗口进行刷新 
-                  xadmin.father_reload();
-                });
-            }
-            else {
-              // 数据验证有问题
-              layer.msg(data.errmsg, {
-                time: 2000, //2s后自动关闭
-              });
-            }
+<script type="text/javascript">
+  var form = layui.form;
+  form.render();
+  var element = layui.element;
+  var tableSelect = layui.tableSelect;
+  tableSelect.render({
+    elem: '#model_pick',
+    checkedKey: 'id',
+    searchKey: 'keyword',	//搜索输入框的name值 默认keyword
+    table: {
+      url: "{% url 'standard:modelsdata' %}",
+      cols: [[
+        { type: 'radio' },
+        { field: 'id', title: 'ID' },
+        { field: 'name', title: '型号名称' },
+        { field: 'desc', title: '型号描述', width: 200 },
+        {
+          field: 'basic_material', title: '基本板材', templet: function (d) {
+            if (d.basic_material == '0') { return '石膏板' }
+            else if (d.basic_material == '1') { return '木夹板' }
+            else { return '无' }
+          }
+        },
+        {
+          field: 'steel_plate', title: '钢板', templet: function (d) {
+            if (d.basic_material == '0') { return '内' }
+            else if (d.basic_material == '1') { return '外' }
+            else { return '无' }
+          }
+        },
+        { field: 'top_mechanism', title: '底撑', templet: function (d) { return d.top_mechanism == '1' ? '有' : '无' } },
+        { field: 'top_clearance', title: '底部虚位', templet: function (d) { return d.top_clearance + "mm" } }
+      ]]
+    },
+    done: function (elem, data) {
+      var NEWJSON = []
+      var MODELIDJSON = []
+      layui.each(data.data, function (index, item) {
+        NEWJSON.push(item.name)
+        MODELIDJSON.push(item.id)
+      })
+      elem.val(NEWJSON)
+      $("[name='model_id']").val(MODELIDJSON)
+    }
+  });
 
-          })
-          return false;
-        });
+</script>
 
-    });</script>
+<script type="text/javascript">
+  $ = layui.jquery;
+  var form = layui.form,
+    layer = layui.layer;
+
+  //监听提交
+  form.on('submit(add_panel)',
+    function (data) {
+      data.field.csrfmiddlewaretoken = $("[name='csrfmiddlewaretoken']").val()
+      data.field.project_id = $("[name='project_id']").val()
+      data.field.model_id = $("[name='model_id']").val()
+      data.field.panelset_id = $("[name='panelset_id']").val()
+      //ajax请求
+      $.post("{% url 'PDS:panelsetsadd' %}", data.field, function (data) {
+        if (data.res == 2) {
+          // 可以对父窗口进行刷新 
+          // xadmin.father_reload();
+          $("[name='panelset_id']").val(data.panelset_id)
+          xadmin.open('新建屏风', '{% url "PDS:panelsadd" %}?id=' + data.panelset_id, 900, 600)
+        }
+        else if (data.res == 3) {
+          xadmin.open('新建屏风', '{% url "PDS:panelsadd" %}?id=' + data.panelset_id, 900, 600)
+        }
+        else {
+          // 数据验证有问题
+          layer.msg(data.errmsg, {
+            time: 2000, //2s后自动关闭
+          });
+        }
+      })
+      return false;
+    });
+</script>
+
+<script type="text/javascript">
+  $ = layui.jquery;
+  function make_panel(panle_no, quantity, carrier_space, panel_width, panel_type, svgcode) {
+    // var panle_no = "1";
+    // var quantity = "1";
+    // var carrier_space = "686";
+    var allcode = "<svg xmlns='http://www.w3.org/2000/svg' version='1.1' height='128' width='128' ><g stroke='black' stroke-width='1.5' fill='none'>" + svgcode + "</g></svg>";
+    // var panel_width = "1000";
+    // var panel_type = "BP";
+    var tool = "<button class='layui-btn layui-btn-xs' type='button'>编辑</button><button class='layui-btn layui-btn-danger layui-btn-xs' type='button'>删除</button>";
+    pic_code = "<div class='layui-col-xs2'><table class='layui-table'lay-size='sm'><tbody><tr><td>" + panle_no + "</td></tr><tr><td>" + quantity + "</td></tr><tr><td>" + carrier_space + "</td></tr><tr><td>" + allcode + "</td></tr><tr><td>" + panel_width + "</td></tr><tr><td>" + panel_type + "</td></tr><tr><td>" + tool + "</td></tr></tbody></table></div>";
+    $('#pic_label').before(pic_code)
+  }
+</script>
 {% endblock bottomfiles %}
 {# 网页底部引入块 #}

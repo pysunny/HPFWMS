@@ -44,6 +44,7 @@ class ModelsAddView(View):
         # 接收数据
         name = request.POST.get('name')
         series = request.POST.get('series')
+        desc = request.POST.get('desc')
         top_clearance = request.POST.get('top_clearance')
         top_seal = request.POST.get('top_seal')
         top_mechanism = request.POST.get('top_mechanism')
@@ -53,13 +54,12 @@ class ModelsAddView(View):
         bottom_clearance = request.POST.get('top_clearance')
         bottom_seal = request.POST.get('top_seal')
         bottom_mechanism = request.POST.get('top_mechanism')
-        desc = request.POST.get('desc')
         # 校验数据
         if not all([name, series, top_clearance, basic_material, steel_plate, bottom_clearance, desc]):
             return JsonResponse({'res': 0, 'errmsg': '数据不完整'})
         # 检验已有相同名字
         try:
-            panelmodel = PanelModels.objects.get(name=name)
+            panelmodel = PanelModels.objects.get(name=name, basic_material=basic_material, bottom_clearance=bottom_clearance, steel_plate=steel_plate)
         except PanelModels.DoesNotExist:
             # 用户名不存在
             panelmodel = None
