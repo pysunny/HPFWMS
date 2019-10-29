@@ -83,7 +83,7 @@ z{% block boby %}
             }
 
             else if (layEvent === 'edit') { //编辑
-                xadmin.open('编辑组件','{% url "standard:picspartsedit" %}?id='+ data.id,500,500)
+                xadmin.open('编辑组件','{% url "standard:picsparts" %}?picparts_id='+ data.id,500,500)
             }
         });
     });
@@ -98,7 +98,7 @@ z{% block boby %}
 <!-- 新建项目按钮 -->
 <script type="text/html" id="toolbarDemo">
     <div class = "layui-btn-container" > 
-        <button class = "layui-btn layui-btn-sm" lay-event = "getCheckData" onclick="xadmin.open('新建组件','{% url 'standard:picspartsadd' %}',500,500)"> 新建组件 </button>
+        <button class = "layui-btn layui-btn-sm" lay-event = "getCheckData" onclick="xadmin.open('新建组件','{% url 'standard:picsparts' %}',500,500)"> 新建组件 </button>
     </div > 
 </script>
 

@@ -45,6 +45,14 @@ class PanelsetsDataView(View):
         # 使用ComplexEncoder格式化jason
         return HttpResponse(json.dumps(context, cls=ComplexEncoder))
 
+# /PDS/panelsetsadd_setp2 新建屏风组
+class PanelsetsAddSetp2View(View):
+    """ 新建组 """
+    def get(self, request):
+        """ 显示页面 """
+        # 接收数据
+        return render(request, 'PDS/panelsetsadd_step_2.html')
+
 # /PDS/panelsetsadd 新建屏风组
 class PanelsetsAddView(View):
     """ 新建组 """
@@ -53,7 +61,7 @@ class PanelsetsAddView(View):
         # 接收数据
         project_id = request.GET.get('id')
 
-        return render(request, 'PDS/panelsetsadd.html', {'project_id':project_id})
+        return render(request, 'PDS/panelsetsadd_step_1.html', {'project_id':project_id})
 
     def post(self, request):
         """ 添加新组 """
@@ -151,7 +159,8 @@ class PanelsAddView(View):
             'carrier_space':carrier_space,
             'panel_width':panel_width,
             'svgcode':svgcode,
-            'panel_type':panel_type
+            'panel_type':panel.get_panel_type_display(),
+            'panel_id':panel.id
         }
 
         # 返回应答

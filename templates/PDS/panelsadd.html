@@ -22,7 +22,7 @@
       <div class="layui-form-item">
         <label class="layui-form-label">编号</label>
         <div class="layui-input-block">
-          <input type="text" name="panle_no" placeholder="请输入" autocomplete="off" class="layui-input" lay-verify="required|number">
+          <input type="text" name="panle_no" placeholder="请输入" autocomplete="off" class="layui-input" lay-verify="required">
         </div>
       </div>
       <div class="layui-row">
@@ -141,7 +141,7 @@
                   xadmin.close();
 
                   // 可以对父窗口进行刷新 
-                  parent.make_panel(data.panle_no, data.quantity, data.carrier_space, data.panel_width, data.panel_type, data.svgcode);
+                  parent.make_panel(data.panle_no, data.quantity, data.carrier_space, data.panel_width, data.panel_type, data.svgcode, data.panel_id);
                 });
             }
             else {

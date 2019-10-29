@@ -7,7 +7,7 @@
   <div class="layui-row">
       <form method="post" class="layui-form">
           {% csrf_token %}
-          <input type="hidden" name="partsid" value="{{picpart.id}}">
+          <input type="hidden" name="picparts_id" value="{{picpart.id}}">
           <div class="layui-form-item">
               <label  class="layui-form-label"><span class="x-red">*</span>组件标记</label>
               <div class="layui-input-block">
@@ -64,9 +64,9 @@
       form.on('submit(add)',
         function (data) {
           data.field.csrfmiddlewaretoken = $("[name='csrfmiddlewaretoken']").val()
-          data.field.id = $("[name='partsid']").val()
+          data.field.picparts_id = $("[name='picparts_id']").val()
           //ajax请求
-          $.post("{% url 'standard:picspartsedit' %}", data.field, function (data) {
+          $.post("{% url 'standard:picsparts' %}", data.field, function (data) {
             if (data.res == 2) {
               layer.alert("保存成功", {
                 icon: 6

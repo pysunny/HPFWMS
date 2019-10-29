@@ -85,7 +85,7 @@
             // }
 
             if (layEvent === 'edit') { //编辑
-                xadmin.open('编辑型号','{% url "standard:modelsedit" %}?id='+ data.id,900,600)
+                xadmin.open('编辑型号','{% url "standard:models" %}?model_id='+ data.id,900,600)
             }
         });
 
@@ -100,7 +100,7 @@
 
 <script type="text/html" id="toolbarDemo">
     <div class = "layui-btn-container" > 
-        <button class = "layui-btn layui-btn-sm" lay-event = "getCheckData" onclick="xadmin.open('编辑型号','{% url 'standard:modelsadd' %}',900,600)"> 添加型号 </button>
+        <button class = "layui-btn layui-btn-sm" lay-event = "getCheckData" onclick="xadmin.open('新建型号','{% url 'standard:models' %}',900,600)"> 新建型号 </button>
     </div > 
 </script>
 
