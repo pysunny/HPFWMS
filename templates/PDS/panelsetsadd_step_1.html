@@ -2,8 +2,10 @@
 {% load staticfiles %}
 {% block titlename %}HPFWMS-新建项目第一步{% endblock titlename %}
 {% block topfiles %}
+<link rel="stylesheet" href="{% static 'css/formSelects-v4.css' %}" />
 <script type="text/javascript" src="{% static 'lib/layui/layui.all.js' %}" charset="utf-8"> </script>
 <script type="text/javascript" src="{% static 'lib/layui/tableSelect.js' %}" charset="utf-8"></script>
+<script type="text/javascript" src="{% static 'lib/layui/formSelects-v4.js' %}" charset="utf-8"></script>
 {% endblock topfiles %}
 {# 网页顶部引入文件块 #}
 {% block bodyclass %} {% endblock bodyclass %}
@@ -84,8 +86,7 @@
         <div class="layui-form-item">
           <label class="layui-form-label">轮子</label>
           <div class="layui-input-block">
-            <select name="wheel" lay-verify="required">
-              <option value=""></option>
+            <select name="wheel" lay-verify="required" xm-select="wheel" xm-select-radio="">
               <option value="0">26</option>
               <option value="1">36</option>
               <option value="2">57</option>
@@ -102,8 +103,7 @@
         <div class="layui-form-item">
           <label class="layui-form-label">隔音测试</label>
           <div class="layui-input-block">
-            <select name="sound_test" lay-verify="required">
-              <option value=""></option>
+            <select name="sound_test" lay-verify="required" xm-select="sound_test" xm-select-radio="">
               <option value="0">不需要</option>
               <option value="1">需要</option>
             </select>
@@ -114,8 +114,7 @@
         <div class="layui-form-item">
           <label class="layui-form-label">屏风结构</label>
           <div class="layui-input-block">
-            <select name="face_structure" lay-verify="required">
-              <option value=""></option>
+            <select name="face_structure" lay-verify="required" xm-select="face_structure" xm-select-radio="">
               <option value="0">无钢结构</option>
               <option value="1">固面带收边</option>
               <option value="2">易面带收边</option>
@@ -128,14 +127,31 @@
         <div class="layui-form-item">
           <label class="layui-form-label">边框颜色</label>
           <div class="layui-input-block">
-            <input type="text" name="frame_color" placeholder="请输入" autocomplete="off" class="layui-input"
-              lay-verify="required">
+              <select name="frame_color" xm-select="frame_color" xm-select-search="" xm-select-create="" lay-verify="required" xm-select-radio="">
+                <option value="" >请选择;如果没有需要的选项，请可以输入再选择</option>
+                <option value="银灰色" >银灰色</option>
+              </select>
+          </div>
+        </div>
+      </div>
+      <div class="layui-col-xs8 layui-col-xs-offset2">
+        <div class="layui-form-item">
+          <label class="layui-form-label">横驳条分别</label>
+          <div class="layui-input-block">
+              <select name="splicer" xm-select="splicer" xm-select-search="" xm-select-create="" lay-verify="required" >
+                <option value="" >请选择;如果没有需要的选项，请可以输入再选择</option>
+                <option value="无横驳条" >无横驳条</option>
+                <option value="平门中门" >平门中门</option>
+                <option value="2400" >2400</option>
+                <option value="4800" >4800</option>
+                <option value="7200" >7200</option>
+              </select>
           </div>
         </div>
       </div>
         <div class="layui-form-item" align="right">
             <button type="reset" class="layui-btn layui-btn-primary" style="width:10%;">重置</button>
-            <a href="{% url 'PDS:panelsetsaddsetp2' %}" class="layui-btn" type="botton" style="width:10%;">下一步</a>
+            <button class="layui-btn" lay-submit lay-filter="add" style="width:10%;">下一步</button>
         </div>
     </div>
   </form>
@@ -156,7 +172,6 @@
 <script type="text/javascript">
   var form = layui.form;
   form.render();
-  var element = layui.element;
   var tableSelect = layui.tableSelect;
   tableSelect.render({
     elem: '#model_pick',
@@ -191,7 +206,6 @@
       layui.each(data.data, function (index, item) {
         NEWJSON.push(item.name)
         MODELIDJSON.push(item.id)
-        alert(MODELIDJSON)
       })
       elem.val(NEWJSON)
       $("[name='model_id']").val(MODELIDJSON)
@@ -204,9 +218,8 @@
   $ = layui.jquery;
   var form = layui.form,
     layer = layui.layer;
-
   //监听提交
-  form.on('submit(add_panel)',
+  form.on('submit(add)',
     function (data) {
       data.field.csrfmiddlewaretoken = $("[name='csrfmiddlewaretoken']").val()
       data.field.project_id = $("[name='project_id']").val()
@@ -215,24 +228,37 @@
       //ajax请求
       $.post("{% url 'PDS:panelsetsadd' %}", data.field, function (data) {
         if (data.res == 2) {
-          // 可以对父窗口进行刷新 
-          // xadmin.father_reload();
-          $("[name='panelset_id']").val(data.panelset_id)
-          xadmin.open('新建屏风', '{% url "PDS:panelsadd" %}?id=' + data.panelset_id, 900, 600)
-        }
-        else if (data.res == 3) {
-          xadmin.open('新建屏风', '{% url "PDS:panelsadd" %}?id=' + data.panelset_id, 900, 600)
-        }
-        else {
-          // 数据验证有问题
-          layer.msg(data.errmsg, {
-            time: 2000, //2s后自动关闭
-          });
-        }
-      })
-      return false;
-    });
+              layer.alert("保存成功", {
+                icon: 6
+              },
+              function () {
+                //关闭当前frame
+                // xadmin.close();
+                // alert('haha')
+                // 可以对父窗口进行刷新 
+                window.location.href("{% url 'PDS:panelsetsaddsetp2' %}");
+              });
+            }
+            else {
+              // 数据验证有问题
+              layer.msg(data.errmsg, {
+                time: 2000, //2s后自动关闭
+              });
+            }
+
+          })
+          return false;
+        });
 </script>
 
+<script type="text/javascript">
+  var formSelects = layui.formSelects;
+  formSelects.render();
+  formSelects.btns('wheel', []);
+  formSelects.btns('sound_test', []);
+  formSelects.btns('face_structure', []);
+  formSelects.btns('frame_color', []);
+  formSelects.btns('splicer', []);
+</script>
 {% endblock bottomfiles %}
 {# 网页底部引入块 #}

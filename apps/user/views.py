@@ -3,7 +3,7 @@ from django.urls import reverse
 from django.views.generic import View
 from celery_tasks.tasks import send_email_active_email, send_register_email
 from django.conf import settings
-from user.models import User, UserPermission
+from user.models import User
 from django.http import JsonResponse, HttpResponse
 from django.contrib.auth import authenticate, login, logout
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
@@ -228,7 +228,9 @@ class UserDataView(View):
         # 获取数据数量
         count = ret.count()
         data = list(users)
+        # data = serializers.serialize("json", ret, ensure_ascii=False)
         # 组织上下文
+        # print(data)
         context = {
             "code": 0,
             "msg": "",
@@ -238,33 +240,35 @@ class UserDataView(View):
         # 使用ComplexEncoder格式化jason
         return HttpResponse(json.dumps(context, cls=ComplexEncoder))
 
-# /user/permissionlist 用户权限表
-
-
-class PermissionListView(View):
-    """ 用户权限表 """
-
+class UserDetailView(View):
+    """ 用户权限管理 """
     def get(self, request):
-        return render(request, 'user/permissionlist.html')
+        # 接收数据
+        user_id = request.GET.get('user_id')
+        user = User.objects.get(id=user_id)
+        location = user.get_location_display()
 
-# /user/permissiodata 用户权限表数据接口
-
-
-class PermissionDataView(View):
-    def get(self, request):
-        # 获取全部用户的数据
-        ret = UserPermission.objects.all()
-        # 转化数据
-        permissions = ret.values()
-        # 获取数据数量
-        count = ret.count()
-        data = list(permissions)
         # 组织上下文
         context = {
-            "code": 0,
-            "msg": "",
-            "count": count,
-            "data": data
+            'user':user,
+            'location':location
         }
-        # 使用ComplexEncoder格式化jason
-        return HttpResponse(json.dumps(context))
+
+        return render(request, 'user/userdetail.html', context)
+
+    def post(self, request):
+        """ 添加用户权限 """
+        user_id = request.POST.get('user_id')
+        location_permiss = request.POST.get('location_permiss').split(',')
+        app_permiss = request.POST.get('app_permiss').split(',')
+
+        # 校验数据
+        if not all([user_id, location_permiss, app_permiss]):
+            return JsonResponse({'res': 0, 'errmsg': '数据不完整'})
+
+        # 业务处理
+        User.objects.filter(id=user_id).update(
+            location_permiss=location_permiss,
+            app_permiss=app_permiss
+        )
+        return JsonResponse({'res': 2})

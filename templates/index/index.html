@@ -90,12 +90,6 @@
                             <cite>用户管理</cite>
                         </a>
                     </li>
-                    <li>
-                        <a onclick="xadmin.add_tab('用户权限表','{% url 'user:permissionList' %}')">
-                            <i class="iconfont">&#xe6a7;</i>
-                            <cite>用户权限表</cite>
-                        </a>
-                    </li>
                 </ul>
             </li>
         </ul>
@@ -121,7 +115,7 @@
         </div>
         <div class="layui-tab-content">
             <div class="layui-tab-item layui-show">
-                <iframe src='{% url 'index:welcome' %}' frameborder="0" scrolling="yes" class="x-iframe"></iframe>
+                <iframe src='{% url "index:welcome" %}' frameborder="0" scrolling="yes" class="x-iframe"></iframe>
             </div>
         </div>
         <div id="tab_show"></div>

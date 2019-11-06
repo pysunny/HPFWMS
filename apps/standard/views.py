@@ -195,27 +195,27 @@ class PicsView(View):
             return JsonResponse({'res': 0, 'errmsg': '数据不完整'})
 
         # 检验是否有相同名字
-            try:
-                pic = PicsModels.objects.filter(name=name, wheel=wheel)
-                # 如果是修改模式，需要排除自己
-                if pic_id:
-                    pic = pic.exclude(id=pic_id)
-            except PicsModels.DoesNotExist:
-                # 用户名不存在
-                pic = None
-            if pic:
-                return JsonResponse({'res': 1, 'errmsg': '此图元名称已经存在'})
-            # 检验是否有结构的屏风图元
-            try:
-                pic = PicsModels.objects.filter(leftside=leftside, middle=middle, wheel=wheel, rightside=rightside)
-                # 如果是修改模式，需要排除自己
-                if pic_id:
-                    pic = pic.exclude(id=pic_id)
-            except PicsModels.DoesNotExist:
-                # 用户名不存在
-                pic = None
-            if pic:
-                return JsonResponse({'res': 3, 'errmsg': '此图元结构已经存在'})
+        try:
+            pic = PicsModels.objects.filter(name=name, wheel=wheel)
+            # 如果是修改模式，需要排除自己
+            if pic_id:
+                pic = pic.exclude(id=pic_id)
+        except PicsModels.DoesNotExist:
+            # 用户名不存在
+            pic = None
+        if pic:
+            return JsonResponse({'res': 1, 'errmsg': '此图元名称已经存在'})
+        # 检验是否有结构的屏风图元
+        try:
+            pic = PicsModels.objects.filter(leftside=leftside, middle=middle, wheel=wheel, rightside=rightside)
+            # 如果是修改模式，需要排除自己
+            if pic_id:
+                pic = pic.exclude(id=pic_id)
+        except PicsModels.DoesNotExist:
+            # 用户名不存在
+            pic = None
+        if pic:
+            return JsonResponse({'res': 3, 'errmsg': '此图元结构已经存在'})
         
         # 业务处理
         # 如果pic_id有值，表示是修改模式，需要使用更新

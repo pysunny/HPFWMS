@@ -77,13 +77,10 @@ class PanelsetsAddView(View):
         sound_test = request.POST.get('sound_test')
         face_structure = request.POST.get('face_structure')
         frame_color = request.POST.get('frame_color')
-        panelset_id = request.POST.get('panelset_id')
-
-        if panelset_id:
-            return JsonResponse({'res': 3, 'panelset_id':panelset_id})
+        splicer = request.POST.get('splicer')
 
         # 校验数据
-        if not all([project, mark, sets, production_time, model, height, width, wheel, sound_test, face_structure, frame_color]):
+        if not all([project, mark, sets, production_time, model, height, width, wheel, sound_test, face_structure, frame_color, splicer]):
             return JsonResponse({'res': 0, 'errmsg': '数据不完整'})
 
         # 检验已有相同名字
@@ -107,12 +104,11 @@ class PanelsetsAddView(View):
             wheel=wheel,
             sound_test=sound_test,
             face_structure=face_structure,
-            frame_color=frame_color
+            frame_color=frame_color,
+            splicer=splicer
         )
-
-        panelset_id = panelset.id
         # 返回应答
-        return JsonResponse({'res': 2, 'panelset_id':panelset_id})
+        return JsonResponse({'res': 2})
 
 # /PDS/panelsadd 新建屏风组
 class PanelsAddView(View):

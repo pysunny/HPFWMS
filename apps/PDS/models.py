@@ -35,6 +35,7 @@ class Panelsets(BaseModel):
     sound_test = models.SmallIntegerField(choices=SOUND_TEST_CHOICES, verbose_name='隔音测试')
     face_structure = models.SmallIntegerField(choices=FACE_STRUCTURE_CHOICES, verbose_name='屏风结构')
     frame_color = models.CharField(max_length=128, verbose_name='边框颜色')
+    splicer = models.CharField(max_length=128, default="", verbose_name='横驳条分布')
 
     class Meta:
         db_table = 'df_panelsets'
