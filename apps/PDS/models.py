@@ -42,7 +42,7 @@ class Panelsets(BaseModel):
         verbose_name = '屏风组列表'
         verbose_name_plural = verbose_name
 
-class Panles(BaseModel):
+class Panels(BaseModel):
     """ 屏风模型类 """
     PANEL_TYPE_CHOICES = (
         (0,'BP'),

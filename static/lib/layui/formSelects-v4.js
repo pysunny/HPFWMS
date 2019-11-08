@@ -147,7 +147,8 @@
 				btns: [quickBtns[0], quickBtns[1], quickBtns[2]],
 				searchType: 0,
 				create: (id, name) => {
-					return Date.now();
+					// return Date.now();
+					return name;
 				},
 				template: (id, item) => {
 					return item.name;

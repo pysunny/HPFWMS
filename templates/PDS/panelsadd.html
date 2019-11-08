@@ -16,44 +16,45 @@
     <form method="post" class="layui-form">
       {% csrf_token %}
       <input type="hidden" name="panelset_id" value="{{panelset_id}}">
+      <input type="hidden" name="panel_id" value="{{panel.id}}">
       <fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
         <legend>屏风细节</legend>
       </fieldset>
       <div class="layui-form-item">
         <label class="layui-form-label">编号</label>
         <div class="layui-input-block">
-          <input type="text" name="panle_no" placeholder="请输入" autocomplete="off" class="layui-input" lay-verify="required">
+          <input type="text" name="panle_no" placeholder="请输入" autocomplete="off" class="layui-input" lay-verify="required" value="{{ panel.panle_no }}">
         </div>
       </div>
       <div class="layui-row">
         <div class="layui-form-item">
           <label class="layui-form-label">数量</label>
           <div class="layui-input-block">
-            <input type="text" name="quantity" placeholder="请输入" autocomplete="off" class="layui-input" lay-verify="required">
+            <input type="text" name="quantity" placeholder="请输入" autocomplete="off" class="layui-input" lay-verify="required|number" value="{{ panel.quantity }}">
           </div>
         </div>
         <div class="layui-form-item">
           <label class="layui-form-label">轮距</label>
           <div class="layui-input-block">
-            <input type="text" name="carrier_space" placeholder="请输入" autocomplete="off" class="layui-input" lay-verify="required|number" >
+            <input type="text" name="carrier_space" placeholder="请输入" autocomplete="off" class="layui-input" lay-verify="required|number" value="{{ panel.carrier_space }}">
           </div>
         </div>
         <div class="layui-form-item">
-          <input type="hidden" name="pic_id" value="">
+          <input type="hidden" name="pic_id" value="{{ panel.panel_pic.id }}">
           <label class="layui-form-label">屏风图元</label>
           <div class="layui-input-block">
-            <input type="text" name="model" placeholder="请输入" autocomplete="off" class="layui-input" lay-verify="required" id="pic_pick">
+            <input type="text" name="panel_pic" placeholder="请输入" autocomplete="off" class="layui-input" lay-verify="required" id="pic_pick" value="{{ panel.panel_pic.name }}">
           </div>
         </div>
         <div class="layui-form-item">
           <label class="layui-form-label">屏风长度</label>
           <div class="layui-input-block">
-            <input type="text" name="panel_width" placeholder="请输入" autocomplete="off" class="layui-input" lay-verify="required|number">
+            <input type="text" name="panel_width" placeholder="请输入" autocomplete="off" class="layui-input" lay-verify="required|number" value="{{ panel.panel_width }}">
           </div>
         </div>
         <div class="layui-form-item">
             <div class="layui-input-block">
-              <button class="layui-btn" lay-submit lay-filter="add">提交</button>
+              <button class="layui-btn" lay-submit lay-filter="add">保存</button>
             </div>
           </div>
       </div>
@@ -76,11 +77,12 @@
     searchKey: 'keyword',	//搜索输入框的name值 默认keyword
 		table: {
 			url: "{% url 'standard:picsdata' %}",
+      height: 450,
 			cols: [[
-				{ type: 'radio' },
-				{ field: 'id', title: 'ID' , width: 100},
-        { field: 'name', title: '型号名称' , width: 100},
-        { field: 'pictype', title: '图元种类' , width: 100 ,templet: function (d) {
+				{ type: 'radio' , width: 80},
+				{ field: 'id', title: 'ID' , width: 80},
+        { field: 'name', title: '型号名称' , width: 80},
+        { field: 'pictype', title: '图元种类' , width: 80 ,templet: function (d) {
             if (d.pictype == '0') { return 'BP' }
             if (d.pictype == '1') { return 'LCP' }
             if (d.pictype == '2') { return 'BSP' }
@@ -130,18 +132,19 @@
           data.field.csrfmiddlewaretoken = $("[name='csrfmiddlewaretoken']").val()
           data.field.pic_id = $("[name='pic_id']").val()
           data.field.panelset_id = $("[name='panelset_id']").val()
+          data.field.panel_id = $("[name='panel_id']").val()
           //ajax请求
           $.post("{% url 'PDS:panelsadd' %}", data.field, function (data) {
             if (data.res == 2) {
               layer.alert("增加成功", {
                 icon: 6
               },
-                function () {
+              function () {
                   //关闭当前frame
                   xadmin.close();
 
                   // 可以对父窗口进行刷新 
-                  parent.make_panel(data.panle_no, data.quantity, data.carrier_space, data.panel_width, data.panel_type, data.svgcode, data.panel_id);
+                  xadmin.father_reload();
                 });
             }
             else {

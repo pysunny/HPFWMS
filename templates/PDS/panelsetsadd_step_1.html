@@ -25,14 +25,14 @@
   <form method="post" class="layui-form">
     {% csrf_token %}
     <input type="hidden" name="project_id" value="{{project_id}}">
-    <input type="hidden" name="panelset_id" value="">
+    <input type="hidden" name="panelset_id" value="{{panelset.id}}">
     <div class="layui-row" style="margin-top: 20px;">
       <div class="layui-col-xs8 layui-col-xs-offset2">
         <div class="layui-form-item">
           <label class="layui-form-label">屏风编号</label>
           <div class="layui-input-block">
             <input type="text" name="mark" placeholder="请输入" autocomplete="off" class="layui-input"
-              lay-verify="required">
+              lay-verify="required" value="{{panelset.mark}}">
           </div>
         </div>
       </div>
@@ -41,7 +41,7 @@
           <label class="layui-form-label">组数</label>
           <div class="layui-input-block">
             <input type="text" name="sets" placeholder="请输入" autocomplete="off" class="layui-input"
-              lay-verify="required|number">
+              lay-verify="required|number" value="{{panelset.sets}}">
           </div>
         </div>
       </div>
@@ -50,17 +50,17 @@
           <label class="layui-form-label">出厂时间</label>
           <div class="layui-input-block">
             <input type="text" name="production_time" placeholder="请输入" autocomplete="off" class="layui-input"
-              lay-verify="required|date" id="production_time">
+              lay-verify="required|date" id="production_time" value="{{ panelset.production_time | date:'Y-m-d' }}">
           </div>
         </div>
       </div>
       <div class="layui-col-xs8 layui-col-xs-offset2">
         <div class="layui-form-item">
-          <input type="hidden" name="model_id" value="">
+          <input type="hidden" name="model_id" value="{{panelset.model.id}}">
           <label class="layui-form-label">屏风型号</label>
           <div class="layui-input-block">
             <input type="text" name="model" placeholder="请输入" autocomplete="off" class="layui-input"
-              lay-verify="required" id="model_pick">
+              lay-verify="required" id="model_pick" value="{{panelset.model.name}}">
           </div>
         </div>
       </div>
@@ -69,7 +69,7 @@
           <label class="layui-form-label">标准高度</label>
           <div class="layui-input-block">
             <input type="text" name="height" placeholder="请输入" autocomplete="off" class="layui-input"
-              lay-verify="required|number">
+              lay-verify="required|number" value="{{panelset.height}}">
           </div>
         </div>
       </div>
@@ -78,7 +78,7 @@
           <label class="layui-form-label">标准长度</label>
           <div class="layui-input-block">
             <input type="text" name="width" placeholder="请输入" autocomplete="off" class="layui-input"
-              lay-verify="required|number">
+              lay-verify="required|number" value="{{panelset.width}}">
           </div>
         </div>
       </div>
@@ -87,14 +87,14 @@
           <label class="layui-form-label">轮子</label>
           <div class="layui-input-block">
             <select name="wheel" lay-verify="required" xm-select="wheel" xm-select-radio="">
-              <option value="0">26</option>
-              <option value="1">36</option>
-              <option value="2">57</option>
-              <option value="3">11</option>
-              <option value="4">38</option>
-              <option value="5">40</option>
-              <option value="6">42</option>
-              <option value="6">11T</option>
+              <option value="0" {% if panelset.wheel == 0 %} selected="selected" {% endif %} >26</option>
+              <option value="1" {% if panelset.wheel == 1 %} selected="selected" {% endif %} >36</option>
+              <option value="2" {% if panelset.wheel == 2 %} selected="selected" {% endif %} >57</option>
+              <option value="3" {% if panelset.wheel == 3 %} selected="selected" {% endif %} >11</option>
+              <option value="4" {% if panelset.wheel == 4 %} selected="selected" {% endif %} >38</option>
+              <option value="5" {% if panelset.wheel == 5 %} selected="selected" {% endif %} >40</option>
+              <option value="6" {% if panelset.wheel == 6 %} selected="selected" {% endif %} >42</option>
+              <option value="6" {% if panelset.wheel == 7 %} selected="selected" {% endif %} >11T</option>
             </select>
           </div>
         </div>
@@ -104,8 +104,8 @@
           <label class="layui-form-label">隔音测试</label>
           <div class="layui-input-block">
             <select name="sound_test" lay-verify="required" xm-select="sound_test" xm-select-radio="">
-              <option value="0">不需要</option>
-              <option value="1">需要</option>
+              <option value="0" {% if panelset.sound_test == 0 %} selected="selected" {% endif %} >不需要</option>
+              <option value="1" {% if panelset.sound_test == 1 %} selected="selected" {% endif %} >需要</option>
             </select>
           </div>
         </div>
@@ -115,10 +115,10 @@
           <label class="layui-form-label">屏风结构</label>
           <div class="layui-input-block">
             <select name="face_structure" lay-verify="required" xm-select="face_structure" xm-select-radio="">
-              <option value="0">无钢结构</option>
-              <option value="1">固面带收边</option>
-              <option value="2">易面带收边</option>
-              <option value="3">固面不带收边</option>
+              <option value="0" {% if panelset.face_structure == 0 %} selected="selected" {% endif %} >无钢结构</option>
+              <option value="1" {% if panelset.face_structure == 1 %} selected="selected" {% endif %} >固面带收边</option>
+              <option value="2" {% if panelset.face_structure == 2 %} selected="selected" {% endif %} >易面带收边</option>
+              <option value="3" {% if panelset.face_structure == 3 %} selected="selected" {% endif %} >固面不带收边</option>
             </select>
           </div>
         </div>
@@ -127,9 +127,16 @@
         <div class="layui-form-item">
           <label class="layui-form-label">边框颜色</label>
           <div class="layui-input-block">
-              <select name="frame_color" xm-select="frame_color" xm-select-search="" xm-select-create="" lay-verify="required" xm-select-radio="">
+              <select name="frame_color" xm-select="frame_color" xm-select-search="" xm-select-create="" id="frame_color" lay-verify="required" xm-select-radio="">
                 <option value="" >请选择;如果没有需要的选项，请可以输入再选择</option>
+                {% if panelset and panelset.frame_color != "银灰色" %}
+                <option value="银灰色">银灰色</option>
+                <option value="{{ panelset.frame_color }}" selected="selected" >{{ panelset.frame_color }}</option>
+                {% elif panelset.frame_color == "银灰色" %}
+                <option value="银灰色" selected="selected" >银灰色</option>
+                {% else %}
                 <option value="银灰色" >银灰色</option>
+                {% endif %}
               </select>
           </div>
         </div>
@@ -138,20 +145,25 @@
         <div class="layui-form-item">
           <label class="layui-form-label">横驳条分别</label>
           <div class="layui-input-block">
-              <select name="splicer" xm-select="splicer" xm-select-search="" xm-select-create="" lay-verify="required" >
+              <select name="splicer" xm-select="splicer" xm-select-search="" xm-select-create="" >
                 <option value="" >请选择;如果没有需要的选项，请可以输入再选择</option>
-                <option value="无横驳条" >无横驳条</option>
-                <option value="平门中门" >平门中门</option>
-                <option value="2400" >2400</option>
-                <option value="4800" >4800</option>
-                <option value="7200" >7200</option>
+                <option value="" {% if panelset and splicer_list == "" %} selected="selected" {% endif %}>无横驳条</option>
+                <option value="平门中门" {% if "平门中门" in panelset.splicer %} selected="selected" {% endif %}>平门中门</option>
+                <option value="2400" {% if "2400" in panelset.splicer %} selected="selected" {% endif %} >2400</option>
+                <option value="4800" {% if "4800" in panelset.splicer %} selected="selected" {% endif %} >4800</option>
+                <option value="7200" {% if "7200" in panelset.splicer %} selected="selected" {% endif %} >7200</option>
+                {% for splicer in splicer_list %}
+                  {% if splicer not in common_splicer %}
+                  <option value="{{splicer}}" selected="selected" >{{splicer}}</option>
+                  {% endif %}
+                {% endfor %} 
               </select>
           </div>
         </div>
       </div>
         <div class="layui-form-item" align="right">
-            <button type="reset" class="layui-btn layui-btn-primary" style="width:10%;">重置</button>
-            <button class="layui-btn" lay-submit lay-filter="add" style="width:10%;">下一步</button>
+            <button class="layui-btn" lay-submit lay-filter="add" style="width:10%;">保存</button>
+            <button class="layui-btn" onclick="next_step()" type="button" style="width:10%;">下一步</button>
         </div>
     </div>
   </form>
@@ -229,14 +241,15 @@
       $.post("{% url 'PDS:panelsetsadd' %}", data.field, function (data) {
         if (data.res == 2) {
               layer.alert("保存成功", {
-                icon: 6
+                icon: 6,
+                time: 2000, //2s后自动关闭
               },
               function () {
-                //关闭当前frame
                 // xadmin.close();
-                // alert('haha')
+                // 写panelset_id,
+                $("[name='panelset_id']").val(data.panelset_id);
                 // 可以对父窗口进行刷新 
-                window.location.href("{% url 'PDS:panelsetsaddsetp2' %}");
+                // window.location.href = "{% url 'PDS:panelsetsaddsetp2' %}?panelset_id="+data.panelset_id;
               });
             }
             else {
@@ -245,10 +258,9 @@
                 time: 2000, //2s后自动关闭
               });
             }
-
           })
           return false;
-        });
+      });
 </script>
 
 <script type="text/javascript">
@@ -259,6 +271,21 @@
   formSelects.btns('face_structure', []);
   formSelects.btns('frame_color', []);
   formSelects.btns('splicer', []);
+</script>
+
+<script type="text/javascript">
+// 这个函数用于下一页按钮,作用是把保存与下一页分开。
+function next_step() {
+  if ($("[name='panelset_id']").val()=="") {
+    layer.msg("请保存基础资料", {
+      time: 2000, //2s后自动关闭
+    });
+  }
+  else {
+    panelset_id = $("[name='panelset_id']").val()
+    window.location.href = "{% url 'PDS:panelsetsaddsetp2' %}?panelset_id="+panelset_id;
+    }
+}
 </script>
 {% endblock bottomfiles %}
 {# 网页底部引入块 #}

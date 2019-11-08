@@ -7,7 +7,6 @@ from utils.ComplexEncoder import ComplexEncoder
 from datetime import datetime
 import json
 
-# Create your views here.
 # /project/list 项目列表
 class ProjectListView(View):
     def get(self, request):
@@ -15,7 +14,6 @@ class ProjectListView(View):
         return render(request, 'project/list.html')
 
 # /project/add 新建项目
-
 class ProjectAddView(View):
     def get(self, request):
         """ 显示页面 """
@@ -66,16 +64,14 @@ class ProjectAddView(View):
         return JsonResponse({'res': 2})
 
 # /project/data 数据接口
-
-
 class ProjectDataView(View):
     def get(self, request):
         # 获取全部用户的数据
         user = request.user
-        # 获取用户所在区域
-        userlocation = user.location
+        # 获取的区域权限
+        location_permiss = eval(user.location_permiss)
         # 获取用户区域的全部项目
-        ret = Projects.objects.filter(projectlocation=userlocation)
+        ret = Projects.objects.filter(projectlocation__in=location_permiss, is_delete=False)
         # 转化数据
         projects = ret.values()
         # 获取数据数量
@@ -95,6 +91,16 @@ class ProjectDataView(View):
         }
         # 使用ComplexEncoder格式化jason
         return HttpResponse(json.dumps(context, cls=ComplexEncoder))
+
+# /project/delete 删除项目
+class ProjectDeleteView(View):
+    def post(self, request):
+        # 获取要删除的项目ID
+        project_id = request.POST.get('project_id')
+        # 更新数据库
+        Projects.objects.filter(project_id=project_id).update(is_delete = True)
+        # 返回应答
+        return JsonResponse({'res': 2})
 
 
 

@@ -72,6 +72,7 @@ class ModelsView(View):
         except PanelModels.DoesNotExist:
             # 用户名不存在
             panelmodel = None
+            
         if panelmodel:
             return JsonResponse({'res': 1, 'errmsg': '型号已经存在'})
         # 业务处理

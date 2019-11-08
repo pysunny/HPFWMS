@@ -20,6 +20,7 @@
 {% block boby %}
 <div class="layui-fluid">
     <div class="layui-row layui-col-space15">
+        {% csrf_token %}
         <div class="layui-col-md12">
             <div class="layui-card">
                 <div class="layui-card-body ">
@@ -61,13 +62,15 @@
                 , { field: 'project_id', title: '工程编号' }
                 , { field: 'name', title: '工程名称' }
                 , { field: 'user_id', title: '用户' }
-                , {field: 'projectlocation', title: '区域', templet: function (d) {
+                , {
+                    field: 'projectlocation', title: '区域', templet: function (d) {
                         if (d.projectlocation == '0') { return 'HPF' }
                         else if (d.projectlocation == '1') { return 'HHKD' }
                         else if (d.projectlocation == '2') { return 'HGZ' }
                         else if (d.projectlocation == '3') { return 'HSH' }
                         else { return 'HDL' }
-                    }}
+                    }
+                }
                 , { field: 'address', title: '工程地址' }
                 , { field: 'is_public', title: '是否公开' }
                 , { field: 'create_time', title: '创建时间' }
@@ -80,17 +83,28 @@
             var layEvent = obj.event; //获得 lay-event 对应的值（也可以是表头的 event 参数对应的值）
 
             if (layEvent === 'detail') { //查看
-                top.xadmin.add_tab(data.name,'{% url 'PDS:panelsetslist' %}?id='+data.project_id)
+                top.xadmin.add_tab(data.name, '{% url 'PDS:panelsetslist' %}?project_id=' + data.project_id)
 
             }
 
-            // else if (layEvent === 'del') { //删除
-            //     layer.confirm('真的删除行么', function (index) {
-            //         obj.del(); //删除对应行（tr）的DOM结构，并更新缓存
-            //         layer.close(index);
-            //         //向服务端发送删除指令
-            //     });
-            // }
+            else if (layEvent === 'del') { //删除
+                layer.confirm('真的删除行么', function (index) {
+                    csrfmiddlewaretoken = $("[name='csrfmiddlewaretoken']").val()
+                    project_id = data.project_id
+                    $.post("{% url 'project:delete' %}", { 'csrfmiddlewaretoken': csrfmiddlewaretoken, 'project_id': project_id }, function (data) {
+                        if (data.res == 2) {
+                            obj.del(); //删除对应行（tr）的DOM结构，并更新缓存
+                            layer.close(index);
+                        }
+                        else {
+                            // 数据验证有问题
+                            layer.msg(data.errmsg, {
+                                time: 2000, //2s后自动关闭
+                            });
+                        }
+                    })
+                });
+            }
 
             else if (layEvent === 'edit') { //编辑
                 //do something
