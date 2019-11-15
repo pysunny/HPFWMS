@@ -6,6 +6,7 @@
     .layui-table-cell {
         height: auto;
         width: auto;
+        text-align: center;
     }
 </style>
 {% endblock topfiles %}
@@ -53,18 +54,9 @@ z{% block boby %}
             , cols: [[ //表头
                 { field: 'xieliehao', width: 80, title: '序列号', type: 'numbers' }
                 , { field: 'name', title: '组件名称' }
-                , { field: 'paneltype', title: '屏风种类' ,templet: function (d) {
-                        if (d.paneltype == '0') { return '普通屏风' }
-                        else if (d.paneltype == '1') { return '玻璃屏风' }
-                        else { return '收板间门' }
-                    }}
-                , { field: 'panelpart', title: '组件位置' ,templet: function (d) {
-                        if (d.panelpart == '0') { return '左边' }
-                        else if (d.panelpart == '1') { return '中间' }
-                        else if (d.panelpart == '2') { return '轮子' }
-                        else { return '右边' }
-                    }}
-                , { title: '图例显示', templet:"#svgTpl"}
+                , { field: 'paneltype', title: '屏风种类' }
+                , { field: 'panelpart', title: '组件位置' }
+                , { title: '图例显示', templet: "#svgTpl" }
                 , { field: 'create_time', title: '创建时间' }
                 , { fixed: 'right', title: '操作', width: 130, align: 'center', toolbar: '#barDemo' }
             ]]
@@ -76,14 +68,14 @@ z{% block boby %}
 
             if (layEvent === 'del') { //删除
                 // layer.confirm('真的删除行么', function (index) {
-                    // obj.del(); //删除对应行（tr）的DOM结构，并更新缓存
-                    // layer.close(index);
-                    //向服务端发送删除指令
+                // obj.del(); //删除对应行（tr）的DOM结构，并更新缓存
+                // layer.close(index);
+                //向服务端发送删除指令
                 // });
             }
 
             else if (layEvent === 'edit') { //编辑
-                xadmin.open('编辑组件','{% url "standard:picsparts" %}?picparts_id='+ data.id,500,500)
+                xadmin.open('编辑组件', '{% url "standard:picsparts" %}?picpart_id=' + data.id, 500, 500)
             }
         });
     });

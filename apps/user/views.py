@@ -73,7 +73,8 @@ class LoginView(View):
 class RegisterView(View):
     def get(self, request):
         """ 显示页面 """
-        return render(request, 'user/register.html')
+        location_choices = User.LOCATION_CHOICES
+        return render(request, 'user/register.html', {'location_choices':location_choices})
 
     def post(self, request):
         """ 进行注册处理 """

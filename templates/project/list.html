@@ -61,16 +61,8 @@
                 { field: 'xieliehao', width: 80, title: '序列号', type: 'numbers' }
                 , { field: 'project_id', title: '工程编号' }
                 , { field: 'name', title: '工程名称' }
-                , { field: 'user_id', title: '用户' }
-                , {
-                    field: 'projectlocation', title: '区域', templet: function (d) {
-                        if (d.projectlocation == '0') { return 'HPF' }
-                        else if (d.projectlocation == '1') { return 'HHKD' }
-                        else if (d.projectlocation == '2') { return 'HGZ' }
-                        else if (d.projectlocation == '3') { return 'HSH' }
-                        else { return 'HDL' }
-                    }
-                }
+                , { field: 'user', title: '用户' }
+                , { field: 'projectlocation', title: '区域' }
                 , { field: 'address', title: '工程地址' }
                 , { field: 'is_public', title: '是否公开' }
                 , { field: 'create_time', title: '创建时间' }
@@ -108,6 +100,7 @@
 
             else if (layEvent === 'edit') { //编辑
                 //do something
+                xadmin.open('编辑项目', '{% url 'project:add' %}?project_id=' + data.project_id, 400, 400)
 
                 //同步更新缓存对应的值
                 obj.update({

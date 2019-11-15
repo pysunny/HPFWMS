@@ -1,3 +1,5 @@
+# 这是类已经停止使用 
+
 import json
 import datetime
 

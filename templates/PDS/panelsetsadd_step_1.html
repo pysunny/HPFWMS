@@ -87,14 +87,9 @@
           <label class="layui-form-label">轮子</label>
           <div class="layui-input-block">
             <select name="wheel" lay-verify="required" xm-select="wheel" xm-select-radio="">
-              <option value="0" {% if panelset.wheel == 0 %} selected="selected" {% endif %} >26</option>
-              <option value="1" {% if panelset.wheel == 1 %} selected="selected" {% endif %} >36</option>
-              <option value="2" {% if panelset.wheel == 2 %} selected="selected" {% endif %} >57</option>
-              <option value="3" {% if panelset.wheel == 3 %} selected="selected" {% endif %} >11</option>
-              <option value="4" {% if panelset.wheel == 4 %} selected="selected" {% endif %} >38</option>
-              <option value="5" {% if panelset.wheel == 5 %} selected="selected" {% endif %} >40</option>
-              <option value="6" {% if panelset.wheel == 6 %} selected="selected" {% endif %} >42</option>
-              <option value="6" {% if panelset.wheel == 7 %} selected="selected" {% endif %} >11T</option>
+              {% for key, value in wheel_choices %}
+                <option value="{{ key }}" {% if panelset.wheel == key %} selected="selected" {% endif %} >{{ value }} </option>
+              {% endfor %}
             </select>
           </div>
         </div>
@@ -104,8 +99,9 @@
           <label class="layui-form-label">隔音测试</label>
           <div class="layui-input-block">
             <select name="sound_test" lay-verify="required" xm-select="sound_test" xm-select-radio="">
-              <option value="0" {% if panelset.sound_test == 0 %} selected="selected" {% endif %} >不需要</option>
-              <option value="1" {% if panelset.sound_test == 1 %} selected="selected" {% endif %} >需要</option>
+              {% for key, value in sound_test %}
+                <option value="{{ key }}" {% if panelset.sound_test == key %} selected="selected" {% endif %} >{{ value }}</option>
+              {% endfor %}
             </select>
           </div>
         </div>
@@ -115,10 +111,9 @@
           <label class="layui-form-label">屏风结构</label>
           <div class="layui-input-block">
             <select name="face_structure" lay-verify="required" xm-select="face_structure" xm-select-radio="">
-              <option value="0" {% if panelset.face_structure == 0 %} selected="selected" {% endif %} >无钢结构</option>
-              <option value="1" {% if panelset.face_structure == 1 %} selected="selected" {% endif %} >固面带收边</option>
-              <option value="2" {% if panelset.face_structure == 2 %} selected="selected" {% endif %} >易面带收边</option>
-              <option value="3" {% if panelset.face_structure == 3 %} selected="selected" {% endif %} >固面不带收边</option>
+              {% for key, value in face_structure %}
+                <option value="{{ key }}" {% if panelset.face_structure == key %} selected="selected" {% endif %} >{{ value }}</option>
+              {% endfor %}
             </select>
           </div>
         </div>
@@ -195,23 +190,12 @@
         { type: 'radio' , width: 80},
         { field: 'name', title: '型号名称' , width: 100 },
         { field: 'desc', title: '型号描述', width: 200 },
-        {
-          field: 'basic_material', title: '基本板材', width: 80, templet: function (d) {
-            if (d.basic_material == '0') { return '石膏板' }
-            else if (d.basic_material == '1') { return '木夹板' }
-            else { return '无' }
-          }
-        },
-        {
-          field: 'steel_plate', title: '钢板', width: 80, templet: function (d) {
-            if (d.basic_material == '0') { return '内' }
-            else if (d.basic_material == '1') { return '外' }
-            else { return '无' }
-          }
-        },
+        { field: 'basic_material', title: '基本板材', width: 80},
+        { field: 'steel_plate', title: '钢板', width: 80 },
         { field: 'top_clearance', title: '底部虚位', width: 80, templet: function (d) { return d.top_clearance + "mm" } }
       ]]
     },
+    
     done: function (elem, data) {
       var NEWJSON = []
       var MODELIDJSON = []

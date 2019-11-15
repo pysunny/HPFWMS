@@ -4,7 +4,7 @@ from project.models import Projects
 from PDS.models import Panelsets, Panels
 from standard.models import PanelModels, PicsModels
 from django.http import JsonResponse, HttpResponse
-from utils.ComplexEncoder import ComplexEncoder
+from utils.getData import getData
 import json
 
 # /PDS/panelsetslist 组列表
@@ -25,23 +25,21 @@ class PanelsetsDataView(View):
         # 获取全部用户的数据
         # 接收数据
         project_id = request.GET.get('project_id')
+        page = int(request.GET.get('page'))
+        limit = int(request.GET.get('limit'))
+        # 获取数据
         ret = Panelsets.objects.filter(project_id = project_id, is_delete=False)
-        # 转化数据
-        panelset = ret.values()
-        # 获取数据数量
-        count = ret.count()
-        data = list(panelset)
-        for pic in data:
-            pic['model'] = PanelModels.objects.get(id=pic['model_id']).name
-        # 组织上下文
-        context = {
-            "code": 0,
-            "msg": "",
-            "count": count,
-            "data": data
-        }
-        # 使用ComplexEncoder格式化jason
-        return HttpResponse(json.dumps(context, cls=ComplexEncoder))
+        # 调用分页的方法 整理数据
+        context = getData().getData(ret, page, limit)
+        # 添加选项内容
+        # 获取data
+        data = context["data"]
+        for tmp in data:
+            model = Panelsets.objects.get(id=tmp['id'])
+            tmp['wheel'] = model.get_wheel_display()
+            tmp['model'] = PanelModels.objects.get(id=tmp['model']).name
+
+        return HttpResponse(json.dumps(context))
 
 # /PDS/panelsetsadd_setp2 新建屏风
 class PanelsetsAddSetp2View(View):
@@ -55,10 +53,11 @@ class PanelsetsAddSetp2View(View):
         # 获取panels数据
         panels = Panels.objects.filter(panelset=panelset, is_delete=False)
 
+
         # 组织上下文
         context = {
             'panelset_id':panelset_id,
-            'panels':panels
+            'panels':panels,
         }
 
         return render(request, 'PDS/panelsetsadd_step_2.html', context )
@@ -84,12 +83,20 @@ class PanelsetsAddView(View):
             if not splicer == "":
                 splicer_list = splicer.split(",")
 
+        # 添加wheel 选项内容
+        wheel_choices = Panelsets.WHEEL_CHOICES
+        face_structure = Panelsets.FACE_STRUCTURE_CHOICES
+        sound_test = Panelsets.SOUND_TEST_CHOICES
+
         # 组织上下文
         context = {
             'project_id':project_id,
             'panelset':panelset,
             'splicer_list':splicer_list,
-            'common_splicer':["平门中门","2400","4800","7200"]
+            'common_splicer':["平门中门","2400","4800","7200"],
+            'wheel_choices':wheel_choices,
+            'face_structure':face_structure,
+            'sound_test':sound_test
         }
 
         return render(request, 'PDS/panelsetsadd_step_1.html', context)
@@ -253,3 +260,25 @@ class PanelsDeleteView(View):
         Panels.objects.filter(id=panel_id).update(is_delete=True)
         # 返回应答
         return JsonResponse({'res': 2})
+
+
+#/pds/pdsprint 打印PDS页面
+class PrintPdsView(View):
+    def get(self, request):
+        #显示页面
+        # 获取屏风组ID
+        panelset_id = request.GET.get('panelset_id')
+        # 获取屏风组
+        panelset = Panelsets.objects.get(id=panelset_id)
+        # 获取所在项目
+        project = panelset.project
+        # 获取全部屏风
+        panels = Panels.objects.filter(panelset=panelset, is_delete=False)
+        # 组织上下文
+        context = {
+            'project':project,
+            'panelset':panelset,
+            'panels':panels
+        }
+        # 返回应答
+        return render(request, 'PDS/print_PDS.html', context)

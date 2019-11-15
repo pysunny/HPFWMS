@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'standard',
     'PDS',
     'index',
+    'PDS.templatetags',
 ]
 
 MIDDLEWARE = [
@@ -69,6 +70,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
             ],
+            
         },
     },
 ]

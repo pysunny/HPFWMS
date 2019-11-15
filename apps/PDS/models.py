@@ -27,7 +27,7 @@ class Panelsets(BaseModel):
     project = models.ForeignKey('project.Projects', on_delete=models.CASCADE, verbose_name='所属项目')
     mark = models.CharField(max_length=128, verbose_name='屏风编号')
     sets = models.SmallIntegerField(default=1, verbose_name='组数')
-    production_time = models.DateField(verbose_name='出厂时间')
+    production_time = models.DateTimeField(verbose_name='出厂时间')
     model = models.ForeignKey('standard.PanelModels', on_delete=models.CASCADE, verbose_name='型号')
     height = models.IntegerField(verbose_name='高度')
     width = models.IntegerField(verbose_name='宽度')

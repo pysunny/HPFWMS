@@ -2,8 +2,9 @@ from django.shortcuts import render
 from django.views.generic import View
 from standard.models import PanelModels, PartPicModels, PicsModels
 from django.http import JsonResponse, HttpResponse
-from utils.ComplexEncoder import ComplexEncoder
+# from utils.ComplexEncoder import ComplexEncoder
 from django.core.paginator import Paginator
+from utils.getData import getData
 import json
 
 """ 屏风型号 """
@@ -16,22 +17,26 @@ class ModelsListView(View):
 # /standard/modelsdata 型号数据
 class ModelsDataView(View):
     def get(self, request):
-        # 获取全部用户的数据
+        # 获取全部数据
         ret = PanelModels.objects.all()
-        # 转化数据
-        panelmodels = ret.values()
-        # 获取数据数量
-        count = ret.count()
-        data = list(panelmodels)
-        # 组织上下文
-        context = {
-            "code": 0,
-            "msg": "",
-            "count": count,
-            "data": data
-        }
-        # 使用ComplexEncoder格式化jason
-        return HttpResponse(json.dumps(context, cls=ComplexEncoder))
+        page = int(request.GET.get('page'))
+        limit = int(request.GET.get('limit'))
+        # 调用分页的方法 获取数据
+        context = getData().getData(ret, page, limit)
+        # 转换数据中有选项部分
+        # 获取data
+        data = context["data"]
+        # 循环,并修改成get_xxxx_display()
+        for tmp in data:
+            model = PanelModels.objects.get(id=tmp['id'])
+            tmp['series'] = model.get_series_display()
+            tmp['bottom_option'] = model.get_bottom_option_display()
+            tmp['top_option'] = model.get_top_option_display()
+            tmp['steel_plate'] = model.get_steel_plate_display()
+            tmp['basic_material'] = model.get_basic_material_display()
+
+        # 返回数据
+        return HttpResponse(json.dumps(context, ensure_ascii=False))
 
 # /standard/models 屏风型号操作
 class ModelsView(View):
@@ -44,8 +49,23 @@ class ModelsView(View):
         if model_id:
             model = PanelModels.objects.get(id=model_id)
 
-        return render(request, 'standard/models.html',{'model':model})
+        series_choices = PanelModels.SERIES_CHOICES
+        basic_material_choices = PanelModels.BASIC_MATERIAL_CHOICES
+        steel_plate_choices = PanelModels.STEEL_PLATE_CHOICES
+        top_option_choices = PanelModels.TOP_OPTION_CHOICES
+        bottom_option_choices = PanelModels.BOTTOM_OPTION_CHOICES
+
+        context = {
+            'model':model,
+            'series_choices':series_choices,
+            'basic_material_choices':basic_material_choices,
+            'steel_plate_choices':steel_plate_choices,
+            'top_option_choices':top_option_choices,
+            'bottom_option_choices':bottom_option_choices
+        }
+
         # 如果接受数据没有id ,表示是新建模式,不用返回数据
+        return render(request, 'standard/models.html', context)
 
     def post(self, request):
         """ 添加新项目 """
@@ -55,20 +75,18 @@ class ModelsView(View):
         series = request.POST.get('series')
         desc = request.POST.get('desc')
         top_clearance = request.POST.get('top_clearance')
-        top_seal = request.POST.get('top_seal')
-        top_mechanism = request.POST.get('top_mechanism')
+        top_option = request.POST.get('top_option')
         basic_material = request.POST.get('basic_material')
         steel_plate = request.POST.get('steel_plate')
         rockwool = request.POST.get('rockwool')
-        bottom_clearance = request.POST.get('top_clearance')
-        bottom_seal = request.POST.get('top_seal')
-        bottom_mechanism = request.POST.get('top_mechanism')
+        bottom_option = request.POST.get('bottom_option')
+        bottom_clearance = request.POST.get('bottom_clearance')
         # 校验数据
         if not all([name, series, top_clearance, basic_material, steel_plate, bottom_clearance, desc]):
             return JsonResponse({'res': 0, 'errmsg': '数据不完整'})
         # 检验已有相同名字
         try:
-            panelmodel = PanelModels.objects.get(name=name, basic_material=basic_material, bottom_clearance=bottom_clearance, steel_plate=steel_plate)
+            panelmodel = PanelModels.objects.get(name=name, basic_material=basic_material, bottom_clearance=bottom_clearance, top_option=top_option, bottom_option=bottom_option, steel_plate=steel_plate)
         except PanelModels.DoesNotExist:
             # 用户名不存在
             panelmodel = None
@@ -82,14 +100,12 @@ class ModelsView(View):
                 name=name,
                 series=series,
                 top_clearance=top_clearance,
-                top_seal=top_seal,
-                top_mechanism=top_mechanism,
+                top_option=top_option,
                 basic_material=basic_material,
                 steel_plate=steel_plate,
                 rockwool=rockwool,
+                bottom_option=bottom_option,
                 bottom_clearance=bottom_clearance,
-                bottom_seal=bottom_seal,
-                bottom_mechanism=bottom_mechanism,
                 desc=desc
             )
             # 返回应答
@@ -99,19 +115,16 @@ class ModelsView(View):
             name=name,
             series=series,
             top_clearance=top_clearance,
-            top_seal=top_seal,
-            top_mechanism=top_mechanism,
+            top_option=top_option,
             basic_material=basic_material,
             steel_plate=steel_plate,
             rockwool=rockwool,
             bottom_clearance=bottom_clearance,
-            bottom_seal=bottom_seal,
-            bottom_mechanism=bottom_mechanism,
+            bottom_option=bottom_option,
             desc=desc
         )
         # 返回应答
         return JsonResponse({'res': 2})
-        
         
 """ 屏风图元 """
 # /standard/picslist 屏风图元
@@ -123,30 +136,28 @@ class PicsListView(View):
 # /standard/picsdata 图元数据
 class PicsDataView(View):
     def get(self, request):
-        # 获取全部用户的数据
+        # 获取全部数据
         ret = PicsModels.objects.all()
-        # 转化数据
-        pics = ret.values()
-        # 获取数据数量
-        count = ret.count()
-        data = list(pics)
-
+        # 获取页码及页数
+        page = int(request.GET.get('page'))
+        limit = int(request.GET.get('limit'))
+        # 调用分页的方法 获取数据
+        context = getData().getData(ret, page, limit)
+        # 获取数据中data数据
+        data = context["data"]
         # 在字典内添加四个组件代码
         for pic in data:
-            pic['leftsidecode']=PartPicModels.objects.get(id=pic['leftside_id']).svgcode
-            pic['middlecode']=PartPicModels.objects.get(id=pic['middle_id']).svgcode
-            pic['wheelcode']=PartPicModels.objects.get(id=pic['wheel_id']).svgcode
-            pic['rightsidecode']=PartPicModels.objects.get(id=pic['rightside_id']).svgcode
+            # 获取此模型
+            model = PicsModels.objects.get(id=pic['id'])
+            pic['paneltype'] = model.get_paneltype_display()
+            pic['wheeltype'] = model.get_wheeltype_display()
+            pic['pictype'] = model.get_pictype_display()
+            pic['leftsidecode']=PartPicModels.objects.get(id=pic['leftside']).svgcode
+            pic['middlecode']=PartPicModels.objects.get(id=pic['middle']).svgcode
+            pic['wheelcode']=PartPicModels.objects.get(id=pic['wheel']).svgcode
+            pic['rightsidecode']=PartPicModels.objects.get(id=pic['rightside']).svgcode
 
-        # 组织上下文
-        context = {
-            "code": 0,
-            "msg": "",
-            "count": count,
-            "data": data
-        }
-        # 使用ComplexEncoder格式化jason
-        return HttpResponse(json.dumps(context, cls=ComplexEncoder))
+        return HttpResponse(json.dumps(context, ensure_ascii=False))
 
 # /standard/pics 屏风图元操作
 class PicsView(View):
@@ -165,12 +176,18 @@ class PicsView(View):
         if pic_id:
             pic = PicsModels.objects.get(id=pic_id)
 
+        # 获取选项
+        paneltype_choices = PicsModels.PANEL_TYPE_CHOICES
+        pictype_choices = PicsModels.PIC_TYPE_CHOICES
         context = {
+
             'pic':pic,
             'leftside':leftside,
             'middle':middle,
             'wheel':wheel,
-            'rightside':rightside
+            'rightside':rightside,
+            'pictype_choices':pictype_choices,
+            'paneltype_choices':paneltype_choices
         }
         
         return render(request, 'standard/pics.html', context)
@@ -249,7 +266,6 @@ class PicsView(View):
         # 返回应答
         return JsonResponse({'res': 2})
 
-
 """ 屏风组件 """
 # /standard/picspartslist 屏风组件
 class PicsPartsListView(View):
@@ -260,48 +276,51 @@ class PicsPartsListView(View):
 # /standard/picspartsdata 组件数据
 class PicsPartsDataView(View):
     def get(self, request):
-        # 获取页数及数量
-        page = request.GET.get('page')
-        limit = request.GET.get('limit')
-        # 获取全部用户的数据
+        # 获取全部的数据
         ret = PartPicModels.objects.all()
+        # 获取页数及数量
+        page = int(request.GET.get('page'))
+        limit = int(request.GET.get('limit'))
+        # 调用分页的方法 获取数据
+        context = getData().getData(ret, page, limit)
+        # 获取数据中data数据
+        data = context["data"]
+        # 添加选项内容
+        for tmp in data:
+            # 获取此模型
+            model = PartPicModels.objects.get(id=tmp['id'])
+            tmp['paneltype'] = model.get_paneltype_display()
+            tmp['panelpart'] = model.get_panelpart_display()
 
-        # 转化数据
-        parts = ret.values()
-
-        # 对数据进行分页
-        paginator = Paginator(parts, limit)
-        # 获取数据数量
-        count = paginator.count
-
-        parts = paginator.page(page)
-        
-        data = list(parts)
-        # 组织上下文
-        context = {
-            "code": 0,
-            "msg": "",
-            "count": count,
-            "data": data
-        }
         # 使用ComplexEncoder格式化jason
-        return HttpResponse(json.dumps(context, cls=ComplexEncoder))
+        return HttpResponse(json.dumps(context))
 
 # /standard/picspartsadd 新建组件
 class PicsPartsView(View):
     def get(self, request):
         """ 显示页面 """
-        picparts_id = request.GET.get('picparts_id')
+        picpart_id = request.GET.get('picpart_id')
         picpart = ""
-        # 如果picparts_id有值，表示是修改模式，需要返回picpart
-        if picparts_id:
-            picpart = PartPicModels.objects.get(id=picparts_id)
+        # 如果picpart_id有值，表示是修改模式，需要返回picpart
+        if picpart_id:
+            picpart = PartPicModels.objects.get(id=picpart_id)
 
-        return render(request, 'standard/picsparts.html', {"picpart":picpart})
+        # 获取选项元组
+        paneltype_choices = PartPicModels.PANEL_TYPE_CHOICES
+        picpart_choices = PartPicModels.PIC_PART_CHOICES
+
+        # 组织上下文
+        context = {
+            "picpart":picpart,
+            'paneltype_choices':paneltype_choices,
+            'picpart_choices':picpart_choices
+        }
+
+        return render(request, 'standard/picsparts.html', context)
 
     def post(self, request):
         """ 添加组件 """
-        picparts_id = request.POST.get('picparts_id')
+        picpart_id = request.POST.get('picpart_id')
         name = request.POST.get('picspartsname')
         paneltype = request.POST.get('paneltype')
         panelpart = request.POST.get('panelpart')
@@ -314,8 +333,8 @@ class PicsPartsView(View):
         # 检验已有相同名字,# 如果修改模式要排除本身
         try:
             picpart = PartPicModels.objects.filter(name=name, panelpart=panelpart)
-            if picparts_id:
-                picpart = picpart.exclude(id=picparts_id)
+            if picpart_id:
+                picpart = picpart.exclude(id=picpart_id)
         except PartPicModels.DoesNotExist:
             # 用户名不存在
             picpart = None
@@ -323,9 +342,9 @@ class PicsPartsView(View):
         if picpart:
             return JsonResponse({'res': 1, 'errmsg': '此基本图元已经存在'})
 
-        if picparts_id:
+        if picpart_id:
             # 如果修改模式，进行updata
-            PartPicModels.objects.filter(id=picparts_id).update(
+            PartPicModels.objects.filter(id=picpart_id).update(
             name=name,
             paneltype=paneltype,
             panelpart=panelpart,

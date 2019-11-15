@@ -99,7 +99,12 @@
             var layEvent = obj.event; //获得 lay-event 对应的值（也可以是表头的 event 参数对应的值）
 
 
-            if (layEvent === 'edit') { //编辑
+            if (layEvent === 'print') { //编辑
+                // top.xadmin.open('{{project.name}}-'+data.mark+'-打印页',"{% url 'PDS:pdsprint' %}?panelset_id="+ data.id)
+                window.open("{% url 'PDS:pdsprint' %}?panelset_id="+ data.id)
+            }
+
+            else if (layEvent === 'edit') { //编辑
                 top.xadmin.add_tab('{{project.name}}-'+data.mark+'-编辑',"{% url 'PDS:panelsetsadd' %}?project_id={{project.project_id}}&panelset_id="+ data.id)
             }
 
@@ -127,7 +132,7 @@
 
 <!-- 操作列 -->
 <script type="text/html" id="barPds">
-        <a class="layui-btn layui-btn-xs" lay-event="detail" href="javascript:;">查看</a>
+        <a class="layui-btn layui-btn-xs" lay-event="print" href="javascript:;">打印</a>
         <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
         <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
     </script>

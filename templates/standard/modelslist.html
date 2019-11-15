@@ -1,7 +1,16 @@
 {% extends 'base.html' %}
 {% load staticfiles %}
 {% block titlename %}HPFWMS-项目列表{% endblock titlename %}
-
+{% block topfiles %}
+<style type="text/css">
+    .layui-table-cell {
+        height: auto;
+        width: auto;
+        text-align: center;
+    }
+</style>
+{% endblock topfiles %}
+{# 网页顶部引入文件块 #}
 {% block nav %}
 <div class="x-nav">
     <span class="layui-breadcrumb">
@@ -44,29 +53,15 @@
             , cols: [[ //表头
                 { field: 'xieliehao', width: 80, title: '序列号', type: 'numbers' }
                 , { field: 'name', title: '型号名称' }
-                , { field: 'series', title: '系列' ,templet: function (d) {
-                        if (d.series == '0') { return 'ct680' }
-                        else if (d.series == '1') { return '5000' }
-                        else { return '600' }
-                    }}
+                , { field: 'series', title: '系列' }
                 , { field: 'desc', title: '型号描述' }
-                , { field: 'bottom_seal', title: '底胶', templet: function (d) { return d.bottom_seal == '1' ? '有' : '无' } }
-                , { field: 'bottom_mechanism', title: '底撑', templet: function (d) { return d.bottom_mechanism == '1' ? '有' : '无' } }
+                , { field: 'bottom_option', title: '底部' }
                 , { field: 'bottom_clearance', title: '底部虚位', templet: function (d) { return d.top_clearance + "mm" } }
-                , { field: 'basic_material', title: '基本板材',templet: function (d) {
-                        if (d.basic_material == '0') { return '石膏板' }
-                        else if (d.basic_material == '1') { return '木夹板' }
-                        else { return '无' }
-                    }}
-                , { field: 'steel_plate', title: '钢板' ,templet: function (d) {
-                        if (d.basic_material == '0') { return '内' }
-                        else if (d.basic_material == '1') { return '外' }
-                        else { return '无' }
-                    }}
+                , { field: 'basic_material', title: '基本板材' }
+                , { field: 'steel_plate', title: '钢板' }
                 , { field: 'rockwool', title: '岩棉', templet: function (d) { return d.rockwool == '1' ? '有' : '无' } }
-                , { field: 'top_seal', title: '底胶', templet: function (d) { return d.top_seal == '1' ? '有' : '无' } }
-                , { field: 'top_mechanism', title: '底撑', templet: function (d) { return d.top_mechanism == '1' ? '有' : '无' } }
-                , { field: 'top_clearance', title: '底部虚位', templet: function (d) { return d.top_clearance + "mm" }}
+                , { field: 'top_option', title: '顶部' }
+                , { field: 'top_clearance', title: '顶部虚位', templet: function (d) { return d.top_clearance + "mm" } }
                 , { fixed: 'right', title: '操作', width: 120, align: 'center', toolbar: '#barDemo' }
             ]]
             , toolbar: '#toolbarDemo'
@@ -77,15 +72,15 @@
             var layEvent = obj.event; //获得 lay-event 对应的值（也可以是表头的 event 参数对应的值）
 
             // if (layEvent === 'del') { //删除
-                // layer.confirm('真的删除行么', function (index) {
-                    // obj.del(); //删除对应行（tr）的DOM结构，并更新缓存
-                    // layer.close(index);
-                    //向服务端发送删除指令
-                // });
+            // layer.confirm('真的删除行么', function (index) {
+            // obj.del(); //删除对应行（tr）的DOM结构，并更新缓存
+            // layer.close(index);
+            //向服务端发送删除指令
+            // });
             // }
 
             if (layEvent === 'edit') { //编辑
-                xadmin.open('编辑型号','{% url "standard:models" %}?model_id='+ data.id,900,600)
+                xadmin.open('编辑型号', '{% url "standard:models" %}?model_id=' + data.id, 900, 600)
             }
         });
 

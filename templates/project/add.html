@@ -7,35 +7,35 @@
     <div class="layui-row">
         <form method="post" class="layui-form">
             {% csrf_token %}
+            <input type="hidden" name="project_id" value="{{ project.project_id }}">
             <div class="layui-form-item">
-                <label for="projectname" class="layui-form-label">
+                <label class="layui-form-label">
                     <span class="x-red">*</span>项目名称</label>
-                <div class="layui-input-inline">
-                    <input type="text" id="projectname" name="projectname" placeholder="项目名称" lay-verify="required"
+                <div class="layui-input-block">
+                    <input type="text" name="name" placeholder="项目名称" lay-verify="required" value="{{ project.name }}"
                         autocomplete="off" class="layui-input"></div>
             </div>
             <div class="layui-form-item">
-                <label for="location" class="layui-form-label">
+                <label class="layui-form-label">
                     <span class="x-red">*</span>项目区域</label>
-                <div class="layui-input-inline">
-                    <select name="projectlocation" lay-verify="required">
+                <div class="layui-input-block">
+                    <select name="projectlocation" lay-verify="required"  id="projectlocation" {% if project %} disabled {% endif %}>
                         <option value="">请选择所在区域</option>
-                        <option value="0">番禺厂部(HPF)</option>
-                        <option value="1">香港总部(HHKD)</option>
-                        <option value="2">广州公司(HGZ)</option>
-                        <option value="3">上海办事处(HSH)</option>
-                        <option value="4">大连公司(HDL)</option>
+                        {% for key , value in location_choices %}
+                        <option value="{{ key }}" {% if project.projectlocation ==  key  %} selected="selected" {% endif %}> {{ value }}</option>
+                        {% endfor %}
                     </select>
                 </div>
             </div>
             <div class="layui-form-item">
-                <label for="request_time" class="layui-form-label">工程地址</label>
-                <div class="layui-input-inline">
-                    <input type="text" class="layui-input" autocomplete="off" placeholder="工程地址" name="address" id="address"></div>
+                <label class="layui-form-label">工程地址</label>
+                <div class="layui-input-block">
+                    <input type="text" class="layui-input" autocomplete="off" placeholder="工程地址" name="address"
+                        value="{{ project.address }}"></div>
             </div>
             <div class="layui-form-item">
-                <label for="L_repass" class="layui-form-label"></label>
-                <button class="layui-btn" lay-filter="add" lay-submit="">增加</button>
+                <label class="layui-form-label"></label>
+                <button class="layui-btn" lay-filter="add" lay-submit="">保存</button>
             </div>
         </form>
     </div>
@@ -45,41 +45,43 @@
 
 {% block bottomfiles %}
 <script>layui.use(['form', 'layer', 'jquery'],
-        function () {
-            $ = layui.jquery;
-            var form = layui.form,
-                layer = layui.layer;
+    function () {
+        $ = layui.jquery;
+        var form = layui.form,
+            layer = layui.layer;
 
-            //监听提交
-            form.on('submit(add)',
-                function (data) {
-                    data.field.csrfmiddlewaretoken = $("[name='csrfmiddlewaretoken']").val()
-                    //ajax请求
-                    $.post("{% url 'project:add' %}", data.field, function (data) {
-                        if (data.res == 2) {
-                            layer.alert("增加成功", {
-                                icon: 6
-                            },
-                                function () {
-                                    //关闭当前frame
-                                    xadmin.close();
+        //监听提交
+        form.on('submit(add)',
+            function (data) {
+                data.field.csrfmiddlewaretoken = $("[name='csrfmiddlewaretoken']").val();
+                data.field.project_id = $("[name='project_id']").val()
+                data.field.location = $("#projectlocation option:selected").text()
+        //ajax请求
+                $.post("{% url 'project:add' %}", data.field, function (data) {
+                    if (data.res == 2) {
+                        layer.alert("保存成功", {
+                            icon: 6
+                        },
+                            function () {
+                                //关闭当前frame
+                                xadmin.close();
 
-                                    // 可以对父窗口进行刷新 
-                                    xadmin.father_reload();
-                                });
-                        }
-                        else {
-                            // 数据验证有问题
-                            layer.msg(data.errmsg, {
-                                time: 2000, //2s后自动关闭
+                                // 可以对父窗口进行刷新 
+                                xadmin.father_reload();
                             });
-                        }
+                    }
+                    else {
+                        // 数据验证有问题
+                        layer.msg(data.errmsg, {
+                            time: 2000, //2s后自动关闭
+                        });
+                    }
 
-                    })
-                    return false;
-                });
+                })
+        return false;
+    });
 
-        });</script>
+});</script>
 
 {% endblock bottomfiles %}
 {# 网页底部引入块 #}

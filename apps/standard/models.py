@@ -12,22 +12,30 @@ class PanelModels(BaseModel):
     BASIC_MATERIAL_CHOICES = (
         (0,'石膏板'),
         (1,'木夹板'),
-        (3,'无')
+        (2,'无')
     )
     STEEL_PLATE_CHOICES = (
         (0,'内'),
         (1,'外'),
         (2,'无')
     )
+    TOP_OPTION_CHOICES = (
+        (0,'机动顶撑 带 胶条'),
+        (1,'机动顶撑 不带 胶条'),
+        (2,'胶条')
+    )
+    BOTTOM_OPTION_CHOICES = (
+        (0,'机动底撑 带 胶条'),
+        (1,'机动底撑 不带 胶条'),
+        (2,'胶条')
+    )
     name = models.CharField(max_length=128, verbose_name='型号名称')
     series = models.SmallIntegerField(choices=SERIES_CHOICES, verbose_name='系列')
     desc = models.CharField(max_length=256, verbose_name='型号描述')
-    bottom_seal = models.BooleanField(verbose_name='有无底胶')
-    top_seal = models.BooleanField(verbose_name='有无顶胶')
-    top_mechanism = models.BooleanField(verbose_name='有无顶撑')
-    top_clearance = models.SmallIntegerField(verbose_name='顶部虚位')
-    bottom_mechanism = models.BooleanField(verbose_name='有无底撑')
+    bottom_option = models.BooleanField(choices=BOTTOM_OPTION_CHOICES, default=0, verbose_name='底部选项')
     bottom_clearance = models.SmallIntegerField(verbose_name='底部虚位')
+    top_option = models.BooleanField(choices=TOP_OPTION_CHOICES, default=0, verbose_name='顶部选项')
+    top_clearance = models.SmallIntegerField(verbose_name='顶部虚位')
     basic_material = models.SmallIntegerField(choices=BASIC_MATERIAL_CHOICES, verbose_name='基本板材')
     steel_plate = models.SmallIntegerField(choices=STEEL_PLATE_CHOICES, verbose_name='钢板')
     rockwool = models.BooleanField(verbose_name='有无岩棉')
@@ -42,16 +50,17 @@ class PartPicModels(BaseModel):
     """ 屏风图元组件类型类 """
     # 屏风种类选择
     PANEL_TYPE_CHOICES = (
-        (0,'CommonPanels'),
-        (1,'GlassPanels'),
-        (2,'PocketDoor')
+        (0,'普通屏风'),
+        (1,'玻璃屏风'),
+        (2,'收板间门')
     )
     # 组件位置选择
     PIC_PART_CHOICES = (
-        (0,'LeftSide'),
-        (1,'MiddleBody'),
-        (2,'Wheel'),
-        (3,'RightSide')
+        (0,'左边'),
+        (1,'中间'),
+        (2,'轮子'),
+        (3,'右边'),
+        (4,'文字')
     )
     name = models.CharField(max_length=256, verbose_name='组件名称标识')
     paneltype = models.SmallIntegerField(choices=PANEL_TYPE_CHOICES, verbose_name='屏风种类')
@@ -67,11 +76,7 @@ class PartPicModels(BaseModel):
 class PicsModels(BaseModel):
     """ 屏风图元类型类 """
     # 屏风种类选择
-    PANEL_TYPE_CHOICES = (
-        (0,'CommonPanels'),
-        (1,'GlassPanels'),
-        (2,'PocketDoor')
-    )
+    PANEL_TYPE_CHOICES = PartPicModels.PANEL_TYPE_CHOICES
     PIC_TYPE_CHOICES = (
         (0,'BP'),
         (1,'LCP'),

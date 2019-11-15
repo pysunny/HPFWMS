@@ -5,49 +5,50 @@
 {% block boby %}
 <div class="layui-fluid">
   <div class="layui-row">
-      <form method="post" class="layui-form">
-          {% csrf_token %}
-          <input type="hidden" name="picparts_id" value="{{picpart.id}}">
-          <div class="layui-form-item">
-              <label  class="layui-form-label"><span class="x-red">*</span>组件标记</label>
-              <div class="layui-input-block">
-                  <input type="text" id="picspartsname" name="picspartsname" placeholder="组件标记" lay-verify="required" autocomplete="off" class="layui-input" value="{{picpart.name}}">
-              </div>
-          </div>
-          <div class="layui-form-item">
-              <label class="layui-form-label"><span class="x-red">*</span>屏风种类</label>
-              <div class="layui-input-block">
-                  <select name="paneltype" lay-verify="required" value="{{picpart.paneltype}}">
-                      <option value="">选择屏风种类</option>
-                      <option value="0" {% if picpart.paneltype == 0 %} selected="selected" {% endif %} >普通屏风</option>
-                      <option value="1" {% if picpart.paneltype == 1 %} selected="selected" {% endif %} >玻璃屏风(GL1)</option>
-                      <option value="2" {% if picpart.paneltype == 2 %} selected="selected" {% endif %} >收板间门</option>
-                  </select>
-              </div>
-          </div>
-          <div class="layui-form-item">
-              <label class="layui-form-label"><span class="x-red">*</span>组件位置</label>
-              <div class="layui-input-block">
-                  <select name="panelpart" lay-verify="required" >
-                      <option value="" >选择组件位置</option>
-                      <option value="0" {% if picpart.panelpart == 0 %} selected="selected" {% endif %} >左边</option>
-                      <option value="1" {% if picpart.panelpart == 1 %} selected="selected" {% endif %} >中间</option>
-                      <option value="2" {% if picpart.panelpart == 2 %} selected="selected" {% endif %} >轮子</option>
-                      <option value="3" {% if picpart.panelpart == 3 %} selected="selected" {% endif %} >右边</option>
-                  </select>
-              </div>
-          </div>
-          <div class="layui-form-item">
-            <label class="layui-form-label"><span class="x-red">*</span>组件代码</label>
-            <div class="layui-input-block" >
-              <textarea name="svgcode" placeholder="请组件代码" class="layui-textarea" lay-verify="required">{{picpart.svgcode}}</textarea>
-            </div>
-          </div>
-          <div class="layui-form-item">
-              <label class="layui-form-label"></label>
-              <button class="layui-btn" lay-filter="add" lay-submit="">保存</button>
-          </div>
-      </form>
+    <form method="post" class="layui-form">
+      {% csrf_token %}
+      <input type="hidden" name="picpart_id" value="{{picpart.id}}">
+      <div class="layui-form-item">
+        <label class="layui-form-label"><span class="x-red">*</span>组件标记</label>
+        <div class="layui-input-block">
+          <input type="text" id="picspartsname" name="picspartsname" placeholder="组件标记" lay-verify="required"
+            autocomplete="off" class="layui-input" value="{{picpart.name}}">
+        </div>
+      </div>
+      <div class="layui-form-item">
+        <label class="layui-form-label"><span class="x-red">*</span>屏风种类</label>
+        <div class="layui-input-block">
+          <select name="paneltype" lay-verify="required" value="{{picpart.paneltype}}">
+            <option value="">选择屏风种类</option>
+            {% for key, value in paneltype_choices %}
+            <option value="{{ key }}" {% if picpart.paneltype == key %} selected="selected" {% endif %}>{{ value }}</option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+      <div class="layui-form-item">
+        <label class="layui-form-label"><span class="x-red">*</span>组件位置</label>
+        <div class="layui-input-block">
+          <select name="panelpart" lay-verify="required">
+            <option value="">选择组件位置</option>
+            {% for key, value in picpart_choices %}
+            <option value="{{ key }}" {% if picpart.panelpart == key %} selected="selected" {% endif %}>{{ value }}</option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+      <div class="layui-form-item">
+        <label class="layui-form-label"><span class="x-red">*</span>组件代码</label>
+        <div class="layui-input-block">
+          <textarea name="svgcode" placeholder="请组件代码" class="layui-textarea"
+            lay-verify="required">{{picpart.svgcode}}</textarea>
+        </div>
+      </div>
+      <div class="layui-form-item">
+        <label class="layui-form-label"></label>
+        <button class="layui-btn" lay-filter="add" lay-submit="">保存</button>
+      </div>
+    </form>
   </div>
 </div>
 {% endblock boby %}
@@ -64,7 +65,7 @@
       form.on('submit(add)',
         function (data) {
           data.field.csrfmiddlewaretoken = $("[name='csrfmiddlewaretoken']").val()
-          data.field.picparts_id = $("[name='picparts_id']").val()
+          data.field.picpart_id = $("[name='picpart_id']").val()
           //ajax请求
           $.post("{% url 'standard:picsparts' %}", data.field, function (data) {
             if (data.res == 2) {
