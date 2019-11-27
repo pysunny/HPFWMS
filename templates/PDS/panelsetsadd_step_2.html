@@ -46,7 +46,7 @@
               </svg>
             </td></tr>
           <tr><td>{{ panel.panel_width }}</td></tr>
-          <tr><td>{{ panel.panel_type }}</td></tr>
+          <tr><td>{{ panel.get_panel_type_display }}</td></tr>
           <tr><td>
               <button class='layui-btn layui-btn-xs'
                 onclick="xadmin.open('新建屏风','{% url 'PDS:panelsadd' %}?panel_id='+{{panel.id}},600,600)">编辑</button>

@@ -11,14 +11,13 @@
       <div class="layui-form-item">
         <label class="layui-form-label"><span class="x-red">*</span>组件标记</label>
         <div class="layui-input-block">
-          <input type="text" id="picspartsname" name="picspartsname" placeholder="组件标记" lay-verify="required"
-            autocomplete="off" class="layui-input" value="{{picpart.name}}">
+          <input type="text" name="name" placeholder="组件标记" lay-verify="required" autocomplete="off" class="layui-input" value="{{picpart.name}}">
         </div>
       </div>
       <div class="layui-form-item">
         <label class="layui-form-label"><span class="x-red">*</span>屏风种类</label>
         <div class="layui-input-block">
-          <select name="paneltype" lay-verify="required" value="{{picpart.paneltype}}">
+          <select name="paneltype" lay-verify="required" >
             <option value="">选择屏风种类</option>
             {% for key, value in paneltype_choices %}
             <option value="{{ key }}" {% if picpart.paneltype == key %} selected="selected" {% endif %}>{{ value }}</option>
@@ -40,8 +39,7 @@
       <div class="layui-form-item">
         <label class="layui-form-label"><span class="x-red">*</span>组件代码</label>
         <div class="layui-input-block">
-          <textarea name="svgcode" placeholder="请组件代码" class="layui-textarea"
-            lay-verify="required">{{picpart.svgcode}}</textarea>
+          <textarea name="svgcode" placeholder="请组件代码" class="layui-textarea" lay-verify="required">{{picpart.svgcode}}</textarea>
         </div>
       </div>
       <div class="layui-form-item">

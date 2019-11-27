@@ -93,11 +93,11 @@ class ProjectDataView(View):
         ret = Projects.objects.filter(projectlocation__in=location_permiss, is_delete=False)
         # 调用分页的方法 获取数据
         context = getData().getData(ret, page, limit)
-        # 获取data
+        # # 获取data
         data = context["data"]
         for tmp in data:
-            model = Projects.objects.get(project_id=tmp['project_id'])
-            tmp['projectlocation'] = model.get_projectlocation_display()
+        #     model = Projects.objects.get(project_id=tmp['project_id'])
+        #     tmp['projectlocation'] = model.get_projectlocation_display()
             tmp['user'] = User.objects.get(id=tmp['user']).username
 
 

@@ -27,11 +27,17 @@
 {# 网页主体上侧块 #}
 z{% block boby %}
 <div class="layui-fluid">
+        {% csrf_token %}
     <div class="layui-row layui-col-space15">
         <div class="layui-col-md12">
             <div class="layui-card">
                 <div class="layui-card-body ">
                     <table id="demo" lay-filter="test"></table>
+                    <script type="text/html" id="test-table-switchTpl">
+                        {% verbatim %}
+                        <input type="checkbox" name="is_activate" lay-skin="switch" lay-text="已激活|未激活" lay-filter="test-table-is_activate" value="{{ d.id }}" {{ d.is_activate == 1 ? 'checked' : '' }}>
+                        {% endverbatim %}
+                    </script>
                 </div>
             </div>
         </div>
@@ -44,7 +50,7 @@ z{% block boby %}
 
 <script>
     layui.use('table', function () {
-        var table = layui.table;
+        var table = layui.table, form = layui.form,$ = layui.$;
         table.render({
             elem: '#demo'
             , height: 800
@@ -57,7 +63,9 @@ z{% block boby %}
                 , { field: 'paneltype', title: '屏风种类' }
                 , { field: 'panelpart', title: '组件位置' }
                 , { title: '图例显示', templet: "#svgTpl" }
+                , { field: 'creator', title: '创建者' }
                 , { field: 'create_time', title: '创建时间' }
+                , { field: 'is_activate', title: '是否激活', templet: '#test-table-switchTpl', unresize: true}
                 , { fixed: 'right', title: '操作', width: 130, align: 'center', toolbar: '#barDemo' }
             ]]
         });
@@ -77,6 +85,29 @@ z{% block boby %}
             else if (layEvent === 'edit') { //编辑
                 xadmin.open('编辑组件', '{% url "standard:picsparts" %}?picpart_id=' + data.id, 500, 500)
             }
+        });
+
+        //监听激活操作
+        form.on('switch(test-table-is_activate)', function(obj){
+            var json = {};
+            json.csrfmiddlewaretoken = $("[name='csrfmiddlewaretoken']").val()
+            json.is_activate = obj.elem.checked;
+            json.picpart_id = this.value;
+            console.log(json)
+            $.post("{% url 'standard:picspartsactice' %}", json, function (data) {
+                if (data.res == 2) {
+                    layer.tips(obj.elem.checked, obj.othis);
+                }
+                else {
+                    // 数据验证有问题
+                    // layer.tips(obj.othis.checked, obj.elem);
+                    layer.msg(data.errmsg, {
+                        time: 2000, //2s后自动关闭
+                    });
+                }
+            })
+
+
         });
     });
 </script>

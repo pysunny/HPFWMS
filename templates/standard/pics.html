@@ -8,98 +8,130 @@
     <div class="layui-row">
       {% csrf_token %}
       <input type="hidden" name="pic_id" value="{{pic.id}}">
-      <div class="layui-col-xs12">
+      <div class="layui-col-xs4">
         <div class="layui-form-item">
           <label class="layui-form-label"><span class="x-red">*</span>图元标记</label>
           <div class="layui-input-block">
-            <input type="text" id="picsname" name="picsname" placeholder="组件标记" lay-verify="required" autocomplete="off"
-              class="layui-input" value="{{pic.name}}">
+            <input type="text" id="picsname" name="picsname" placeholder="组件标记" lay-verify="required" autocomplete="off" class="layui-input" value="{{pic.name}}">
           </div>
         </div>
       </div>
-      <div class="layui-col-xs6">
-        <div class="layui-form-item">
-          <label class="layui-form-label"><span class="x-red">*</span>屏风种类</label>
-          <div class="layui-input-block">
-            <select name="paneltype" lay-verify="required">
-              <option value="">选择屏风种类</option>
-              {% for key, value in paneltype_choices %}
-              <option value="{{ key }}" {% if pic.paneltype == key %} selected="selected" {% endif %}>{{ value }}
-              </option>
-              {% endfor %}
-            </select>
-          </div>
-        </div>
-      </div>
-      <div class="layui-col-xs6">
+      <div class="layui-col-xs4">
         <div class="layui-form-item">
           <label class="layui-form-label"><span class="x-red">*</span>图元分类</label>
           <div class="layui-input-block">
             <select name="pictype" lay-verify="required">
               <option value="">选择图元分类</option>
-              {% for key, value in pictype_choices %}
-              <option value="{{ key }}" {% if pic.pictype == key %} selected="selected" {% endif %}>{{ value }}</option>
-              {% endfor %}
+              {% for key, value in PicsModels.PANEL_TYPE_CHOICES %}
+              <option value="{{ key }}" {% if pic.pictype == key %} selected="selected" {% endif %}>{{ value }}</option>{% endfor %}
             </select>
           </div>
         </div>
       </div>
-      <div class="layui-col-xs6">
+      <div class="layui-col-xs4">
         <div class="layui-form-item">
-          <label class="layui-form-label"><span class="x-red">*</span>左边组件</label>
+          <label class="layui-form-label"><span class="x-red">*</span>屏风种类</label>
           <div class="layui-input-block">
-            <select name="leftside" lay-verify="required">
-              <option value="">选择左边组件</option>
-              {% for lefts in leftside %}
-              <option value="{{ lefts.id }}" {% if pic.leftside.id == lefts.id %} selected="selected" {% endif %}>
-                {{ lefts.name }}</option>
+            <select name="paneltype" lay-verify="required">
+              <option value="">选择屏风种类</option>
+              {% for key, value in PicsModels.PIC_TYPE_CHOICES %}
+              <option value="{{ key }}" {% if pic.paneltype == key %} selected="selected" {% endif %}>{{ value }}</option>
               {% endfor %}
             </select>
           </div>
         </div>
       </div>
-      <div class="layui-col-xs6">
-        <div class="layui-form-item">
-          <label class="layui-form-label"><span class="x-red">*</span>中间组件</label>
-          <div class="layui-input-block">
-            <select name="middle" lay-verify="required">
-              <option value="">选择中间组件</option>
-              {% for middles in middle %}
-              <option value="{{ middles.id }}" {% if pic.middle.id == middles.id %} selected="selected" {% endif %}>
-                {{ middles.name }}</option>
-              {% endfor %}
-            </select>
-          </div>
-        </div>
-      </div>
-      <div class="layui-col-xs6">
+    </div>
+    <div class="layui-row ">
+      <div class="layui-col-xs4 layui-col-xs-offset4">
         <div class="layui-form-item">
           <label class="layui-form-label"><span class="x-red">*</span>轮子组件</label>
           <div class="layui-input-block">
-            <select name="wheel" lay-verify="required">
+            <select name="wheel" lay-verify="required" lay-filter="wheel" class="sel">
               <option value="">选择轮子组件</option>
               {% for wheels in wheel %}
-              <option value="{{ wheels.id }}" {% if pic.wheel.id == wheels.id %} selected="selected" {% endif %}>
-                {{ wheels.name }}</option>
+              <option value="{{ wheels.id }}" {% if pic.wheel.id == wheels.id %} selected="selected" {% endif %} code="{{ wheels.svgcode }}">{{ wheels.name }}</option>
               {% endfor %}
             </select>
           </div>
         </div>
       </div>
-      <div class="layui-col-xs6">
+    </div>
+    <div class="layui-row">
+      <div class="layui-col-xs4">
         <div class="layui-form-item">
+          <label class="layui-form-label"><span class="x-red">*</span>左边组件</label>
+          <div class="layui-input-block">
+            <select name="leftside" lay-verify="required" lay-filter="leftside" class="sel">
+              <option value="">选择左边组件</option>
+              {% for lefts in leftside %}
+              <option value="{{ lefts.id }}" {% if pic.leftside.id == lefts.id %} selected="selected" {% endif %} code="{{ lefts.svgcode }}">{{ lefts.name }}</option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="layui-col-xs4">
+        <div style="text-align: center;">
+          <div id="temp"></div>
+            <div id='svgdiv' style='text-align: center;'>
+              <svg xmlns='http://www.w3.org/2000/svg' version='1.1' height='256' width='256' viewBox='0 0 128 128'>
+              <g>
+              </g>
+            </svg>
+          </div>
+        </div>
+      </div>
+      <div class="layui-col-xs4">
+        <div class="layui-form-item ">
           <label class="layui-form-label"><span class="x-red">*</span>右边组件</label>
           <div class="layui-input-block">
-            <select name="rightside" lay-verify="required">
+            <select name="rightside" lay-verify="required" lay-filter="rightside" class="sel">
               <option value="">选择右边组件</option>
               {% for rights in rightside %}
-              <option value="{{ rights.id }}" {% if pic.rightside.id == rights.id %} selected="selected" {% endif %}>
-                {{ rights.name }}</option>
+              <option value="{{ rights.id }}" {% if pic.rightside.id == rights.id %} selected="selected" {% endif %} code="{{ rights.svgcode }}" >{{ rights.name }}</option>
               {% endfor %}
             </select>
           </div>
         </div>
       </div>
+    </div>
+    <div class="layui-row">
+      <div class="layui-col-xs4">
+        <div class="layui-form-item">
+          <label class="layui-form-label">额外长度</label>
+          <div class="layui-input-block">
+            <input type="text" id="extra_length" name="extra_length" placeholder="组件标记" lay-verify="number" autocomplete="off" class="layui-input" value="{{pic.extra_length}}">
+          </div>
+        </div>
+      </div>
+      <div class="layui-col-xs4 ">
+        <div class="layui-form-item">
+          <label class="layui-form-label"><span class="x-red">*</span>中间组件</label>
+          <div class="layui-input-block">
+            <select name="middle" lay-verify="required" lay-filter="middle" class="sel">
+              <option value="">选择中间组件</option>
+              {% for middles in middle %}
+              <option value="{{ middles.id }}" {% if pic.middle.id == middles.id %} selected="selected" {% endif %} code="{{ middles.svgcode }}" >{{ middles.name }}</option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="layui-col-xs4">
+        <div class="layui-form-item">
+          <label class="layui-form-label"><span class="x-red">*</span>文字组件</label>
+          <div class="layui-input-block">
+            <select name="text" lay-verify="required" lay-filter="text" class="sel">
+              <option value="">选择文字组件</option>
+              {% for texts in text %}
+              <option value="{{ texts.id }}" {% if pic.text.id == texts.id %} selected="selected" {% endif %} code="{{ texts.svgcode }}">{{ texts.name }}</option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
       <div class="layui-form-item">
         <label class="layui-form-label"></label>
         <button class="layui-btn" lay-filter="add" lay-submit="">保存</button>
@@ -107,6 +139,7 @@
     </div>
   </form>
 </div>
+
 {% endblock boby %}
 {# 网页主体块 #}
 
@@ -118,20 +151,17 @@
         layer = layui.layer;
 
       //监听提交
-      form.on('submit(add)',
-        function (data) {
+      form.on('submit(add)', function (data) {
           data.field.csrfmiddlewaretoken = $("[name='csrfmiddlewaretoken']").val()
           data.field.pic_id = $("[name='pic_id']").val()
-          //ajax请求
+          console.log(data.field)
+          // ajax请求
           $.post("{% url 'standard:pics' %}", data.field, function (data) {
             if (data.res == 2) {
-              layer.alert("保存成功", {
-                icon: 6
-              },
-                function () {
+              layer.alert("保存成功", {icon: 6
+              },function () {
                   //关闭当前frame
                   xadmin.close();
-
                   // 可以对父窗口进行刷新 
                   xadmin.father_reload();
                 });
@@ -142,10 +172,31 @@
                 time: 2000, //2s后自动关闭
               });
             }
-
           })
           return false;
         });
+
+        form.on('select', function(data){
+          $("#svgdiv").remove();
+          svg_code = "";
+          $(".sel").each(function () {
+            var self=$(this);
+            sel_opt = self.find("option:selected");
+            if (sel_opt.attr("code") == undefined ) {
+              return true;
+            }
+            else {
+              opt_code = sel_opt.attr("code");
+              svg_code = svg_code + opt_code;
+            }
+            // svgcode = svgcode + sel_opt
+          })
+          // console.log(svg_code); //得到select原始DOM对象
+          code = "<div id='svgdiv'style='text-align: center;'><svg xmlns='http://www.w3.org/2000/svg' version='1.1' height='256' width='256' viewBox='0 0 128 128'><g stroke='black' stroke-width='1.5' fill='none'>"+svg_code+"</g></svg></div>"
+          $("#temp").after(code);
+        });  
+
+
 
     });</script>
 {% endblock bottomfiles %}

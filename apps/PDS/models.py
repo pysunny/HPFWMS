@@ -4,21 +4,27 @@ from db.base_model import BaseModel
 # Create your models here.
 class Panelsets(BaseModel):
     """ 屏风组模型类 """
-    WHEEL_CHOICES = (
+    # 多向式轮子
+    OMNI_WHEEL_CHOICES = (
         (0,'26'),
         (1,'36'),
         (2,'57'),
         (3,'11'),
+    )
+    # 单向式轮子
+    PAIR_WHEEL_CHOICES = (
         (4,'38'),
         (5,'40'),
         (6,'42'),
         (7,'11T')
     )
+    # 全部轮子
+    WHEEL_CHOICES = OMNI_WHEEL_CHOICES + PAIR_WHEEL_CHOICES
+
     FACE_STRUCTURE_CHOICES = (
-        (0,'没钢结构'),
-        (1,'固面带收边'),
-        (2,'易面带收边'),
-        (3,'固面不带收边')
+        (0,'固面带收边'),
+        (1,'易面带收边'),
+        (2,'固面不带收边')
     )
     SOUND_TEST_CHOICES = (
         (0,'不需要'),
@@ -33,7 +39,7 @@ class Panelsets(BaseModel):
     width = models.IntegerField(verbose_name='宽度')
     wheel = models.SmallIntegerField(choices=WHEEL_CHOICES, verbose_name='轮子')
     sound_test = models.SmallIntegerField(choices=SOUND_TEST_CHOICES, verbose_name='隔音测试')
-    face_structure = models.SmallIntegerField(choices=FACE_STRUCTURE_CHOICES, verbose_name='屏风结构')
+    face_structure = models.SmallIntegerField(choices=FACE_STRUCTURE_CHOICES, default="", verbose_name='屏风结构')
     frame_color = models.CharField(max_length=128, verbose_name='边框颜色')
     splicer = models.CharField(max_length=128, default="", verbose_name='横驳条分布')
 

@@ -49,18 +49,18 @@
         <div class="layui-form-item">
           <label class="layui-form-label">出厂时间</label>
           <div class="layui-input-block">
-            <input type="text" name="production_time" placeholder="请输入" autocomplete="off" class="layui-input"
-              lay-verify="required|date" id="production_time" value="{{ panelset.production_time | date:'Y-m-d' }}">
+            <input type="text" name="production_time" placeholder="请输入" autocomplete="off" class="layui-input" lay-verify="required|date" id="production_time" value="{{ panelset.production_time | date:'Y-m-d' }}">
           </div>
         </div>
       </div>
       <div class="layui-col-xs8 layui-col-xs-offset2">
         <div class="layui-form-item">
           <input type="hidden" name="model_id" value="{{panelset.model.id}}">
+          <input type="hidden" name="model_wheel_type" value="{{panelset.model.get_wheel_type_display}}">
+          <input type="hidden" name="model_series" value="{{panelset.model.get_series_display }}">
           <label class="layui-form-label">屏风型号</label>
           <div class="layui-input-block">
-            <input type="text" name="model" placeholder="请输入" autocomplete="off" class="layui-input"
-              lay-verify="required" id="model_pick" value="{{panelset.model.name}}">
+            <input type="text" name="model" placeholder="请输入" autocomplete="off" class="layui-input" lay-verify="required" id="model_pick" value="{{panelset.model.name}}">
           </div>
         </div>
       </div>
@@ -68,8 +68,7 @@
         <div class="layui-form-item">
           <label class="layui-form-label">标准高度</label>
           <div class="layui-input-block">
-            <input type="text" name="height" placeholder="请输入" autocomplete="off" class="layui-input"
-              lay-verify="required|number" value="{{panelset.height}}">
+            <input type="text" name="height" placeholder="请输入" autocomplete="off" class="layui-input" lay-verify="required|number" value="{{panelset.height}}">
           </div>
         </div>
       </div>
@@ -77,8 +76,7 @@
         <div class="layui-form-item">
           <label class="layui-form-label">标准长度</label>
           <div class="layui-input-block">
-            <input type="text" name="width" placeholder="请输入" autocomplete="off" class="layui-input"
-              lay-verify="required|number" value="{{panelset.width}}">
+            <input type="text" name="width" placeholder="请输入" autocomplete="off" class="layui-input" lay-verify="required|number" value="{{panelset.width}}">
           </div>
         </div>
       </div>
@@ -86,10 +84,10 @@
         <div class="layui-form-item">
           <label class="layui-form-label">轮子</label>
           <div class="layui-input-block">
-            <select name="wheel" lay-verify="required" xm-select="wheel" xm-select-radio="">
-              {% for key, value in wheel_choices %}
+            <select name="wheel" lay-verify="required" id="wheel" xm-select="wheel" xm-select-radio="">
+              <!-- {% for key, value in wheel_choices %}
                 <option value="{{ key }}" {% if panelset.wheel == key %} selected="selected" {% endif %} >{{ value }} </option>
-              {% endfor %}
+              {% endfor %} -->
             </select>
           </div>
         </div>
@@ -106,11 +104,11 @@
           </div>
         </div>
       </div>
-      <div class="layui-col-xs8 layui-col-xs-offset2">
+      <div class="layui-col-xs8 layui-col-xs-offset2" {% if not panelset.model.get_series_display == "600" %} style="display:none;" {% endif %} id="structure">
         <div class="layui-form-item">
           <label class="layui-form-label">屏风结构</label>
           <div class="layui-input-block">
-            <select name="face_structure" lay-verify="required" xm-select="face_structure" xm-select-radio="">
+            <select name="face_structure" xm-select="face_structure" xm-select-radio="" id="face_structure">
               {% for key, value in face_structure %}
                 <option value="{{ key }}" {% if panelset.face_structure == key %} selected="selected" {% endif %} >{{ value }}</option>
               {% endfor %}
@@ -173,7 +171,8 @@
   //执行一个laydate实例
   laydate.render({
     elem: '#production_time' //指定元素
-  });
+      ,min: 0 //限制时间
+    });
 </script>
 
 <script type="text/javascript">
@@ -190,6 +189,7 @@
         { type: 'radio' , width: 80},
         { field: 'name', title: '型号名称' , width: 100 },
         { field: 'desc', title: '型号描述', width: 200 },
+        { field: 'wheel_type', title: '屏风类型', width: 80},
         { field: 'basic_material', title: '基本板材', width: 80},
         { field: 'steel_plate', title: '钢板', width: 80 },
         { field: 'top_clearance', title: '底部虚位', width: 80, templet: function (d) { return d.top_clearance + "mm" } }
@@ -199,12 +199,20 @@
     done: function (elem, data) {
       var NEWJSON = []
       var MODELIDJSON = []
+      var WHEELJSON = []
+      var SERIESJSON = []
       layui.each(data.data, function (index, item) {
         NEWJSON.push(item.name)
         MODELIDJSON.push(item.id)
+        WHEELJSON.push(item.wheel_type)
+        SERIESJSON.push(item.series)
       })
       elem.val(NEWJSON)
       $("[name='model_id']").val(MODELIDJSON)
+      $("[name='model_wheel_type']").val(WHEELJSON)
+      $("[name='model_series']").val(SERIESJSON)
+      add_wheel()
+      structure()
     }
   });
 
@@ -214,7 +222,6 @@
   $ = layui.jquery;
   var form = layui.form,
     layer = layui.layer;
-  //监听提交
   form.on('submit(add)',
     function (data) {
       data.field.csrfmiddlewaretoken = $("[name='csrfmiddlewaretoken']").val()
@@ -255,6 +262,71 @@
   formSelects.btns('face_structure', []);
   formSelects.btns('frame_color', []);
   formSelects.btns('splicer', []);
+  
+  var model_wheel_type = $("[name='model_wheel_type']").val();
+
+  if (model_wheel_type == "") {
+    formSelects.data('wheel', 'local', {
+    arr: [
+    ]
+  });
+  }
+
+  else if (model_wheel_type == "多向式") {
+    formSelects.data('wheel', 'local', {
+    arr: [
+        {% for key, value in omni_wheel_choices %}
+          {"name": "{{ value }}", "value": {{ key }} {% if panelset.wheel == key %} ,"selected":"selected" {% endif %}},
+        {% endfor %}
+    ]
+  });
+  }
+
+  else if (model_wheel_type == "单向式") {
+    formSelects.data('wheel', 'local', {
+    arr: [
+        {% for key, value in pair_wheel_choices %}
+          {"name": "{{ value }}", "value": {{ key }} {% if panelset.wheel == key %} ,"selected":"selected" {% endif %}},
+        {% endfor %}
+    ]
+  });
+  }
+
+</script>
+
+<script type="text/javascript">
+function add_wheel() {
+  var formSelects = layui.formSelects;  
+  var model_wheel_type = $("[name='model_wheel_type']").val();
+
+  if (model_wheel_type == "") {
+    formSelects.data('wheel', 'local', {
+    arr: [
+    ]
+  });
+  }
+
+  else if (model_wheel_type == "多向式") {
+    formSelects.data('wheel', 'local', {
+    arr: [
+        {% for key, value in omni_wheel_choices %}
+          {"name": "{{ value }}", "value": {{ key }} {% if panelset.wheel == key %} ,"selected":"selected" {% endif %}},
+        {% endfor %}
+    ]
+  });
+  }
+
+  else if (model_wheel_type == "单向式") {
+    formSelects.data('wheel', 'local', {
+    arr: [
+        {% for key, value in pair_wheel_choices %}
+          {"name": "{{ value }}", "value": {{ key }} {% if panelset.wheel == key %} ,"selected":"selected" {% endif %}},
+        {% endfor %}
+    ]
+  });
+  }
+}
+
 </script>
 
 <script type="text/javascript">
@@ -271,5 +343,19 @@ function next_step() {
     }
 }
 </script>
+
+<script type="text/javascript">
+// 这个函数用于下一页按钮,作用是把保存与下一页分开。
+function structure() {
+  if ($("[name='model_series']").val()=="600") {
+    $("#structure").attr("style","display:block");
+  }
+  else {
+    $("#structure").attr("style","display:none");
+    $("#face_structure").val("");
+    }
+}
+</script>
+
 {% endblock bottomfiles %}
 {# 网页底部引入块 #}

@@ -35,8 +35,8 @@ class PanelsetsDataView(View):
         # 获取data
         data = context["data"]
         for tmp in data:
-            model = Panelsets.objects.get(id=tmp['id'])
-            tmp['wheel'] = model.get_wheel_display()
+        #     model = Panelsets.objects.get(id=tmp['id'])
+        #     tmp['wheel'] = model.get_wheel_display()
             tmp['model'] = PanelModels.objects.get(id=tmp['model']).name
 
         return HttpResponse(json.dumps(context))
@@ -85,6 +85,8 @@ class PanelsetsAddView(View):
 
         # 添加wheel 选项内容
         wheel_choices = Panelsets.WHEEL_CHOICES
+        omni_wheel_choices = Panelsets.OMNI_WHEEL_CHOICES
+        pair_wheel_choices = Panelsets.PAIR_WHEEL_CHOICES
         face_structure = Panelsets.FACE_STRUCTURE_CHOICES
         sound_test = Panelsets.SOUND_TEST_CHOICES
 
@@ -95,6 +97,8 @@ class PanelsetsAddView(View):
             'splicer_list':splicer_list,
             'common_splicer':["平门中门","2400","4800","7200"],
             'wheel_choices':wheel_choices,
+            'omni_wheel_choices':omni_wheel_choices,
+            'pair_wheel_choices':pair_wheel_choices,
             'face_structure':face_structure,
             'sound_test':sound_test
         }

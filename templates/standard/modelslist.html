@@ -55,11 +55,12 @@
                 , { field: 'name', title: '型号名称' }
                 , { field: 'series', title: '系列' }
                 , { field: 'desc', title: '型号描述' }
+                , { field: 'wheel_type', title: '屏风类型' }
                 , { field: 'bottom_option', title: '底部' }
                 , { field: 'bottom_clearance', title: '底部虚位', templet: function (d) { return d.top_clearance + "mm" } }
                 , { field: 'basic_material', title: '基本板材' }
                 , { field: 'steel_plate', title: '钢板' }
-                , { field: 'rockwool', title: '岩棉', templet: function (d) { return d.rockwool == '1' ? '有' : '无' } }
+                , { field: 'rockwool', title: '岩棉' }
                 , { field: 'top_option', title: '顶部' }
                 , { field: 'top_clearance', title: '顶部虚位', templet: function (d) { return d.top_clearance + "mm" } }
                 , { fixed: 'right', title: '操作', width: 120, align: 'center', toolbar: '#barDemo' }

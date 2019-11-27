@@ -101,7 +101,7 @@
 
             if (layEvent === 'print') { //编辑
                 // top.xadmin.open('{{project.name}}-'+data.mark+'-打印页',"{% url 'PDS:pdsprint' %}?panelset_id="+ data.id)
-                window.open("{% url 'PDS:pdsprint' %}?panelset_id="+ data.id)
+                top.xadmin.add_tab('{{project.name}}-'+data.mark+'-打印页', "{% url 'PDS:pdsprint' %}?panelset_id="+ data.id)
             }
 
             else if (layEvent === 'edit') { //编辑

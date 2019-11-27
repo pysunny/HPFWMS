@@ -1,5 +1,5 @@
 from django.db import models
-from django.db.models.fields import DateTimeField ,DateField
+from django.db.models.fields import DateTimeField
 from django.db.models.fields.related import ManyToManyField
 class BaseModel(models.Model):
     """ 模型抽象基类 """
@@ -26,9 +26,29 @@ class BaseModel(models.Model):
             if isinstance(f, DateTimeField):
                 value = value.strftime('%Y-%m-%d %H:%M:%S') if value else None
 
+            # 如果有选择值，直接返回对应的选项值
+            if not f.choices == []:
+                for tmp in f.choices:
+                    if value == tmp[0]:
+                        value = tmp[1]
+        
             data[f.name] = value
 
         return data
+
+    # 添加获取全部key的方法
+    def get_key_list(self):
+        data = []
+        for f in self._meta.concrete_fields + self._meta.many_to_many:
+            data.append(f.name)
+        return data
+
+    # 添加获取id的name的方法
+    def get_id_name(self):
+        for f in self._meta.concrete_fields + self._meta.many_to_many:
+            if f.primary_key == True:
+                return f.name
+        
 
     class Meta:
         # 说明是一个抽象模型类

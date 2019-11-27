@@ -3,7 +3,7 @@ from django.views.generic import View
 from standard.models import PanelModels, PartPicModels, PicsModels
 from django.http import JsonResponse, HttpResponse
 # from utils.ComplexEncoder import ComplexEncoder
-from django.core.paginator import Paginator
+# from django.core.paginator import Paginator
 from utils.getData import getData
 import json
 
@@ -23,18 +23,6 @@ class ModelsDataView(View):
         limit = int(request.GET.get('limit'))
         # 调用分页的方法 获取数据
         context = getData().getData(ret, page, limit)
-        # 转换数据中有选项部分
-        # 获取data
-        data = context["data"]
-        # 循环,并修改成get_xxxx_display()
-        for tmp in data:
-            model = PanelModels.objects.get(id=tmp['id'])
-            tmp['series'] = model.get_series_display()
-            tmp['bottom_option'] = model.get_bottom_option_display()
-            tmp['top_option'] = model.get_top_option_display()
-            tmp['steel_plate'] = model.get_steel_plate_display()
-            tmp['basic_material'] = model.get_basic_material_display()
-
         # 返回数据
         return HttpResponse(json.dumps(context, ensure_ascii=False))
 
@@ -49,19 +37,11 @@ class ModelsView(View):
         if model_id:
             model = PanelModels.objects.get(id=model_id)
 
-        series_choices = PanelModels.SERIES_CHOICES
-        basic_material_choices = PanelModels.BASIC_MATERIAL_CHOICES
-        steel_plate_choices = PanelModels.STEEL_PLATE_CHOICES
-        top_option_choices = PanelModels.TOP_OPTION_CHOICES
-        bottom_option_choices = PanelModels.BOTTOM_OPTION_CHOICES
+        model_choices = PanelModels
 
         context = {
             'model':model,
-            'series_choices':series_choices,
-            'basic_material_choices':basic_material_choices,
-            'steel_plate_choices':steel_plate_choices,
-            'top_option_choices':top_option_choices,
-            'bottom_option_choices':bottom_option_choices
+            'model_choices':model_choices
         }
 
         # 如果接受数据没有id ,表示是新建模式,不用返回数据
@@ -81,12 +61,23 @@ class ModelsView(View):
         rockwool = request.POST.get('rockwool')
         bottom_option = request.POST.get('bottom_option')
         bottom_clearance = request.POST.get('bottom_clearance')
+        wheel_type = request.POST.get('wheel_type')
         # 校验数据
         if not all([name, series, top_clearance, basic_material, steel_plate, bottom_clearance, desc]):
             return JsonResponse({'res': 0, 'errmsg': '数据不完整'})
         # 检验已有相同名字
         try:
-            panelmodel = PanelModels.objects.get(name=name, basic_material=basic_material, bottom_clearance=bottom_clearance, top_option=top_option, bottom_option=bottom_option, steel_plate=steel_plate)
+            panelmodel = PanelModels.objects.get(
+                name=name, 
+                basic_material=basic_material, 
+                bottom_clearance=bottom_clearance, 
+                top_option=top_option, 
+                bottom_option=bottom_option, 
+                steel_plate=steel_plate, 
+                wheel_type=wheel_type
+            )
+            if model_id:
+                panelmodel = panelmodel.exclude(id=model_id)
         except PanelModels.DoesNotExist:
             # 用户名不存在
             panelmodel = None
@@ -106,7 +97,8 @@ class ModelsView(View):
                 rockwool=rockwool,
                 bottom_option=bottom_option,
                 bottom_clearance=bottom_clearance,
-                desc=desc
+                desc=desc,
+                wheel_type=wheel_type
             )
             # 返回应答
             return JsonResponse({'res': 2})
@@ -121,7 +113,8 @@ class ModelsView(View):
             rockwool=rockwool,
             bottom_clearance=bottom_clearance,
             bottom_option=bottom_option,
-            desc=desc
+            desc=desc,
+            wheel_type=wheel_type
         )
         # 返回应答
         return JsonResponse({'res': 2})
@@ -147,15 +140,11 @@ class PicsDataView(View):
         data = context["data"]
         # 在字典内添加四个组件代码
         for pic in data:
-            # 获取此模型
-            model = PicsModels.objects.get(id=pic['id'])
-            pic['paneltype'] = model.get_paneltype_display()
-            pic['wheeltype'] = model.get_wheeltype_display()
-            pic['pictype'] = model.get_pictype_display()
             pic['leftsidecode']=PartPicModels.objects.get(id=pic['leftside']).svgcode
             pic['middlecode']=PartPicModels.objects.get(id=pic['middle']).svgcode
             pic['wheelcode']=PartPicModels.objects.get(id=pic['wheel']).svgcode
             pic['rightsidecode']=PartPicModels.objects.get(id=pic['rightside']).svgcode
+            pic['textcode']=PartPicModels.objects.get(id=pic['text']).svgcode
 
         return HttpResponse(json.dumps(context, ensure_ascii=False))
 
@@ -167,49 +156,57 @@ class PicsView(View):
         pic_id = request.GET.get('pic_id')
         pic = ""
         # 获取各部位
-        leftside = PartPicModels.objects.filter(panelpart=0)
-        middle = PartPicModels.objects.filter(panelpart=1)
-        wheel = PartPicModels.objects.filter(panelpart=2)
-        rightside = PartPicModels.objects.filter(panelpart=3)
+        leftside = PartPicModels.objects.filter(panelpart=0, is_activate=True)
+        middle = PartPicModels.objects.filter(panelpart=1, is_activate=True)
+        wheel = PartPicModels.objects.filter(panelpart=2, is_activate=True)
+        rightside = PartPicModels.objects.filter(panelpart=3, is_activate=True)
+        text = PartPicModels.objects.filter(panelpart=4, is_activate=True)
 
         # 如果pic_id有值，表示是表示是修改模式,返回pic
         if pic_id:
             pic = PicsModels.objects.get(id=pic_id)
 
-        # 获取选项
-        paneltype_choices = PicsModels.PANEL_TYPE_CHOICES
-        pictype_choices = PicsModels.PIC_TYPE_CHOICES
         context = {
-
             'pic':pic,
             'leftside':leftside,
             'middle':middle,
             'wheel':wheel,
             'rightside':rightside,
-            'pictype_choices':pictype_choices,
-            'paneltype_choices':paneltype_choices
+            'text':text,
+            'PicsModels':PicsModels
         }
         
         return render(request, 'standard/pics.html', context)
 
     def post(self, request):
         """ 添加图元 """
+        user = request.user
         pic_id = request.POST.get('pic_id')
         name = request.POST.get('picsname')
         paneltype = request.POST.get('paneltype')
         pictype = request.POST.get('pictype')
-        wheel_id = request.POST.get('wheel')
+        extra_length = request.POST.get('extra_length')
         leftside = PartPicModels.objects.get(id=request.POST.get('leftside'))
         middle = PartPicModels.objects.get(id=request.POST.get('middle'))
-        wheel = PartPicModels.objects.get(id=wheel_id)
+        wheel = PartPicModels.objects.get(id=request.POST.get('wheel'))
         rightside = PartPicModels.objects.get(id=request.POST.get('rightside'))
+        text = PartPicModels.objects.get(id=request.POST.get('text'))
 
-        wheeltype = '0'
-        if wheel_id == '33':
-            wheeltype = '1'
+
+        # 根据轮子代码定义单向式或者多向式,注意 修改了数据库 可能要更新。
+        if request.POST.get('wheel') == '41' or request.POST.get('wheel') == '46':
+            wheeltype = "0"
+        else:
+            wheeltype = "1"
+
+        # 根据文字图层定义pin_mark,注意 修改了数据库 可能要更新。
+        if request.POST.get('text') == "47":
+            pin_mark = False
+        else:
+            pin_mark = True
 
         # 校验数据
-        if not all([name, paneltype, wheeltype, pictype, leftside, middle, wheel, rightside]):
+        if not all([name, paneltype, wheeltype, pictype, leftside, middle, wheel, rightside, text]):
             return JsonResponse({'res': 0, 'errmsg': '数据不完整'})
 
         # 检验是否有相同名字
@@ -225,7 +222,7 @@ class PicsView(View):
             return JsonResponse({'res': 1, 'errmsg': '此图元名称已经存在'})
         # 检验是否有结构的屏风图元
         try:
-            pic = PicsModels.objects.filter(leftside=leftside, middle=middle, wheel=wheel, rightside=rightside)
+            pic = PicsModels.objects.filter(leftside=leftside, middle=middle, wheel=wheel, rightside=rightside, text=text)
             # 如果是修改模式，需要排除自己
             if pic_id:
                 pic = pic.exclude(id=pic_id)
@@ -247,12 +244,16 @@ class PicsView(View):
                 leftside=leftside,
                 middle=middle,
                 wheel=wheel,
-                rightside=rightside
+                rightside=rightside,
+                extra_length = extra_length,
+                pin_mark = pin_mark,
+                user = user
             )
             # 返回应答
             return JsonResponse({'res': 2})
 
         # pic_id没有值，表示是新建模式，需要创建
+        print('##############')
         PicsModels.objects.create(
             name=name,
             paneltype=paneltype,
@@ -261,7 +262,10 @@ class PicsView(View):
             leftside=leftside,
             middle=middle,
             wheel=wheel,
-            rightside=rightside
+            rightside=rightside,
+            extra_length = extra_length,
+            pin_mark = pin_mark,
+            user = user
         )
         # 返回应答
         return JsonResponse({'res': 2})
@@ -283,16 +287,7 @@ class PicsPartsDataView(View):
         limit = int(request.GET.get('limit'))
         # 调用分页的方法 获取数据
         context = getData().getData(ret, page, limit)
-        # 获取数据中data数据
-        data = context["data"]
-        # 添加选项内容
-        for tmp in data:
-            # 获取此模型
-            model = PartPicModels.objects.get(id=tmp['id'])
-            tmp['paneltype'] = model.get_paneltype_display()
-            tmp['panelpart'] = model.get_panelpart_display()
 
-        # 使用ComplexEncoder格式化jason
         return HttpResponse(json.dumps(context))
 
 # /standard/picspartsadd 新建组件
@@ -319,7 +314,10 @@ class PicsPartsView(View):
         return render(request, 'standard/picsparts.html', context)
 
     def post(self, request):
+        # 获取post数据
+
         """ 添加组件 """
+        user = request.user
         picpart_id = request.POST.get('picpart_id')
         name = request.POST.get('picspartsname')
         paneltype = request.POST.get('paneltype')
@@ -357,9 +355,31 @@ class PicsPartsView(View):
             name=name,
             paneltype=paneltype,
             panelpart=panelpart,
-            svgcode=svgcode
+            svgcode=svgcode,
+            is_activate=False,
+            creator = user
         )
         # 返回应答
         return JsonResponse({'res': 2})
 
 
+# 激活组件
+class PicsPartsActiceView(View):
+    # 这是用于激活组件
+    def post(self, request):
+        # 获取数据
+        user = request.user
+        picpart_id = request.POST.get('picpart_id')
+        is_activate = request.POST.get('is_activate')
+        # 转换数据
+        if is_activate == "true":
+            is_activate = True
+        else:
+            is_activate = False
+        # 更新数据库
+        if user.is_superuser:
+            PartPicModels.objects.filter(id=picpart_id).update(is_activate=is_activate)
+            # 返回应答
+            return JsonResponse({'res': 2})
+        else:
+            return JsonResponse({'res': 1, 'errmsg':'你没有权限'})

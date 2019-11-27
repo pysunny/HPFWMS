@@ -58,7 +58,9 @@ z{% block boby %}
                 , { field: 'wheeltype', title: '轮子分类' }
                 , { field: 'pictype', title: '图元种类' }
                 , { title: '图例显示', templet: '#svgTpl' }
+                , { field: 'creator', title: '创建者' }
                 , { field: 'create_time', title: '创建时间' }
+                , { field: 'is_activate', title: '是否激活', templet: '#test-table-switchTpl', unresize: true}
                 , { fixed: 'right', title: '操作', width: 130, align: 'center', toolbar: '#barDemo' }
             ]]
         });
@@ -76,7 +78,7 @@ z{% block boby %}
             }
 
             else if (layEvent === 'edit') { //编辑
-                xadmin.open('编辑组件', '{% url "standard:pics" %}?pic_id=' + data.id, 600, 500)
+                xadmin.open('编辑组件', '{% url "standard:pics" %}?pic_id=' + data.id, 800, 550)
             }
         });
     });
@@ -91,7 +93,7 @@ z{% block boby %}
 <!-- 新建项目按钮 -->
 <script type="text/html" id="toolbarDemo">
     <div class = "layui-btn-container" > 
-        <button class = "layui-btn layui-btn-sm" lay-event = "getCheckData" onclick="xadmin.open('新建图元','{% url 'standard:pics' %}',600,500)"> 新建图元 </button>
+        <button class = "layui-btn layui-btn-sm" lay-event = "getCheckData" onclick="xadmin.open('新建图元','{% url 'standard:pics' %}',800,550)"> 新建图元 </button>
     </div > 
 </script>
 
