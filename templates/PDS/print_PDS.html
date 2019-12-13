@@ -2,9 +2,17 @@
 {% load staticfiles %}
 {% load filters%}
 {% block titlename %}HPFWMS-项目列表{% endblock titlename %}
-
+{% block topfiles %}
+<script src="{% static 'js/jQuery.print.js' %}"></script>
+{% endblock topfiles %}
+{# 网页顶部引入文件块 #}
 {% block boby %}
-<div class="layui-fluid">
+<div>
+    <button type="button" class="layui-btn" onclick="jQuery('#print_area').print()">打印PDS</button>
+</div>
+<div id="print_area">
+{% for panelset in panelsets %}
+<div class="layui-fluid" style="page-break-after: always;">
     <!-- 顶部标题 -->
     <div class="layui-row" style="width:750px">
         <table width="100%" style="text-align: right;">
@@ -19,7 +27,7 @@
                         </div>
                     </td>
                     <td>
-                        <h1><b><i>HAP PRODUCTION DATA SHEET( 开工纸 )</i></b></h1>
+                        <h2><b><i>HAP PRODUCTION DATA SHEET( 开工纸 )</i></b></h2>
                     </td>
                 </tr>
             </tbody>
@@ -27,12 +35,11 @@
     </div>
     <!-- 项目信息 -->
     <div class="layui-row" style="width:750px">
-        <table border="1" width="100%"
-            style="margin-top: 5px;font-size: 15px;text-align: center;border:1px solid #000; line-height:25px;">
+        <table border="1" width="100%" style="margin-top: 5px;font-size: 15px;text-align: center;border:1px solid #000; line-height:25px;">
             <tbody>
                 <tr>
                     <td>Project(项目名称)</td>
-                    <td colspan=3><b>{{ project.name }}</b></td>
+                    <td colspan=3><b>{{ panelset.project.name }}</b></td>
                 </tr>
                 <tr>
                     <td width="25%">Location(所在区域)</td>
@@ -41,7 +48,7 @@
                     <td width="25%">Page(页码)</td>
                 </tr>
                 <tr>
-                    <td></td>
+                    <td>{{ panelset.location }}</td>
                     <td><b>{{ panelset.production_time | date:"Y-m-j" }}</b></td>
                     <td><b>{{ panelset.update_time | date:"Y-m-j"}}</b></td>
                     <td></td>
@@ -63,8 +70,7 @@
     </div>
     <!-- 屏风信息 -->
     <div class="layui-row" style="margin-top: 5px; width:750px">
-        <table border="1" width="100%"
-            style="font-size: 15px;text-indent: 5px;border:1px solid #000; line-height:25px;">
+        <table border="1" width="100%" style="font-size: 15px;text-indent: 5px;border:1px solid #000; line-height:25px;">
             <tbody>
                 <tr>
                     <td>Modular Height(标准高度)</td>
@@ -99,12 +105,24 @@
                     <td><b>{{ panelset.model.get_bottom_option_display }}</b></td>
                 </tr>
                 <tr>
+                    <td>Decoration thickness(装饰面厚度)</td>
+                    <td><b>{{ panelset.decoration_thickness }}mm</b></td>
+                </tr>
+                <tr>
+                    <td>Decoration description(装饰面说明)</td>
+                    <td><b>{{ panelset.decoration_text }}</b></td>
+                </tr>
+                <tr>
                     <td>Horizontal Splice(横驳条)</td>
                     <td><b>{{ panelset.splicer }}</b></td>
                 </tr>
                 <tr>
                     <td>Rockwool Infill(补充料材料)</td>
-                    <td><b>{{ panelset.model.rockwool }}</b></td>
+                    <td><b>{{ panelset.model.get_rockwool_display }}</b></td>
+                </tr>
+                <tr>
+                    <td>No.Of Operating Handle(挍手数量)</td>
+                    <td><b>{{ panelset.handle_quantity }}</b></td>
                 </tr>
                 <tr>
                     <td>Acoustics field test Y/N (是否需要做隔音测试)</td>
@@ -118,14 +136,23 @@
                     <td>Frame Color(边框颜色)</td>
                     <td> <b>{{ panelset.frame_color }}</b></td>
                 </tr>
+                {% if panelset.has_ipd %}
+                <tr>
+                    <td>IPD Door Clearare Height(门中门门高)</td>
+                    <td> <b>{{ panelset.doorheight }}</b></td>
+                </tr>
+                <tr>
+                    <td>IPD locker Options(门中门门锁选择)</td>
+                    <td> <b>{{ panelset.keyoption }}</b></td>
+                </tr>
+                {% endif %}
             </tbody>
         </table>
     </div>
     <!-- 屏风详细 -->
     <div class="layui-row" style="margin-top: 5px; width:750px">
         <div class="layui-col-xs1" style="width:10%">
-            <table border="1" width="100%"
-                style="text-align:center;font-size: 8px;border:1px solid #000;line-height:25px;">
+            <table border="1" width="100%"style="text-align:center;font-size: 8px;border:1px solid #000;line-height:25px;">
                 <tr>
                     <td><i>NO.#(编号)</i></td>
                 </tr>
@@ -146,10 +173,9 @@
                 </tr>
             </table>
         </div>
-        {% for panel in panels %}
+        {% for panel in panelset.panels %}
         <div class="layui-col-xs2" style="width:18%">
-            <table border="1" width="100%"
-                style="text-align:center;font-size: 15px;border:1px solid #000;line-height:25px;">
+            <table border="1" width="100%" style="text-align:center;font-size: 15px;border:1px solid #000;line-height:25px;">
                 <tr>
                     <td><b>{{ panel.panle_no }}</b></td>
                 </tr>
@@ -167,20 +193,45 @@
                                 {{ panel.panel_pic.middle.svgcode | safe }}
                                 {{ panel.panel_pic.rightside.svgcode | safe }}
                                 {{ panel.panel_pic.wheel.svgcode | safe }}
+                                {{ panel.panel_pic.text.svgcode | safe }}
                             </g>
                         </svg>
                     </td>
                 </tr>
                 <tr>
-                    <td><b>{{ panel.carrier_space }}</b></td>
+                    <td><b>{{ panel.panel_width }}</b></td>
                 </tr>
                 <tr>
-                    <td><b>{{ panel.panel_type }}</b></td>
+                    <td><b>{{ panel.get_panel_type_display }}</b></td>
                 </tr>
             </table>
         </div>
         {% endfor %}
     </div>
+    <div class="layui-row" style="margin-top: 5px; width:750px">
+        <div class="layui-col-xs1"style="width:64%">
+            <table border="1" width="100%" style="text-align:left;font-size: 8px;border:1px solid #000;line-height:25px;">
+                <tr>
+                    <td><b>Note(备注):</b></td>
+                </tr>
+                <tr> 
+                    <td height="130">{{ panelset.note|safe }}</td>
+                </tr>
+            </table>
+        </div>
+        <div class="layui-col-xs1" style="width:36%">
+            <table border="1" width="100%" style="text-align:left;font-size: 8px;border:1px solid #000;line-height:25px;">
+                <tr>
+                    <td><b>Confirm(确认):</b></td>
+                </tr>
+                <tr>
+                    <td height="130"></td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>
+{% endfor %}
 </div>
 {% endblock boby %}
 {# 网页主体块 #}

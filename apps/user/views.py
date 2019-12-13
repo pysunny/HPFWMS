@@ -8,8 +8,10 @@ from django.http import JsonResponse, HttpResponse
 from django.contrib.auth import authenticate, login, logout
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from itsdangerous import SignatureExpired
-from utils.ComplexEncoder import ComplexEncoder
+# from utils.ComplexEncoder import ComplexEncoder
+from utils.getData import getData
 from utils.mixin import LoginRequiredMixin
+from django.contrib.auth.mixins import PermissionRequiredMixin
 import re
 import json
 
@@ -108,9 +110,8 @@ class RegisterView(View):
             return JsonResponse({'res': 5, 'errmsg': '邮箱格式不正确'})
 
         # 检验是否使用hufcor.com的电邮
-        # 测试期间关闭
-        # if not email.endswith('hufcor.com'):
-            # return JsonResponse({'res':6, 'errmsg':'请使用公司电邮注册'})
+        if not email.endswith('hufcor.com'):
+            return JsonResponse({'res':6, 'errmsg':'请使用公司电邮注册'})
 
         # 检验用户名是否重复
         try:
@@ -180,29 +181,29 @@ class EmailActiveView(View):
 
 # /user/active用户激活
 
+# 使用其他形式激活用户 此类不使用
+# class ActiveView(LoginRequiredMixin, View):
+#     """ 用户激活 """
 
-class ActiveView(LoginRequiredMixin, View):
-    """ 用户激活 """
-
-    def get(self, request, user_id):
-        """ 进行用户激活 """
-        # 获取用户id
-        user = request.user
-        if user.is_superuser:
-            user_id = user_id
-            # 激活用户
-            user = User.objects.get(id=user_id)
-            user.is_active = 1
-            user.save()
-            # 跳转到登陆页面
-            return redirect(reverse('user:login'))
-        else:
-            return HttpResponse('你没有超级管理员权限')
+#     def get(self, request, user_id):
+#         """ 进行用户激活 """
+#         # 获取用户id
+#         user = request.user
+#         if user.is_superuser:
+#             user_id = user_id
+#             # 激活用户
+#             user = User.objects.get(id=user_id)
+#             user.is_active = 1
+#             user.save()
+#             # 跳转到登陆页面
+#             return redirect(reverse('user:login'))
+#         else:
+#             return HttpResponse('你没有超级管理员权限')
 
 
-class MemberListView(View):
+class MemberListView(PermissionRequiredMixin, View):
+    permission_required = 'view_user'
     """ 用户管理 """
-
     def get(self, request):
         return render(request, 'user/memberlist.html')
 
@@ -220,39 +221,33 @@ class LogoutView(View):
 # /user/data layui数据接口
 
 
-class UserDataView(View):
+class UserDataView(PermissionRequiredMixin, View):
+    permission_required = 'view_user'
     def get(self, request):
-        # 获取全部用户的数据
+        # 获取全部数据
         ret = User.objects.all()
-        # 转化数据
-        users = ret.values()
-        # 获取数据数量
-        count = ret.count()
-        data = list(users)
-        # data = serializers.serialize("json", ret, ensure_ascii=False)
-        # 组织上下文
-        # print(data)
-        context = {
-            "code": 0,
-            "msg": "",
-            "count": count,
-            "data": data
-        }
+        page = int(request.GET.get('page'))
+        limit = int(request.GET.get('limit'))
+        # 调用分页的方法 获取数据
+        context = getData().getData(ret, page, limit)
         # 使用ComplexEncoder格式化jason
-        return HttpResponse(json.dumps(context, cls=ComplexEncoder))
+        return HttpResponse(json.dumps(context, ensure_ascii=False))
 
-class UserDetailView(View):
+class UserDetailView(PermissionRequiredMixin, View):
+    permission_required = 'view_user'
     """ 用户权限管理 """
     def get(self, request):
         # 接收数据
         user_id = request.GET.get('user_id')
         user = User.objects.get(id=user_id)
         location = user.get_location_display()
+        location_choices = User.LOCATION_CHOICES
 
         # 组织上下文
         context = {
             'user':user,
-            'location':location
+            'location':location,
+            'location_choices':location_choices
         }
 
         return render(request, 'user/userdetail.html', context)
@@ -261,15 +256,22 @@ class UserDetailView(View):
         """ 添加用户权限 """
         user_id = request.POST.get('user_id')
         location_permiss = request.POST.get('location_permiss').split(',')
-        app_permiss = request.POST.get('app_permiss').split(',')
+        is_active = request.POST.get('is_active')
+
+        # is_active = "on"
+        if is_active:
+            is_active = True
+        else:
+            is_active = False
+
 
         # 校验数据
-        if not all([user_id, location_permiss, app_permiss]):
+        if not all([user_id, location_permiss]):
             return JsonResponse({'res': 0, 'errmsg': '数据不完整'})
 
         # 业务处理
         User.objects.filter(id=user_id).update(
             location_permiss=location_permiss,
-            app_permiss=app_permiss
+            is_active=is_active
         )
         return JsonResponse({'res': 2})

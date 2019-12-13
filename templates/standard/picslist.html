@@ -27,11 +27,17 @@
 {# 网页主体上侧块 #}
 z{% block boby %}
 <div class="layui-fluid">
+        {% csrf_token %}
     <div class="layui-row layui-col-space15">
         <div class="layui-col-md12">
             <div class="layui-card">
                 <div class="layui-card-body ">
                     <table id="demo" lay-filter="test"></table>
+                    <script type="text/html" id="test-table-switchTpl">
+                        {% verbatim %}
+                        <input type="checkbox" name="is_activate" lay-skin="switch" lay-text="已激活|未激活" lay-filter="test-table-is_activate" value="{{ d.id }}" {{ d.is_activate == 1 ? 'checked' : '' }}>
+                        {% endverbatim %}
+                    </script>
                 </div>
             </div>
         </div>
@@ -44,7 +50,7 @@ z{% block boby %}
 
 <script>
     layui.use('table', function () {
-        var table = layui.table;
+        var table = layui.table, form = layui.form,$ = layui.$;
         table.render({
             elem: '#demo'
             , height: 800
@@ -55,10 +61,10 @@ z{% block boby %}
                 { field: 'xieliehao', width: 80, title: '序列号', type: 'numbers' }
                 , { field: 'name', title: '组件名称' }
                 , { field: 'paneltype', title: '屏风种类' }
-                , { field: 'wheeltype', title: '轮子分类' }
+                , { field: 'wheelquantity', title: '轮子分类' }
                 , { field: 'pictype', title: '图元种类' }
-                , { title: '图例显示', templet: '#svgTpl' }
-                , { field: 'creator', title: '创建者' }
+                , { title: '图例显示', templet: '#svgTpl', width:150}
+                , { field: 'user', title: '创建者' }
                 , { field: 'create_time', title: '创建时间' }
                 , { field: 'is_activate', title: '是否激活', templet: '#test-table-switchTpl', unresize: true}
                 , { fixed: 'right', title: '操作', width: 130, align: 'center', toolbar: '#barDemo' }
@@ -81,19 +87,41 @@ z{% block boby %}
                 xadmin.open('编辑组件', '{% url "standard:pics" %}?pic_id=' + data.id, 800, 550)
             }
         });
+
+        //监听激活操作
+        form.on('switch(test-table-is_activate)', function(obj){
+            var json = {};
+            json.csrfmiddlewaretoken = $("[name='csrfmiddlewaretoken']").val()
+            json.is_activate = obj.elem.checked;
+            json.pic_id = this.value;
+            // console.log(json)
+            $.post("{% url 'standard:picsactice' %}", json, function (data) {
+                if (data.res == 2) {
+                    layer.tips(obj.elem.checked, obj.othis);
+                }
+                else {
+                    // 数据验证有问题
+                    // layer.tips(obj.othis.checked, obj.elem);
+                    layer.msg(data.errmsg, {
+                        time: 2000, //2s后自动关闭
+                    });
+                }
+            })
+        });
     });
 </script>
 
 <!-- 操作列 -->
 <script type="text/html" id="barDemo">
-    <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
-    <!-- <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a> -->
+    {% verbatim %}
+    <button class="layui-btn layui-btn-xs {{ d.can_edit == 0 ? 'layui-btn-disabled' : '' }}" {{ d.can_edit == 0 ? 'disabled' : '' }} lay-event="edit">编辑</button>
+    {% endverbatim %}
 </script>
 
 <!-- 新建项目按钮 -->
 <script type="text/html" id="toolbarDemo">
     <div class = "layui-btn-container" > 
-        <button class = "layui-btn layui-btn-sm" lay-event = "getCheckData" onclick="xadmin.open('新建图元','{% url 'standard:pics' %}',800,550)"> 新建图元 </button>
+        <button class = "layui-btn layui-btn-sm" onclick="xadmin.open('新建图元','{% url 'standard:pics' %}',800,550)"> 新建图元 </button>
     </div > 
 </script>
 
@@ -105,6 +133,7 @@ z{% block boby %}
                 {% verbatim %}"{{d.middlecode}}"{% endverbatim %}
                 {% verbatim %}"{{d.wheelcode}}"{% endverbatim %}
                 {% verbatim %}"{{d.rightsidecode}}"{% endverbatim %}
+                {% verbatim %}"{{d.textcode}}"{% endverbatim %}
             </g>
         </svg>
     </div>

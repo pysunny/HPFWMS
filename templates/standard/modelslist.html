@@ -28,11 +28,17 @@
 
 {% block boby %}
 <div class="layui-fluid">
+        {% csrf_token %}
     <div class="layui-row layui-col-space15">
         <div class="layui-col-md12">
             <div class="layui-card">
                 <div class="layui-card-body ">
                     <table id="demo" lay-filter="test"></table>
+                    <script type="text/html" id="test-table-switchTpl">
+                        {% verbatim %}
+                        <input type="checkbox" name="is_activate" lay-skin="switch" lay-text="已激活|未激活" lay-filter="test-table-is_activate" value="{{ d.id }}" {{ d.is_activate == 1 ? 'checked' : '' }}>
+                        {% endverbatim %}
+                    </script>
                 </div>
             </div>
         </div>
@@ -44,7 +50,7 @@
 {% block bottomfiles %}
 <script>
     layui.use('table', function () {
-        var table = layui.table;
+        var table = layui.table, form = layui.form,$ = layui.$;
         table.render({
             elem: '#demo'
             , height: 500
@@ -63,6 +69,8 @@
                 , { field: 'rockwool', title: '岩棉' }
                 , { field: 'top_option', title: '顶部' }
                 , { field: 'top_clearance', title: '顶部虚位', templet: function (d) { return d.top_clearance + "mm" } }
+                , { field: 'user', title: '创建者' }
+                , { field: 'is_activate', title: '是否激活', templet: '#test-table-switchTpl', unresize: true}
                 , { fixed: 'right', title: '操作', width: 120, align: 'center', toolbar: '#barDemo' }
             ]]
             , toolbar: '#toolbarDemo'
@@ -85,18 +93,40 @@
             }
         });
 
+        //监听激活操作
+        form.on('switch(test-table-is_activate)', function(obj){
+            var json = {};
+            json.csrfmiddlewaretoken = $("[name='csrfmiddlewaretoken']").val()
+            json.is_activate = obj.elem.checked;
+            json.model_id = this.value;
+            console.log(json)
+            $.post("{% url 'standard:modelsactice' %}", json, function (data) {
+                if (data.res == 2) {
+                    layer.tips(obj.elem.checked, obj.othis);
+                }
+                else {
+                    // 数据验证有问题
+                    // layer.tips(obj.othis.checked, obj.elem);
+                    layer.msg(data.errmsg, {
+                        time: 2000, //2s后自动关闭
+                    });
+                }
+            })
+        });
+
     });
 </script>
 
 <!-- 操作列 -->
 <script type="text/html" id="barDemo">
-    <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
-    <!-- <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a> -->
+    {% verbatim %}
+    <button class="layui-btn layui-btn-xs {{ d.can_edit == 0 ? 'layui-btn-disabled' : '' }}" {{ d.can_edit == 0 ? 'disabled' : '' }} lay-event="edit">编辑</button>
+    {% endverbatim %}
 </script>
 
 <script type="text/html" id="toolbarDemo">
     <div class = "layui-btn-container" > 
-        <button class = "layui-btn layui-btn-sm" lay-event = "getCheckData" onclick="xadmin.open('新建型号','{% url 'standard:models' %}',900,600)"> 新建型号 </button>
+        <button class = "layui-btn layui-btn-sm" onclick="xadmin.open('新建型号','{% url 'standard:models' %}',900,600)"> 新建型号 </button>
     </div > 
 </script>
 

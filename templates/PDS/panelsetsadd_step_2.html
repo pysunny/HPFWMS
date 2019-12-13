@@ -24,7 +24,7 @@
   </div>
   <div class="layui-row " style="margin-top: 20px;">
     <button class="layui-btn" type="button"
-      onclick="xadmin.open('新建屏风','{% url 'PDS:panelsadd' %}?panelset_id='+{{panelset_id}},600,600)"
+      onclick="xadmin.open('新建屏风','{% url 'PDS:panelsadd' %}?panelset_id='+{{panelset_id}},780,600)"
       style="width:10%;">添加屏风</button>
   </div>
   <div class="layui-row" style="margin-top: 20px;">
@@ -42,6 +42,7 @@
                   {{ panel.panel_pic.middle.svgcode | safe}}
                   {{ panel.panel_pic.rightside.svgcode | safe}}
                   {{ panel.panel_pic.wheel.svgcode | safe}}
+                  {{ panel.panel_pic.text.svgcode | safe}}
                 </g>
               </svg>
             </td></tr>
@@ -49,7 +50,7 @@
           <tr><td>{{ panel.get_panel_type_display }}</td></tr>
           <tr><td>
               <button class='layui-btn layui-btn-xs'
-                onclick="xadmin.open('新建屏风','{% url 'PDS:panelsadd' %}?panel_id='+{{panel.id}},600,600)">编辑</button>
+                onclick="xadmin.open('编辑屏风','{% url 'PDS:panelsadd' %}?panel_id='+{{panel.id}},780,600)">编辑</button>
               <button class='layui-btn layui-btn-danger layui-btn-xs ' onclick="delete_botton({{panel.id}})">删除</button>
             </td></tr>
         </tbody>
@@ -59,7 +60,7 @@
   </div>
   <div class="layui-row layui-col-space10" align="right" style="margin-top: 20px;">
     <button class="layui-btn" onclick="prev_step()" style="width:10%;">上一步</button>
-    <button class="layui-btn" onclick="" style="width:10%;">完成</button>
+    <button class="layui-btn" onclick="next_step()" type="button" style="width:10%;">下一步</button>
   </div>
 </div>
 {% endblock boby %}
@@ -70,6 +71,9 @@
   // 这个函数用于上一页按钮。
   function prev_step() {
     window.location.href = "{% url 'PDS:panelsetsadd' %}?panelset_id=" + {{ panelset_id }};
+  }
+  function next_step() {
+    window.location.href = "{% url 'PDS:step3' %}?panelset_id=" + {{ panelset_id }};
   }
 
   function delete_botton(panel_id) {

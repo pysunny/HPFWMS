@@ -10,37 +10,39 @@ class PanelModels(BaseModel):
         (2,'600')
     )
     BASIC_MATERIAL_CHOICES = (
-        (0,'石膏板'),
-        (1,'木夹板'),
-        (2,'无')
+        (0,'Gypsum Board(石膏板)'),
+        (1,'Plywood Board(木夹板)'),
+        (2,'Tamper Glass(玻璃)'),
+        (3,'Others Decoration Board(其他装饰面板材)')
     )
     STEEL_PLATE_CHOICES = (
-        (0,'内'),
-        (1,'外'),
-        (2,'无')
+        (0,'Serface(钢板面)'),
+        (1,'Inside(钢板底)'),
+        (2,'None(无钢板)')
     )
     TOP_OPTION_CHOICES = (
-        (0,'机动顶撑 带 胶条'),
-        (1,'机动顶撑 不带 胶条'),
-        (2,'胶条'),
-        (3,'电动顶撑 带 胶条'),
-        (4,'电动顶撑 不带 胶条')
+        (0,'Mechanical And Sweep Seal(机动顶撑 带 胶条)'),
+        (1,'Mechanical Seal(机动顶撑 不带 胶条)'),
+        (2,'Sweep Seal Only(只做胶条)'),
+        (3,'Ele. Mech. And Sweep Seal(电动顶撑 带 胶条)'),
+        (4,'Ele. Mech. Seal(电动顶撑 不带 胶条)')
     )
     BOTTOM_OPTION_CHOICES = (
-        (0,'机动底撑 带 胶条'),
-        (1,'机动底撑 不带 胶条'),
-        (2,'胶条'),
-        (3,'电动底撑 带 胶条'),
-        (4,'电动底撑 不带 胶条')
+        (0,'Mechanical And Sweep Seal(机动底撑 带 胶条)'),
+        (1,'Mechanical Seal(机动底撑 不带 胶条)'),
+        (2,'Sweep Seal Only(只做胶条)'),
+        (3,'Ele. Mech. And Sweep Seal(电动底撑 带 胶条)'),
+        (4,'Ele. Mech. Seal(电动底撑 不带 胶条)')
     )
     WHEEL_TYPE_CHOICES = (
         (0,'多向式'),
         (1,'单向式')
     )
     ROCKWOOL_CHOICES = (
-        (0, '50kg岩棉'),
+        (0, '有岩棉'),
         (1, '无岩棉')
     )
+
     name = models.CharField(max_length=128, verbose_name='型号名称')
     series = models.SmallIntegerField(choices=SERIES_CHOICES, verbose_name='系列')
     desc = models.CharField(max_length=256, verbose_name='型号描述')
@@ -53,7 +55,7 @@ class PanelModels(BaseModel):
     rockwool = models.SmallIntegerField(choices=ROCKWOOL_CHOICES, verbose_name='有无岩棉')
     wheel_type = models.SmallIntegerField(choices=WHEEL_TYPE_CHOICES, verbose_name='屏风类型', default=0)
     is_activate = models.BooleanField(default=False, verbose_name='激活标记')
-    creator = models.ForeignKey('user.User', default=2, on_delete=models.CASCADE, verbose_name='创建者')
+    user = models.ForeignKey('user.User', on_delete=models.CASCADE, verbose_name='创建者')
 
     class Meta:
         db_table = 'df_models'
@@ -82,7 +84,7 @@ class PartPicModels(BaseModel):
     panelpart = models.SmallIntegerField(choices=PIC_PART_CHOICES, verbose_name='组件位置')
     svgcode = models.CharField(max_length=512, verbose_name='图元组件代码')
     is_activate = models.BooleanField(default=False, verbose_name='激活标记')
-    creator = models.ForeignKey('user.User', default=2, on_delete=models.CASCADE, verbose_name='创建者')
+    user = models.ForeignKey('user.User', on_delete=models.CASCADE, verbose_name='创建者')
 
     class Meta:
         db_table = 'df_svgparts'
@@ -94,7 +96,11 @@ class PicsModels(BaseModel):
     """ 屏风图元类型类 """
     # 屏风种类选择
     PANEL_TYPE_CHOICES = PartPicModels.PANEL_TYPE_CHOICES
-    WHEEL_TYPE_CHOICES = PanelModels.WHEEL_TYPE_CHOICES
+    WHEEL_QUANTITY_CHOICES = (
+        (0,"双轮"),
+        (1,"单轮"),
+        (3,"无轮")
+    )
     PIC_TYPE_CHOICES = (
         (0,'BP'),
         (1,'LCP'),
@@ -106,7 +112,7 @@ class PicsModels(BaseModel):
     )
     name = models.CharField(max_length=256, verbose_name='组件名称标识')
     paneltype = models.SmallIntegerField(choices=PANEL_TYPE_CHOICES, verbose_name='屏风种类')
-    wheeltype = models.SmallIntegerField(choices=WHEEL_TYPE_CHOICES, verbose_name='轮子分类')
+    wheelquantity = models.SmallIntegerField(choices=WHEEL_QUANTITY_CHOICES, default=0, verbose_name='轮子数量')
     pictype = models.SmallIntegerField(choices=PIC_TYPE_CHOICES, verbose_name='图元种类')
     leftside = models.ForeignKey(PartPicModels, on_delete=models.CASCADE, verbose_name='左边组件图元', related_name="leftside")
     middle = models.ForeignKey(PartPicModels, on_delete=models.CASCADE, verbose_name='中间组件图元', related_name="middle")
@@ -116,7 +122,7 @@ class PicsModels(BaseModel):
     extra_length = models.SmallIntegerField(default=0, verbose_name='额外长度')
     pin_mark = models.BooleanField(default=False, verbose_name='是否有地针')
     is_activate = models.BooleanField(default=False, verbose_name='激活标记')
-    creator = models.ForeignKey('user.User', default=2, on_delete=models.CASCADE, verbose_name='创建者')
+    user = models.ForeignKey('user.User', on_delete=models.CASCADE, verbose_name='创建者')
 
     class Meta:
         db_table = 'df_pics'

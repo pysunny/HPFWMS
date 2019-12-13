@@ -11,7 +11,7 @@ class User(AbstractUser, BaseModel):
     email_activate = models.BooleanField(default=False, verbose_name='电邮激活')
     location = models.SmallIntegerField(default=0, choices=LOCATION_CHOICES, verbose_name='所在区域')
     location_permiss = models.CharField(default='', max_length=256, verbose_name='区域权限')
-    app_permiss = models.CharField(default='', max_length=256, verbose_name='app权限')
+    # app_permiss = models.CharField(default='', max_length=256, verbose_name='app权限')
 
     class Meta:
         db_table = 'df_user'

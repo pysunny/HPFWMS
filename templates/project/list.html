@@ -39,6 +39,14 @@
                         </div>
                     </form>
                     <table id="demo" lay-filter="test"></table>
+                    {% verbatim %}
+                    <script type="text/html" id="test-table-is_favorites">
+                        <input type="checkbox" name="is_favorites" lay-skin="switch" lay-text="已收藏|未收藏" lay-filter="test-table-is_favorites" value="{{ d.project_id }}" {{ d.is_favorites == 1 ? 'checked' : '' }}>
+                    </script>
+                    <script type="text/html" id="test-table-is_public">
+                        <input type="checkbox" name="is_public" lay-skin="switch" lay-text="已发布|未公开" lay-filter="test-table-is_public" value="{{ d.project_id }}" {{ d.is_public == 1 ? 'checked' : '' }}>
+                    </script>
+                    {% endverbatim %}
                 </div>
             </div>
         </div>
@@ -50,11 +58,12 @@
 {% block bottomfiles %}
 <script>
     layui.use('table', function () {
-        var table = layui.table;
+        var table = layui.table, form = layui.form,$ = layui.$;
         table.render({
             elem: '#demo'
             , height: 500
             , url: "{% url 'project:data' %}" //数据接口
+            , where:{page_name: 'list'}
             , page: true //开启分页
             , toolbar: '#toolbarDemo'
             , cols: [[ //表头
@@ -64,8 +73,9 @@
                 , { field: 'user', title: '用户' }
                 , { field: 'projectlocation', title: '区域' }
                 , { field: 'address', title: '工程地址' }
-                , { field: 'is_public', title: '是否公开' }
                 , { field: 'create_time', title: '创建时间' }
+                , { field: 'is_favorites', title: '是否收藏' , templet: '#test-table-is_favorites', unresize: true}
+                , { field: 'is_public', title: '是否公开' , templet: '#test-table-is_public', unresize: true}
                 , { fixed: 'right', title: '操作', width: 200, align: 'center', toolbar: '#barDemo' }
             ]]
         });
@@ -109,6 +119,48 @@
                 });
             }
         });
+
+        //监听收藏激活操作
+        form.on('switch(test-table-is_favorites)', function(obj){
+            var json = {};
+            json.csrfmiddlewaretoken = $("[name='csrfmiddlewaretoken']").val()
+            json.is_favorites = obj.elem.checked;
+            json.project_id = this.value;
+            // console.log(json)
+            $.post("{% url 'project:favoritesactive' %}", json, function (data) {
+                if (data.res == 2) {
+                    layer.tips(obj.elem.checked, obj.othis);
+                }
+                else {
+                    // 数据验证有问题
+                    // layer.tips(obj.othis.checked, obj.elem);
+                    layer.msg(data.errmsg, {
+                        time: 2000, //2s后自动关闭
+                    });
+                }
+            })
+        });
+
+        //监听发布激活操作
+        form.on('switch(test-table-is_public)', function(obj){
+            var json = {};
+            json.csrfmiddlewaretoken = $("[name='csrfmiddlewaretoken']").val()
+            json.is_public = obj.elem.checked;
+            json.project_id = this.value;
+            // console.log(json)
+            $.post("{% url 'project:publicactive' %}", json, function (data) {
+                if (data.res == 2) {
+                    layer.tips(obj.elem.checked, obj.othis);
+                }
+                else {
+                    // 数据验证有问题
+                    // layer.tips(obj.othis.checked, obj.elem);
+                    layer.msg(data.errmsg, {
+                        time: 2000, //2s后自动关闭
+                    });
+                }
+            })
+        });
     });
 </script>
 
@@ -122,12 +174,11 @@
 <!-- 新建项目按钮 -->
 <script type="text/html" id="toolbarDemo">
     <div class = "layui-btn-container" > 
-        <button class = "layui-btn layui-btn-sm" lay-event = "getCheckData" onclick="xadmin.open('新建项目','{% url 'project:add' %}',400,400)"> 新建项目 </button>
+        <button class = "layui-btn layui-btn-sm" onclick="xadmin.open('新建项目','{% url 'project:add' %}',400,400)"> 新建项目 </button>
     </div > 
 </script>
 
 <!-- 定义新建tabs函数 -->
-
 <script>layui.use('laydate',
         function () {
             var laydate = layui.laydate;
@@ -144,7 +195,6 @@
 
         });
 </script>
-
 
 {% endblock bottomfiles %}
 {# 网页底部引入块 #}

@@ -34,20 +34,26 @@
         <ul id="nav">
             <li>
                 <a href="javascript:;">
-                    <i class="iconfont left-nav-li" lay-tips="订单管理">&#xe723;</i>
+                    <i class="iconfont left-nav-li" lay-tips="项目管理">&#xe723;</i>
                     <cite>项目管理</cite>
                     <i class="iconfont nav_right">&#xe697;</i></a>
                 <ul class="sub-menu">
                     <li>
-                        <a onclick="xadmin.add_tab('项目列表','{% url 'project:list' %}')">
+                        <a onclick="xadmin.add_tab('全部项目','{% url 'project:list' %}')">
                             <i class="iconfont">&#xe6a7;</i>
-                            <cite>项目列表</cite>
+                            <cite>全部项目</cite>
                         </a>
                     </li>
                     <li>
-                        <a onclick="xadmin.add_tab('公开项目','order-list.html')">
+                        <a onclick="xadmin.add_tab('个人收藏','{% url 'project:favoriteslist' %}')">
                             <i class="iconfont">&#xe6a7;</i>
-                            <cite>公开项目</cite>
+                            <cite>个人收藏</cite>
+                        </a>
+                    </li>
+                    <li>
+                        <a onclick="xadmin.add_tab('公共项目','{% url 'project:publiclist' %}')">
+                            <i class="iconfont">&#xe6a7;</i>
+                            <cite>公共项目</cite>
                         </a>
                     </li>
                 </ul>
@@ -78,6 +84,7 @@
                     </li>
                 </ul>
             </li>
+            {% if perms.view_user %}
             <li>
                 <a href="javascript:;">
                     <i class="iconfont left-nav-li" lay-tips="会员管理">&#xe6b8;</i>
@@ -92,6 +99,7 @@
                     </li>
                 </ul>
             </li>
+            {% endif %}
         </ul>
     </div>
 </div>

@@ -82,23 +82,23 @@ WSGI_APPLICATION = 'HPFWMS.wsgi.application'
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 
 # 测试不使用mysql
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.mysql',
-#         'NAME':'HPFWMS', #数据库名字
-#         'USER':'root',
-#         'PASSWORD':'888888',
-#         'HOST':'localhost',
-#         'POST':3306,
-#     }
-# }
-
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME':'HPFWMS', #数据库名字
+        'USER':'root',
+        'PASSWORD':'888888',
+        'HOST':'localhost',
+        'POST':3306,
     }
 }
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+#     }
+# }
 
 
 # Password validation

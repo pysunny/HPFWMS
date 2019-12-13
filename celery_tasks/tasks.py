@@ -30,5 +30,5 @@ def send_register_email(email, username, use_id):
     message = ''
     sender = settings.EMAIL_FROM
     receiver = ['sunnywu@hufcor.com']
-    html_massage = '<h1>用户名：%s<br/>注册电邮：%s<br/>进行HPFWMS注册</h1>请添加权限,并请点击一下链接激活账号<br/><a href="http://120.197.59.97:57893/user/active/%s">点击激活</a>'%(username, email, use_id)
+    html_massage = '<h1>用户名：%s<br/>注册电邮：%s<br/>用户id：%s<br/>进行HPFWMS注册</h1>请添加区域权限,并激活账号<br/>'%(username, email, use_id)
     send_mail(subject, message, sender, receiver, html_message=html_massage)

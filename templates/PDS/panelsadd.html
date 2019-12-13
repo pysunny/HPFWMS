@@ -4,107 +4,367 @@
 {% block topfiles %}
 <style type="text/css">
   .layui-table-cell {
-      height: auto;
+    height: auto;
   }
 </style>
-<script type="text/javascript" src="{% static 'lib/layui/layui.all.js' %}" charset="utf-8"> </script>
-<script type="text/javascript" src="{% static 'lib/layui/tableSelect.js' %}" charset="utf-8"></script>
 {% endblock topfiles %}
 {% block bodyclass %} {% endblock bodyclass %}
 {% block boby %}
 <div class="layui-fluid">
-    <form method="post" class="layui-form">
-      {% csrf_token %}
-      <input type="hidden" name="panelset_id" value="{{panelset_id}}">
-      <input type="hidden" name="panel_id" value="{{panel.id}}">
-      <fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
-        <legend>屏风细节</legend>
-      </fieldset>
+  <form method="post" class="layui-form">
+    {% csrf_token %}
+    <input type="hidden" name="panelset_id" value="{{ panelset.id }}">
+    <input type="hidden" name="panel_id" value="{{panel.id}}">
+    <fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
+      <legend>屏风细节</legend>
+    </fieldset>
+    <div class="layui-form-item">
+      <label class="layui-form-label">编号</label>
+      <div class="layui-input-block">
+        <input type="text" name="panle_no" placeholder="只可输入数字(0-9)及符号(, ~)" autocomplete="off" id="panle_no" class="layui-input" lay-verify="required" value="{{ panel.panle_no }}">
+      </div>
+    </div>
+    <div class="layui-form-item">
+      <label class="layui-form-label">数量</label>
+      <div class="layui-input-block">
+        <input type="text" name="quantity" placeholder="根据编号自动生成" class="layui-input" id="quantity" disabled lay-verify="required" value="{{ panel.quantity }}">
+      </div>
+    </div>
+    <div class="layui-form-item">
+      <input type="hidden" name="pic_id" value="{{ panel.panel_pic.id }}">
+      <input type="hidden" name="wheelquantity" value="{{ panel.panel_pic.get_wheelquantity_display }}">
+      <label class="layui-form-label">屏风图元</label>
+      <div class="layui-input-block">
+        <input type="text" name="panel_pic" placeholder="请输入" class="layui-input" autocomplete="off" lay-verify="required" id="panel_pic" value="{{ panel.panel_pic.name }}">
+        <div id="div_model" style="display :none ;">
+            <table id="demo" lay-filter="test"></table>
+            <script type="text/html" id="test-table-radio-toolbarDemo">
+              <div class="layui-btn-container">
+                <button class="layui-btn layui-btn-sm" type="button" lay-event="getCheckData">获取选中行数据</button>
+              </div>
+            </script>
+          </div>
+      </div>
+    </div>
+    <div class="layui-form-item">
+      <label class="layui-form-label">屏风长度</label>
+      <div class="layui-input-block">
+        <input type="text" name="panel_width" id="panel_width" placeholder="请输入，只可以输入数字" autocomplete="off" class="layui-input" lay-verify="required|number" value="{{ panel.panel_width }}">
+      </div>
+    </div>
+    <div class="layui-row" id="two_wheel_div" style="display :none ;">
       <div class="layui-form-item">
-        <label class="layui-form-label">编号</label>
+        <input type="hidden" name="carrier" id="carrier" value="{{ panel.carrier_space }}">
+        <label class="layui-form-label">轮距</label>
         <div class="layui-input-block">
-          <input type="text" name="panle_no" placeholder="请输入" autocomplete="off" class="layui-input" lay-verify="required" value="{{ panel.panle_no }}">
+          <div class="layui-col-xs4">
+            <input type="text" name="carrier_left" id="carrier_left"  autocomplete="off" class="layui-input carrier_side" value="{{ panel.carrier_left }}" 
+            placeholder="{% if panel.carrier_side %} {{ panel.carrier_side }}{% else %} 轮边距 {% endif %}" >
+          </div>
+          <div class="layui-col-xs4">
+            <input type="text" name="carrier_space" placeholder="轮距" id="carrier_space" autocomplete="off" class="layui-input" list="carrier_list" value="{{ panel.carrier_middel }}">
+            <datalist id="carrier_list">
+              <option value="991">
+              <option value="838">
+              <option value="686">
+              <option value="533">
+              <option value="381">
+              <option value="305">
+            </datalist>
+          </div>
+          <div class="layui-col-xs4">
+            <input type="text" name="carrier_right" id="carrier_right"  autocomplete="off" class="layui-input carrier_side" value="{{ panel.carrier_right }}"
+            placeholder="{% if panel.carrier_side %} {{ panel.carrier_side }}{% else %} 轮边距 {% endif %}" >
+          </div>
         </div>
       </div>
-      <div class="layui-row">
-        <div class="layui-form-item">
-          <label class="layui-form-label">数量</label>
-          <div class="layui-input-block">
-            <input type="text" name="quantity" placeholder="请输入" autocomplete="off" class="layui-input" lay-verify="required|number" value="{{ panel.quantity }}">
+    </div>
+    <div class="layui-row" id="one_wheel_div" style="display :none ;">
+      <div class="layui-form-item">
+        <label class="layui-form-label">轮距</label>
+        <div class="layui-input-block">
+          <div class="layui-col-xs6">
+            <input type="text" name="carrier_eq_left" id="carrier_eq_left" autocomplete="off" placeholder="EQ" class="layui-input carrier_eq" 
+            value="{% if panel.carrier_eq_left %} {{ panel.carrier_eq_left }}{% else %} EQ {% endif %}">
+          </div>
+          <div class="layui-col-xs6">
+            <input type="text" name="carrier_eq_right" id="carrier_eq_right" autocomplete="off" placeholder="EQ" class="layui-input carrier_eq" 
+            value="{% if panel.carrier_eq_right %} {{ panel.carrier_eq_right }}{% else %} EQ {% endif %}">
           </div>
         </div>
-        <div class="layui-form-item">
-          <label class="layui-form-label">轮距</label>
-          <div class="layui-input-block">
-            <input type="text" name="carrier_space" placeholder="请输入" autocomplete="off" class="layui-input" lay-verify="required|number" value="{{ panel.carrier_space }}">
-          </div>
-        </div>
-        <div class="layui-form-item">
-          <input type="hidden" name="pic_id" value="{{ panel.panel_pic.id }}">
-          <label class="layui-form-label">屏风图元</label>
-          <div class="layui-input-block">
-            <input type="text" name="panel_pic" placeholder="请输入" autocomplete="off" class="layui-input" lay-verify="required" id="pic_pick" value="{{ panel.panel_pic.name }}">
-          </div>
-        </div>
-        <div class="layui-form-item">
-          <label class="layui-form-label">屏风长度</label>
-          <div class="layui-input-block">
-            <input type="text" name="panel_width" placeholder="请输入" autocomplete="off" class="layui-input" lay-verify="required|number" value="{{ panel.panel_width }}">
-          </div>
-        </div>
-        <div class="layui-form-item">
-            <div class="layui-input-block">
-              <button class="layui-btn" lay-submit lay-filter="add">保存</button>
-            </div>
-          </div>
       </div>
-    </form>
-  </div>
+    </div>
+
+    <div class="layui-form-item">
+      <div class="layui-input-block">
+        <button class="layui-btn" lay-submit lay-filter="add">保存</button>
+      </div>
+    </div>
+  </form>
+</div>
 
 {% endblock boby %}
 {# 网页主体块 #}
 
 {% block bottomfiles %}
 
-<script type="text/javascript">
-  var form = layui.form;
-  form.render();
-  var element = layui.element;
-	var tableSelect = layui.tableSelect;
-	tableSelect.render({
-		elem: '#pic_pick',
-		checkedKey: 'id',
-    searchKey: 'keyword',	//搜索输入框的name值 默认keyword
-		table: {
-			url: "{% url 'standard:picsdata' %}",
-      height: 450,
-			cols: [[
-				{ type: 'radio' , width: 80},
-				{ field: 'id', title: 'ID' , width: 80},
-        { field: 'name', title: '型号名称' , width: 80},
-        { field: 'pictype', title: '图元种类' , width: 80 ,templet: function (d) {
-            if (d.pictype == '0') { return 'BP' }
-            if (d.pictype == '1') { return 'LCP' }
-            if (d.pictype == '2') { return 'BSP' }
-            if (d.pictype == '3') { return 'WJ' }
-            if (d.pictype == '4') { return 'UIPD' }
-            if (d.pictype == '5') { return 'LIPD' }
-            else { return 'FP' }
-        }},
-        { title: '图例显示',  templet:"#svgTpl"}
-			]]
-		},
-		done: function (elem, data) {
-			var NEWJSON = []
-			var NEWID = []
-			layui.each(data.data, function (index, item) {
-				NEWJSON.push(item.name)
-        NEWID.push(item.id)
-			})
-			elem.val(NEWJSON);
-      $("[name='pic_id']").val(NEWID)
-		}
-	});
+<script>
+  layui.use(['layer', 'form'], function () {
+    var $ = layui.jquery, form = layui.form, layer = layui.layer;
+
+    wheel_div()
+
+    form.render();
+
+    //表单提交
+    form.on('submit(add)',
+      function (data) {
+        data.field.csrfmiddlewaretoken = $("[name='csrfmiddlewaretoken']").val()
+        data.field.pic_id = $("[name='pic_id']").val()
+        data.field.panelset_id = $("[name='panelset_id']").val()
+        data.field.panel_id = $("[name='panel_id']").val()
+        // console.log(data.field)
+        // ajax请求
+        $.post("{% url 'PDS:panelsadd' %}", data.field, function (data) {
+          if (data.res == 2) {
+            layer.alert("增加成功", {
+              icon: 6
+            },
+              function () {
+                //关闭当前frame
+                xadmin.close();
+
+                // 可以对父窗口进行刷新 
+                xadmin.father_reload();
+              });
+          }
+          else {
+            // 数据验证有问题
+            layer.msg(data.errmsg, {
+              time: 2000, //2s后自动关闭
+            });
+          }
+        })
+        return false;
+      });
+
+  });
+
+    //验证屏风编号数据，禁止输入其他字符
+    $("#panle_no").keyup(function () {
+      // 获取ipout数据
+      str = $("#panle_no").val();
+      // 如果数据不为空
+      if (str != "") {
+        //  数据进行正表达式比较
+        if (!/^[\d\~\,\s]+$/.test(str)) {
+          // 如果出现其他字符 令input为空
+          $("#panle_no").val("");
+        }
+      }
+    })
+
+    // 数据改变后
+    $("#panle_no").change(function () {
+      str = $("#panle_no").val();
+      // 建立空列表
+      var panle_no_list = [];
+      // 如果str有“，”
+      if (str.indexOf(",") >= 0) {
+        // 使用,分割,生成列表
+        tmp_list = str.split(",");
+        // 如果没有，就添加把自身做成列表，方便统一操作
+      } else {
+        tmp_list = [];
+        tmp_list.push(str);
+      }
+      // 循环
+      $.each(tmp_list, function (index, value) {
+        // 如果有~,进行分割，并取前后的取做 递增操作
+        if (value.indexOf("~") > 0) {
+          i = value.split("~");
+          // i1为小值，i2为大值
+          i1 = parseInt(i[0]);
+          i2 = parseInt(i[1]);
+          // 递增
+          if ((i1 != "") & (i2 != "") & (i2 > i1)) {
+            for (j = i1; j <= i2; j++) {
+              // 元素添加到列表
+              panle_no_list.push(j);
+            }
+          }
+        } else {
+          // 直接添加列表
+          if (value != "") {
+            panle_no_list.push(parseInt(value));
+          }
+        }
+      });
+      // 获取列表数量
+      quantity = panle_no_list.length;
+      // 把数量赋值到表单
+      $("#quantity").val(quantity)
+    })
+
+    // 屏风长度的验证
+    // 禁止输入其他字符
+    $("#panel_width").keyup(function () {
+      // 获取ipout数据
+      str = $("#panel_width").val()
+      // 不过数据不为空
+      if (str != "") {
+        //  数据进行正表达式比较
+        if (!/^[\d\s]+$/.test(str)) {
+          // 如果出现其他字符 令input为空
+          $("#panel_width").val("")
+        }
+      }
+    })
+
+    //自动计算轮边距
+    $("#carrier_space").change(function () {
+      panel_width = parseInt($("#panel_width").val());
+      // 如果屏风长度没有值，就退出
+      // 获取轮距
+      carrier_space = parseInt($("#carrier_space").val());
+      // 如果屏风长度有值
+      if (panel_width != "" && carrier_space !="") {
+        // 计算轮边距
+        carrier_side_space = (panel_width - carrier_space) / 2
+        // 隐藏表单赋值
+        $(".carrier_side").val(carrier_side_space)
+      }
+      same_val()
+    })
+
+    function same_val() {
+      if ($("#carrier_left").val() == $("#carrier_right").val()) {
+        tmp = $("#carrier_left").val()
+          $(".carrier_side").val("")
+          $(".carrier_side").attr("placeholder", tmp)
+        }
+      carrier_space = parseInt($("#carrier_space").val());
+      carrier_left = $("#carrier_left").val()
+      carrier_right = $("#carrier_right").val()
+      if (carrier_left =="") {
+        $("#carrier").val(carrier_space)
+      } else {
+        $("#carrier").val(carrier_left + "/" + carrier_space + "/" + carrier_right)
+      }
+      
+    }
+    //输入一边 计算 另外一边
+    $(".carrier_side").change(function () {
+      panel_width = parseInt($("#panel_width").val());
+      carrier_space = parseInt($("#carrier_space").val());
+      if (panel_width != "" && carrier_space !="") {
+        //清空一边，两边都清空
+        if ($(this).val() == "") {
+          carrier_side_space = (panel_width - carrier_space) / 2
+          $(".carrier_side").val(carrier_side_space)
+          // $("#carrier").val(carrier_space)
+        } else {
+          //输入一边 计算 另外一边
+          carrier_side_space = $(this).val()
+          carrier_side_other = panel_width - carrier_space - carrier_side_space
+          $(".carrier_side").not(this).val(carrier_side_other)
+        } 
+      } 
+      same_val()
+    })
+
+    // 单轮的计算，输入一边，自动计算另一边
+    $(".carrier_eq").change(function () {
+      panel_width = $("#panel_width").val()
+      if (panel_width != "") {
+        //一边清空，两边都输入为EQ
+        if ($(this).val() == "") {
+          $(".carrier_eq").val("EQ")
+        } else {
+          carrier_side_space = $(this).val()
+          carrier_side_other = panel_width - carrier_side_space
+          $(".carrier_eq").not(this).val(carrier_side_other)
+        }
+        carrier_left = $("#carrier_eq_left").val()
+        carrier_right = $("#carrier_eq_right").val()
+        $("#carrier").val(carrier_left + "/" + carrier_right)
+      }
+    })
+
+  layui.use('table', function () {
+    var table = layui.table, form = layui.form, $ = layui.$;
+    table.render({
+      elem: '#demo'
+      , height: 550
+      , url: "{% url 'standard:picsdata' %}" //数据接口
+      , page: true //开启分页
+      , toolbar: '#toolbarDemo'
+      , cols: [[ //表头
+        { type: 'radio', width: 50 }
+        , { field: 'id', title: 'ID', width: 80 }
+        , { field: 'name', title: '名称', width: 80 }
+        , { field: 'wheeltype', title: '屏风类型', width: 80 }
+        , { field: 'pictype', title: '种类', width: 80 }
+        , { title: '图例显示', templet: '#svgTpl', width: 150 }
+      ]]
+      , toolbar: '#test-table-radio-toolbarDemo'
+    });
+
+    //头工具栏事件
+    table.on('toolbar(test)', function (obj) {
+      var checkStatus = table.checkStatus(obj.config.id); //获取选中行状态
+      switch (obj.event) {
+        case 'getCheckData':
+          var data = checkStatus.data;  //获取选中行数据
+          var data = data[0];  //获取选中行数据
+          // console.log(data)
+          pic_id = data.id;
+          wheelquantity = data.wheelquantity;
+          // console.log(wheelquantity)
+          name = data.name;
+          $("[name='pic_id']").val(pic_id);
+          $("[name='wheelquantity']").val(wheelquantity);
+          $("#panel_pic").val(name);
+          wheel_div()
+          //输入单轮的默认值
+          $("#carrier").val("EQ/EQ")
+          $("#div_model").slideUp();
+          form.render();
+          break;
+      };
+    });
+  });
+
+  // 轮子的选择div
+  function wheel_div() {
+    wheelquantity = $("[name='wheelquantity']").val();
+    if (wheelquantity == "双轮") {
+      $("#one_wheel_div").hide();
+      $("#two_wheel_div").show();
+      if ($("#carrier").val() != "") {
+        carrier = $("#carrier").val()
+
+        
+      }
+    }
+    else if (wheelquantity == "单轮") {
+      $("#two_wheel_div").hide();
+      $("#one_wheel_div").show();
+      if ($("#carrier").val() != "") {
+        carrier = $("#carrier").val()
+
+        
+      }
+    }
+  }
+  //控制隐藏div
+  $("#panel_pic").focus(function () {
+    $("#div_model").slideDown();
+  })
+  $(".layui-input").not("#panel_pic").focus(function () {
+    $("#div_model").slideUp();
+  })
+
 </script>
 
 <script type="text/html" id="svgTpl">
@@ -115,49 +375,10 @@
               {% verbatim %}"{{d.middlecode}}"{% endverbatim %}
               {% verbatim %}"{{d.wheelcode}}"{% endverbatim %}
               {% verbatim %}"{{d.rightsidecode}}"{% endverbatim %}
+              {% verbatim %}"{{d.textcode}}"{% endverbatim %}
           </g>
       </svg>
   </div>
 </script>
-
-<script type="text/javascript">
-      $ = layui.jquery;
-      var form = layui.form,
-        layer = layui.layer;
-      form.render();
-
-      //监听提交
-      form.on('submit(add)',
-        function (data) {
-          data.field.csrfmiddlewaretoken = $("[name='csrfmiddlewaretoken']").val()
-          data.field.pic_id = $("[name='pic_id']").val()
-          data.field.panelset_id = $("[name='panelset_id']").val()
-          data.field.panel_id = $("[name='panel_id']").val()
-          //ajax请求
-          $.post("{% url 'PDS:panelsadd' %}", data.field, function (data) {
-            if (data.res == 2) {
-              layer.alert("增加成功", {
-                icon: 6
-              },
-              function () {
-                  //关闭当前frame
-                  xadmin.close();
-
-                  // 可以对父窗口进行刷新 
-                  xadmin.father_reload();
-                });
-            }
-            else {
-              // 数据验证有问题
-              layer.msg(data.errmsg, {
-                time: 2000, //2s后自动关闭
-              });
-            }
-
-          })
-          return false;
-        });
-
-  </script>
 {% endblock bottomfiles %}
 {# 网页底部引入块 #}

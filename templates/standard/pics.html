@@ -20,7 +20,7 @@
         <div class="layui-form-item">
           <label class="layui-form-label"><span class="x-red">*</span>图元分类</label>
           <div class="layui-input-block">
-            <select name="pictype" lay-verify="required">
+            <select name="paneltype" lay-verify="required">
               <option value="">选择图元分类</option>
               {% for key, value in PicsModels.PANEL_TYPE_CHOICES %}
               <option value="{{ key }}" {% if pic.pictype == key %} selected="selected" {% endif %}>{{ value }}</option>{% endfor %}
@@ -32,7 +32,7 @@
         <div class="layui-form-item">
           <label class="layui-form-label"><span class="x-red">*</span>屏风种类</label>
           <div class="layui-input-block">
-            <select name="paneltype" lay-verify="required">
+            <select name="pictype" lay-verify="required">
               <option value="">选择屏风种类</option>
               {% for key, value in PicsModels.PIC_TYPE_CHOICES %}
               <option value="{{ key }}" {% if pic.paneltype == key %} selected="selected" {% endif %}>{{ value }}</option>
@@ -101,7 +101,8 @@
         <div class="layui-form-item">
           <label class="layui-form-label">额外长度</label>
           <div class="layui-input-block">
-            <input type="text" id="extra_length" name="extra_length" placeholder="组件标记" lay-verify="number" autocomplete="off" class="layui-input" value="{{pic.extra_length}}">
+            <input type="text" id="extra_length" name="extra_length" placeholder="额外长度(152,25,0)" lay-verify="number" autocomplete="off" class="layui-input" 
+            {% if pic %} value="{{ pic.extra_length }}" {% else %} value="0"{% endif %}>
           </div>
         </div>
       </div>
@@ -125,7 +126,7 @@
             <select name="text" lay-verify="required" lay-filter="text" class="sel">
               <option value="">选择文字组件</option>
               {% for texts in text %}
-              <option value="{{ texts.id }}" {% if pic.text.id == texts.id %} selected="selected" {% endif %} code="{{ texts.svgcode }}">{{ texts.name }}</option>
+              <option value="{{ texts.id }}" {% if pic.text.id == texts.id or texts.id == 47 %} selected="selected" {% endif %} code="{{ texts.svgcode }}">{{ texts.name }}</option>
               {% endfor %}
             </select>
           </div>
@@ -149,6 +150,7 @@
       $ = layui.jquery;
       var form = layui.form,
         layer = layui.layer;
+        mksvg()
 
       //监听提交
       form.on('submit(add)', function (data) {
@@ -177,6 +179,10 @@
         });
 
         form.on('select', function(data){
+          mksvg()
+        });  
+
+        function mksvg() {
           $("#svgdiv").remove();
           svg_code = "";
           $(".sel").each(function () {
@@ -194,9 +200,7 @@
           // console.log(svg_code); //得到select原始DOM对象
           code = "<div id='svgdiv'style='text-align: center;'><svg xmlns='http://www.w3.org/2000/svg' version='1.1' height='256' width='256' viewBox='0 0 128 128'><g stroke='black' stroke-width='1.5' fill='none'>"+svg_code+"</g></svg></div>"
           $("#temp").after(code);
-        });  
-
-
+        }
 
     });</script>
 {% endblock bottomfiles %}
