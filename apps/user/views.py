@@ -110,7 +110,7 @@ class RegisterView(View):
             return JsonResponse({'res': 5, 'errmsg': '邮箱格式不正确'})
 
         # 检验是否使用hufcor.com的电邮
-        if not email.endswith('hufcor.com'):
+        if not email.endswith('@hufcor.com'):
             return JsonResponse({'res':6, 'errmsg':'请使用公司电邮注册'})
 
         # 检验用户名是否重复

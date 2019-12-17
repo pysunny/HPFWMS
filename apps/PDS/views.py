@@ -4,6 +4,7 @@ from project.models import Projects
 from PDS.models import Panelsets, Panels, Ipdinfo
 from standard.models import PanelModels, PicsModels
 from django.http import JsonResponse, HttpResponse
+from django_redis import get_redis_connection
 from utils.getData import getData
 import json
 
@@ -18,7 +19,7 @@ class PanelsetsListView(View):
         # 接收数据
         project_id = request.GET.get('project_id')
         project = Projects.objects.get(project_id=project_id)
-        # 需要添加权限，不是自己的区域项目部可以新建，编辑，删除
+        # 需要添加权限，不是自己的区域项目部不可以新建，编辑，删除
         # 获取的区域权限
         user = request.user
         location_permiss = eval(user.location_permiss)
@@ -29,6 +30,18 @@ class PanelsetsListView(View):
         if projectlocation in location_permiss:
             # 获得权限
             user.has_permiss = True
+        
+        if user.is_authenticated:
+        # 添加历史浏览记录
+            conn = get_redis_connection('default')
+            history_key = 'history_%d' % user.id
+            # 移除
+            conn.lrem(history_key, 0, project_id)
+            # 插入
+            conn.lpush(history_key, project_id)
+            # 只保存5条
+            conn.ltrim(history_key, 0 ,9)
+        
         return render(request, 'PDS/panelsetslist.html', {'project': project})
 
 # /PDS/panelsetsdata 组数据
@@ -114,8 +127,7 @@ class PanelsetsAddView(View):
         """ 添加新组 """
         # 接收数据
         panelset_id = request.POST.get('panelset_id')
-        project = Projects.objects.get(
-            project_id=request.POST.get('project_id'))
+        project = Projects.objects.get(project_id=request.POST.get('project_id'))
         mark = request.POST.get('mark')
         sets = request.POST.get('sets')
         production_time = request.POST.get('production_time')

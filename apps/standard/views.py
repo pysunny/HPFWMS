@@ -60,82 +60,38 @@ class ModelsView(View):
             'model_choices':model_choices
         }
 
-        # 如果接受数据没有id ,表示是新建模式,不用返回数据
+        # 如果接受数据没有id ,表示是新建模式,返回空model
         return render(request, 'standard/models.html', context)
 
     def post(self, request):
-        """ 添加新项目 """
-        # 接收数据
+        """ 添加新屏风型号 """
+        postData = request.POST.dict()
         user = request.user
-        model_id = request.GET.get('model_id')
-        name = request.POST.get('name')
-        series = request.POST.get('series')
-        desc = request.POST.get('desc')
-        top_clearance = request.POST.get('top_clearance')
-        top_option = request.POST.get('top_option')
-        basic_material = request.POST.get('basic_material')
-        steel_plate = request.POST.get('steel_plate')
-        rockwool = request.POST.get('rockwool')
-        bottom_option = request.POST.get('bottom_option')
-        bottom_clearance = request.POST.get('bottom_clearance')
-        wheel_type = request.POST.get('wheel_type')
-        # 校验数据
-        if not all([name, series, top_clearance, basic_material, steel_plate, bottom_clearance, desc]):
-            return JsonResponse({'res': 0, 'errmsg': '数据不完整'})
-        # 检验已有相同名字
+        model_id = request.POST.get('model_id')
+        # 检验已有相同结构,名字可以相同，结构不可以相同
+        check_stru_li = ["name", "basic_material","bottom_clearance", "top_option", "bottom_option", "steel_plate", "wheel_type"]
+        check_stru_di = {key: value for key, value in postData.items() if key in check_stru_li}
         try:
-            panelmodel = PanelModels.objects.filter(
-                name=name, 
-                basic_material=basic_material, 
-                bottom_clearance=bottom_clearance, 
-                top_option=top_option, 
-                bottom_option=bottom_option, 
-                steel_plate=steel_plate, 
-                wheel_type=wheel_type
-            )
+            panelmodel = PanelModels.objects.filter(**check_stru_di)
+            # 如果是修改模式，要排除自己
             if model_id:
                 panelmodel = panelmodel.exclude(id=model_id)
         except PanelModels.DoesNotExist:
-            # 用户名不存在
             panelmodel = None
-            
         if panelmodel:
-            return JsonResponse({'res': 1, 'errmsg': '型号已经存在'})
+            return JsonResponse({'res': 1, 'errmsg': '此型号结构已经存在'})
+        
         # 业务处理
+        # 生成字典，排除csrfmiddlewaretoken,model_id
+        exclude_li = ["csrfmiddlewaretoken", "model_id"]
+        data_di = {key: value for key, value in postData.items() if key not in exclude_li}
         if model_id:
         # 如果model_id有值，就进行更新操作。
-            PanelModels.objects.filter(id=model_id).update(
-                name=name,
-                series=series,
-                top_clearance=top_clearance,
-                top_option=top_option,
-                basic_material=basic_material,
-                steel_plate=steel_plate,
-                rockwool=rockwool,
-                bottom_option=bottom_option,
-                bottom_clearance=bottom_clearance,
-                desc=desc,
-                wheel_type=wheel_type,
-                is_activate = False,
-            )
+            PanelModels.objects.filter(id=model_id).update(is_activate = False, **data_di)
             # 返回应答
             return JsonResponse({'res': 2})
 
-        panelmodel = PanelModels.objects.create(
-            name=name,
-            series=series,
-            top_clearance=top_clearance,
-            top_option=top_option,
-            basic_material=basic_material,
-            steel_plate=steel_plate,
-            rockwool=rockwool,
-            bottom_clearance=bottom_clearance,
-            bottom_option=bottom_option,
-            desc=desc,
-            wheel_type=wheel_type,
-            is_activate = False,
-            user=user
-        )
+        panelmodel = PanelModels.objects.create(is_activate = False, user=user, **data_di)
         # 返回应答
         return JsonResponse({'res': 2})
         

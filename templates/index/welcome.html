@@ -1,16 +1,51 @@
 {% extends 'base.html' %}
 {% load staticfiles %}
 {% block titlename %}HPFWMS-欢迎页{% endblock titlename %}
+{% block nav %}
+<div class="x-nav">
+    <span class="layui-breadcrumb">
+        <a href="">首页</a>
+        <a><cite>我的桌面</cite></a>
+    </span>
+    <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right"
+        onclick="location.reload()" title="刷新">
+        <i class="layui-icon layui-icon-refresh" style="line-height:30px"></i>
+    </a>
+</div>
+{% endblock nav %}
+{# 网页主体上侧块 #}
+
 {% block boby %}
 <div class="layui-fluid">
-    <div class="layui-row layui-col-space15">
-        <div class="layui-col-md12">
-            <div class="layui-card">
-                <div class="layui-card-body ">
-                    <blockquote class="layui-elem-quote">欢迎你：
-                        <span class="x-red">{{user.username}}</span>
-                    </blockquote>
-                </div>
+    <div class="layui-row">
+        <div class="layui-card">
+            <div class="layui-card-body ">
+                <blockquote class="layui-elem-quote">欢迎你：
+                    <span class="x-red">{{user.username}}</span>
+                </blockquote>
+                <fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
+                    <legend>浏览记录</legend>
+                </fieldset>
+                <table class="layui-table">
+                    <tbody>
+                        <tr>
+                            <td>序列号</td>
+                            <td>项目编号</td>
+                            <td>工程名称</td>
+                            <td>区域</td>
+                            <td>用户</td>
+                        <tr>
+                        {% for project in project_li %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td><a href="#" onclick="top.xadmin.add_tab('{{ project.name }}', '{% url 'PDS:panelsetslist' %}?project_id=' + '{{ project.project_id }}')">{{ project.project_id }}</a</td>
+                            <td>{{ project.name }}</td>
+                            <td>{{ project.get_projectlocation_display }}</td>
+                            <td>{{project.user.username}}</td>
+                        <tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>

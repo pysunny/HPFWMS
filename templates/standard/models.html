@@ -171,9 +171,10 @@
       form.on('submit(add)',
         function (data) {
           data.field.csrfmiddlewaretoken = $("[name='csrfmiddlewaretoken']").val()
-          model_id = $("[name='model_id']").val()
+          data.field.model_id = $("[name='model_id']").val()
+          console.log(data.field)
           //ajax请求
-          $.post("{% url 'standard:models' %}?model_id=" + model_id, data.field, function (data) {
+          $.post("{% url 'standard:models' %}", data.field, function (data) {
             if (data.res == 2) {
               layer.alert("保存成功", {
                 icon: 6
