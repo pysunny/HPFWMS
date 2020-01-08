@@ -1,0 +1,117 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% block titlename %}HPFWMS-屏风选择{% endblock titlename %}
+{% block topfiles %}
+<style type="text/css">
+    .layui-table-cell {
+        height: auto;
+        width: auto;
+        text-align: center;
+    }
+</style>
+{% endblock topfiles %}
+{# 网页顶部引入文件块 #}
+{% block boby %}
+<div class="layui-fluid">
+  <div class="layui-row layui-col-space15">
+    {% csrf_token %}
+    <div class="layui-row">
+      {% csrf_token %}
+      <div class="layui-card">
+        <div class="layui-card-body ">
+          <form class="layui-form layui-col-space5">
+            <div class="layui-col-xs12">
+              <div class="layui-show-xs-block">
+                <input type="text" name="username" placeholder="请输入搜索" autocomplete="off" class="layui-input"></div>
+            </div>
+            <div class="layui-col-xs6">
+              <div class="layui-show-xs-block">
+                <select name="paneltype" lay-verify="required">
+                  <option value="">选择图元分类</option>
+                  {% for key, value in PicsModels.PANEL_TYPE_CHOICES %}
+                  <option value="{{ key }}" {% if pic.pictype == key %} selected="selected" {% endif %}>{{ value }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+            </div>
+            <div class="layui-col-xs6">
+              <div class="layui-show-xs-block">
+                <select name="pictype" lay-verify="required">
+                  <option value="">选择屏风种类</option>
+                  {% for key, value in PicsModels.PIC_TYPE_CHOICES %}
+                  <option value="{{ key }}" {% if pic.paneltype == key %} selected="selected" {% endif %}>{{ value }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+            </div>
+          <table>
+            <tbody>
+              {% for pic in pics %}
+                {% if forloop.first %}
+                  <tr>
+                {% endif %}
+                  <td>
+                    <div class="layui-row">
+                      <div class="layui-col-xs12">
+                        <svg xmlns='http://www.w3.org/2000/svg' version='1.1' height='128' width='128'>
+                          <g stroke='black' stroke-width='1.5' fill='none'>
+                            {{ pic.leftside.svgcode | safe}}
+                            {{ pic.middle.svgcode | safe}}
+                            {{ pic.rightside.svgcode | safe}}
+                            {{ pic.wheel.svgcode | safe}}
+                            {{ pic.text.svgcode | safe}}
+                          </g>
+                        </svg>
+                      </div>
+                      <div class="layui-show-xs-block" align="center">
+                        <input type="radio" name="panel_pic_id" value="{{ pic.id }}" pictype="{{ pic.pictype }}" title="{{ pic.name }}">
+                      </div>
+                    </div>
+                  </td>
+                {% if forloop.counter|divisibleby:3 %}
+                  </tr>
+                  <tr>
+                {% endif %}
+                {% if forloop.last %}
+                  </tr>
+                {% endif %}
+              {% endfor %}
+            </tbody>
+          </table>
+        </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock boby %}
+{# 网页主体块 #}
+
+{% block bottomfiles %}
+<script>
+  layui.use('form', function () {
+    var form = layui.form, layer = layui.layer
+    form.on('radio', function (obj) {
+      // console.log(obj.elem.name); //得到radio原始DOM对象
+      var data = {'mod':'addpanel'};
+      data.panel_pic_id = obj.value;
+      data.csrfmiddlewaretoken = $("[name='csrfmiddlewaretoken']").val()
+      data.pictype = $(obj.elem).attr("pictype")
+      // ajax请求
+      $.post("{% url 'PDS:workspace' %}", data, function (data) {
+        if (data.res == 2) {
+          //关闭当前frame
+          xadmin.close();
+          // 可以对父窗口进行刷新 
+          xadmin.father_reload();
+        }
+        else {
+        }
+      })
+    });
+  });
+
+</script>
+{% endblock bottomfiles %}
+{# 网页底部引入块 #}

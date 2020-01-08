@@ -38,7 +38,7 @@
                         {% for project in project_li %}
                         <tr>
                             <td>{{ forloop.counter }}</td>
-                            <td><a href="#" onclick="top.xadmin.add_tab('{{ project.name }}', '{% url 'PDS:panelsetslist' %}?project_id=' + '{{ project.project_id }}')">{{ project.project_id }}</a</td>
+                            <td><a href="#" onclick="top.xadmin.add_tab('{{ project.name }}', '{% url 'PDS:panelsetslist' project.project_id %}')">{{ project.project_id }}</a</td>
                             <td>{{ project.name }}</td>
                             <td>{{ project.get_projectlocation_display }}</td>
                             <td>{{project.user.username}}</td>

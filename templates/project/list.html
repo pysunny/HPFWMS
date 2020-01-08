@@ -1,7 +1,6 @@
 {% extends 'base.html' %}
 {% load staticfiles %}
 {% block titlename %}HPFWMS-项目列表{% endblock titlename %}
-{# 网页顶部引入文件块 #}
 {% block nav %}
 <div class="x-nav">
     <span class="layui-breadcrumb">
@@ -85,7 +84,7 @@
             var layEvent = obj.event; //获得 lay-event 对应的值（也可以是表头的 event 参数对应的值）
 
             if (layEvent === 'detail') { //查看
-                top.xadmin.add_tab(data.name, '{% url 'PDS:panelsetslist' %}?project_id=' + data.project_id)
+                top.xadmin.add_tab(data.name, '/PDS/panelsetslist/' + data.project_id)
 
             }
 

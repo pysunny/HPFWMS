@@ -1,23 +1,23 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.views.generic import View
+from django.urls import reverse
 from project.models import Projects
-from PDS.models import Panelsets, Panels, Ipdinfo
+from PDS.models import Panelsets, Panels
 from standard.models import PanelModels, PicsModels
 from django.http import JsonResponse, HttpResponse
 from django_redis import get_redis_connection
 from utils.getData import getData
 import json
+import datetime
 
 # /PDS/panelsetslist 组列表
-
-
 class PanelsetsListView(View):
     """ 查看组列表视图类 """
 
-    def get(self, request):
+    def get(self, request, project_id):
         """ 显示页面 """
         # 接收数据
-        project_id = request.GET.get('project_id')
+        # project_id = request.GET.get('project_id')
         project = Projects.objects.get(project_id=project_id)
         # 需要添加权限，不是自己的区域项目部不可以新建，编辑，删除
         # 获取的区域权限
@@ -45,15 +45,13 @@ class PanelsetsListView(View):
         return render(request, 'PDS/panelsetslist.html', {'project': project})
 
 # /PDS/panelsetsdata 组数据
-
-
 class PanelsetsDataView(View):
     """ 组数据 """
 
-    def get(self, request):
+    def get(self, request, project_id):
         # 获取全部用户的数据
         # 接收数据
-        project_id = request.GET.get('project_id')
+        # project_id = request.GET.get('project_id')
         page = int(request.GET.get('page'))
         limit = int(request.GET.get('limit'))
         # 获取数据
@@ -71,8 +69,6 @@ class PanelsetsDataView(View):
         return HttpResponse(json.dumps(context))
 
 # /PDS/panelsetsadd_setp2 新建屏风
-
-
 class PanelsetsAddSetp2View(View):
     """ 新建组 """
 
@@ -94,8 +90,6 @@ class PanelsetsAddSetp2View(View):
         return render(request, 'PDS/panelsetsadd_step_2.html', context)
 
 # /PDS/panelsetsadd 新建组
-
-
 class PanelsetsAddView(View):
     """ 新建组 """
 
@@ -143,14 +137,13 @@ class PanelsetsAddView(View):
         handle_quantity = request.POST.get('handle_quantity')
         decoration_thickness = request.POST.get('decoration_thickness')
 
-        # 校验数据
-        if not all([project, mark, sets, production_time, model, height, width, wheel, sound_test, frame_color]):
-            return JsonResponse({'res': 0, 'errmsg': '数据不完整'})
+        # # 校验数据
+        # if not all([project, mark, sets, production_time, model, height, width, wheel, sound_test, frame_color]):
+        #     return JsonResponse({'res': 0, 'errmsg': '数据不完整'})
 
         # 检验已有相同名字
         try:
-            panelset = Panelsets.objects.filter(
-                mark=mark, project=project, is_delete=False)
+            panelset = Panelsets.objects.filter(mark=mark, project=project, is_delete=False)
             # 如果是修改模式，需要排除自己
             if panelset_id:
                 panelset = panelset.exclude(id=panelset_id)
@@ -205,8 +198,6 @@ class PanelsetsAddView(View):
         return JsonResponse({'res': 2, 'panelset_id': panelset_id})
 
 # /PDS/panelsetsdelete 删除组
-
-
 class PanelsetsDeleteView(View):
     def post(self, request):
         # 获取要删除的组ID
@@ -217,8 +208,6 @@ class PanelsetsDeleteView(View):
         return JsonResponse({'res': 2})
 
 # /PDS/panelsadd 新建屏风
-
-
 class PanelsAddView(View):
     """ 新建组 """
 
@@ -314,8 +303,6 @@ class PanelsAddView(View):
         return JsonResponse({'res': 2})
 
 # /PDS/panelsdelete 删除屏风
-
-
 class PanelsDeleteView(View):
     def post(self, request):
         # 获取要删除的屏风ID
@@ -326,99 +313,188 @@ class PanelsDeleteView(View):
         return JsonResponse({'res': 2})
 
 
-# /pds/pdsprint 打印PDS页面
-class PrintPdsView(View):
-    def get(self, request):
-        # 显示页面
-        # 获取屏风组,传入的是列表
-        panelset_id = request.GET.get('panelset_id')
-        # 转换成列表
-        panelset_id_list = eval('[' + panelset_id + ']')
+# # /pds/pdsprint 打印PDS页面
+# class PrintPdsView(View):
+#     def get(self, request):
+#         # 显示页面
+#         # 获取屏风组,传入的是列表
+#         panelset_id = request.GET.get('panelset_id')
+#         # 转换成列表
+#         panelset_id_list = eval('[' + panelset_id + ']')
 
-        # 获取屏风组列表
-        panelsets = Panelsets.objects.filter(id__in=panelset_id_list)
-        for panelset in panelsets:
-            # 获取全部屏风
-            panelset.has_ipd = False
-            panelset.panels = Panels.objects.filter(panelset=panelset, is_delete=False)
-            try:
-                ipd = Ipdinfo.objects.get(panelset=panelset, is_delete=False)
-                panelset.has_ipd = True
-                # 添加属性
-                panelset.doorheight = ipd.doorheight
-                panelset.keyoption = "Side A:%s / Side B:%s"%(ipd.get_lockeyoption_a_display(), ipd.get_lockeyoption_b_display())
-            except :
-                panelset.ipd = None
+#         # 获取屏风组列表
+#         panelsets = Panelsets.objects.filter(id__in=panelset_id_list)
+#         for panelset in panelsets:
+#             # 获取全部屏风
+#             panelset.has_ipd = False
+#             panelset.panels = Panels.objects.filter(panelset=panelset, is_delete=False)
+#             try:
+#                 ipd = Ipdinfo.objects.get(panelset=panelset, is_delete=False)
+#                 panelset.has_ipd = True
+#                 # 添加属性
+#                 panelset.doorheight = ipd.doorheight
+#                 panelset.keyoption = "Side A:%s / Side B:%s"%(ipd.get_lockeyoption_a_display(), ipd.get_lockeyoption_b_display())
+#             except :
+#                 panelset.ipd = None
+#         # 组织上下文
+#         context = {
+#             'panelsets': panelsets
+#         }
+#         # 返回应答
+#         return render(request, 'PDS/print_PDS.html', context)
+
+class setAddView(View):
+    def get(self, request, project_id, panelset_id):
+        # 返回应答
+        # 获取用户id
+        user = request.user
+        conn = get_redis_connection('default')
+        workspaceKeyName = 'workspace_%s' % user.id
+        #如果是新建，编辑模式，就要清空redis
+        if panelset_id == 'new':
+            conn.delete(workspaceKeyName)
+            # 初始化数据,建立空数据
+            set_di = {}
+            set_di.update({'project_id':project_id, 'ipd_qu':0})
+            panel_li = []
+            workData = {'set_di':set_di, 'panel_li':panel_li}
+            # 写入Redis
+            # conn.hmset(workspaceKeyName, workData)
+            conn.rpush(workspaceKeyName, str(workData))
+
+        return redirect(reverse('PDS:workspace'))
+        
+
+# 这是工作区视图
+class workspaceView(View):
+    def get(self, request):
+        # 获取用户id
+        user = request.user
+        conn = get_redis_connection('default')
+        # 获取redis数据
+        workspaceKeyName = 'workspace_%s' % user.id
+
+        # 从redis数据库获取数据
+        workData =  conn.lrange(workspaceKeyName, 0, -1)[0]
+
+        # Redis数据结构：b"{'panel_li': [], 'set_di': {}}"
+        # 获取组属性，屏风列表，转化成可用数据
+        panel_li = eval(workData).get( 'panel_li')
+        set_di = eval(workData).get('set_di')
+        # stc转换成int
+        set_di.update({key:int(value) for key,value in set_di.items() if key in ['sound_test', 'model_id', 'lockeyoption_a', 'wheel', 'lockeyoption_b', 'face_structure', 'ipd_qu']})
+        # 为每个屏风添加svgcode
+        for panel in panel_li:
+            panel_pic_id = int(panel.get('panel_pic_id'))
+            pic = PicsModels.objects.get(id = panel_pic_id)
+            # 添加全部组件的代码
+            svgcode = "%s%s%s%s%s"% (pic.leftside.svgcode, pic.middle.svgcode, pic.rightside.svgcode, pic.wheel.svgcode, pic.text.svgcode)
+            pictype_name = pic.get_pictype_display()
+            # 更新字典，添加添加svgcode
+            panel.update({'svgcode':svgcode, 'pictype_name':pictype_name})
+        
+        # 获取全部的模式，并传到前端
+        models = PanelModels.objects.all()
         # 组织上下文
         context = {
-            'panelsets': panelsets
+            'models':models,
+            'Panelsets':Panelsets,
+            'panel_li':panel_li,
+            'panelset':set_di
         }
-        # 返回应答
-        return render(request, 'PDS/print_PDS.html', context)
+        return render(request, 'PDS/workspace.html', context)
 
 
-class Step3View(View):
-    # 显示页面
-    def get(self, request):
-        # 返回应答
-        panelset_id = request.GET.get('panelset_id')
-        # 获取门锁的选择值
-        panelset = Panelsets.objects.get(id=panelset_id)
-
-        # 监测panel是否有门中门，如果没有门中门传输fasle
-        # 获取全部屏风
-        panels = Panels.objects.filter(panelset=panelset, is_delete=False)
-        # 初始值
-        has_ipd = False
-        # 如果有4(uipd),5(lipd),就改变has_ipd
-        for tmp in panels:
-            if tmp.panel_type == 4 or tmp.panel_type == 5:
-                has_ipd = True
-                continue
-
-        # 把这边传给panelset，方便在网页隐藏div 
-        panelset.has_ipd = has_ipd
-        ipd = None
-        # 如果有门中门
-        if has_ipd:
-            try:
-                ipd = Ipdinfo.objects.get(panelset=panelset)
-            except :
-                ipd = None
-
-        # 组织上下文
-        context = {
-            'Ipdinfo': Ipdinfo,
-            'panelset_id': panelset_id,
-            'panelset':panelset,
-            'ipd':ipd
-        }
-        return render(request, 'PDS/panelsetsadd_step_3.html', context)
-
-
+# 获取数据，并更新redis数据
     def post(self, request):
-            # 接收数据
-            postData = request.POST.dict()
-            ipdinfo_id = postData.get('ipdinfo_id')
-            doorheight = postData.get('doorheight')
-            # 更新需要的字段
-            dataupdate_list = ["decoration_text", "note"]
-            # 生成字典
-            dataupdate = {key: value for key, value in postData.items() if key in dataupdate_list}
-            # 添加装饰面说明及备注信息
-            Panelsets.objects.filter(id=postData['panelset_id']).update(**dataupdate)
-            # 添加门中门信息,没有没有门高，表示没有门中门信息
-            if doorheight:
-                # # 门中门的需要的key
-                dataipd_list = ["lockeroption_a", "lockeroption_b", "doorheight", "panelset_id"]
-                data_ipd = {key: value for key,value in postData.items() if key in dataipd_list}
-                if ipdinfo_id:
-                    Ipdinfo.objects.filter(id=ipdinfo_id).update(**data_ipd)
-                    # 返回应答
-                    return JsonResponse({'res': 2, 'ipdinfo_id':ipdinfo_id})
-                else:
-                    ipd = Ipdinfo.objects.create(**data_ipd)
-                # 返回应答
-                ipdinfo_id = ipd.id
-                return JsonResponse({'res': 2, 'ipdinfo_id':ipdinfo_id})
-            return JsonResponse({'res': 2})
+        # 获取前端数据
+        postData = request.POST.dict()
+        postData.pop('csrfmiddlewaretoken')
+        # 获取用户id
+        user = request.user
+        conn = get_redis_connection('default')
+        # 获取redis数据
+        workspaceKeyName = 'workspace_%s' % user.id
+        # 从redis数据库获取数据
+        workData =  conn.lrange(workspaceKeyName, 0, -1)[0]
+        # 获取组属性，屏风列表，转化成可用数据
+        panel_li = eval(workData).get('panel_li')
+        set_di = eval(workData).get('set_di')
+        # 更新数据,如果是更新是panel_li
+
+        if postData.get('mod') == 'addpanel':
+            postData.pop('mod')
+            # 生成屏风列表字典
+            panel_di = {}
+            panel_di.update(postData)
+            # 添加到panel_li
+            panel_li.append(panel_di)
+            # 如果有门中门,数量+1
+            if int(postData.get('pictype')) == 4 or int(postData.get('pictype')) == 5:
+                set_di['ipd_qu'] += 1
+
+        if postData.get('mod') == 'panel_li':
+            postData.pop('mod')
+            # 获取要修改的字典,index值就是所在数字
+            panel_di = panel_li[int(postData.get('index'))]
+            postData.pop('index')
+            # 添加到panel_li
+            panel_di.update(postData)
+
+        if postData.get('mod') == 'remove':
+            # 删除index元素
+            del panel_li[int(postData.get('index'))]
+            # 如果删除门中门,数量-1
+            if int(postData.get('pictype')) == 4 or int(postData.get('pictype')) == 5:
+                set_di['ipd_qu'] -= 1
+                # 如果门中门数量为0,把字典的门中门数据删除
+                if int(set_di.get('ipd_qu')) == 0:
+                    set_di.update({'lockeyoption_a':'', 'lockeyoption_b':'', 'doorheight':''})
+                    for tmp in ['lockeyoption_a', 'lockeyoption_b', 'doorheight']:
+                        set_di.pop(tmp)
+
+
+        if postData.get('mod') == 'move_left':
+            #元素向左移
+            index = int(postData.get('index'))
+            tmp = panel_li[index]
+            # 删除index元素
+            del panel_li[index]
+            # 重新插入
+            panel_li.insert(index-1, tmp)
+
+        if postData.get('mod') == 'move_right':
+            #元素向右移
+            index = int(postData.get('index'))
+            tmp = panel_li[index]
+            # 删除index元素
+            del panel_li[index]
+            # 重新插入
+            panel_li.insert(index+1, tmp)
+
+            
+        if postData.get('mod') == 'set_di':
+            # 添加组属性
+            postData.pop('mod')
+
+            # 如果下列列表选择了“”，需要删除
+            value = list(postData.values())[0]
+            if value:
+                set_di.update(postData)
+            else:
+                set_di.pop(list(postData.keys())[0])
+            
+
+        workData = str({'set_di':set_di, 'panel_li':panel_li})
+        # 写入Redis
+        conn.lset(workspaceKeyName, 0, workData)
+
+        return JsonResponse({'res': 2})
+        
+
+class panelSelView(View):
+    def get(self, request):
+        # 获取全部屏风图元
+        pics = PicsModels.objects.all()
+        return render(request, 'PDS/panel_sel.html', {'pics':pics})
+

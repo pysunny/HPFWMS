@@ -99,7 +99,7 @@ class PicsModels(BaseModel):
     WHEEL_QUANTITY_CHOICES = (
         (0,"双轮"),
         (1,"单轮"),
-        (3,"无轮")
+        (2,"无轮")
     )
     PIC_TYPE_CHOICES = (
         (0,'BP'),

@@ -1,0 +1,589 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% block titlename %}HPFWMS-新建项目{% endblock titlename %}
+{% block topfiles %}
+<style type="text/css">
+  .excel-input {
+    border: none;
+    overflow: hidden;
+    height: 100%;
+    width: 100%;
+    text-align: center;
+    font-weight: bold;
+  }
+</style>
+{% endblock topfiles %}
+{# 网页顶部引入文件块 #}
+{% block nav %}
+<div class="x-nav">
+    <span class="layui-breadcrumb">
+        <a href="">首页</a>
+        <a href="">项目管理</a>
+        <a><cite>项目修改</cite></a>
+    </span>
+    <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right"
+        onclick="location.reload()" title="刷新">
+        <i class="layui-icon layui-icon-refresh" style="line-height:30px"></i>
+    </a>
+</div>
+{% endblock nav %}
+{# 网页主体上侧块 #}
+{% block boby %}
+<div class="layui-fluid">
+  <div class="layui-col-xs12" id="main_div">
+    <div id="btm_div" style="position:fixed;top:42px;right:5px;z-index:99999;">
+      <button type="button" class="layui-btn layui-btn-normal" id="wrong_btn"><i class="layui-icon">&#xe667;</i></button>
+    </div>
+  <form method="post" class="layui-form" autocomplete="off" >
+    {% csrf_token %}
+    <fieldset class="layui-elem-field layui-field-title"><legend>相关资料</legend></fieldset>
+    <div class="layui-row">
+      <div class="layui-col-xs6">
+        <div class="layui-form-item">
+          <label class="layui-form-label">区域名称</label>
+          <div class="layui-input-block">
+            <input type="text" name="location" placeholder="请输入" class="layui-input huf-data" lay-verify="required" value="{{ panelset.location }}">
+          </div>
+        </div>
+      </div>
+      <div class="layui-col-xs6">
+        <div class="layui-form-item">
+          <label class="layui-form-label">出厂时间</label>
+          <div class="layui-input-block">
+            <input type="text" name="production_time" id="production_time" placeholder="请输入" class="layui-input" lay-verify="required" value="{{ panelset.production_time }}">
+          </div>
+        </div>
+      </div>
+      <div class="layui-col-xs6">
+        <div class="layui-form-item">
+          <label class="layui-form-label">屏风编号</label>
+          <div class="layui-input-block">
+            <input type="text" name="mark" placeholder="请输入" class="layui-input huf-data" lay-verify="required" value="{{ panelset.mark }}">
+          </div>
+        </div>
+      </div>
+      <div class="layui-col-xs6">
+        <div class="layui-form-item">
+          <label class="layui-form-label">屏风组数</label>
+          <div class="layui-input-block">
+            <input type="text" name="sets" placeholder="请输入" class="layui-input huf-data" lay-verify="required" value="{{ panelset.sets }}">
+          </div>
+        </div>
+      </div>
+      <div class="layui-col-xs6">
+        <div class="layui-form-item">
+          <label class="layui-form-label">标准长度</label>
+          <div class="layui-input-block">
+            <input type="text" name="width" placeholder="请输入" class="layui-input huf-data input-mm" lay-verify="required" value="{{ panelset.width }}">
+          </div>
+        </div>
+      </div>
+      <div class="layui-col-xs6">
+        <div class="layui-form-item">
+          <label class="layui-form-label">标准高度</label>
+          <div class="layui-input-block">
+            <input type="text" name="height" placeholder="请输入" class="layui-input huf-data input-mm" lay-verify="required" value="{{ panelset.height }}">
+          </div>
+        </div>
+      </div>
+    </div>
+    <fieldset class="layui-elem-field layui-field-title"><legend>结构，细节</legend></fieldset>
+    <div class="layui-row">
+      <div class="layui-col-xs5">
+        <div class="layui-form-item">
+          <label class="layui-form-label">屏风型号</label>
+          <div class="layui-input-block">
+            <select name="model_id" lay-verify="required" id="model" lay-search lay-filter="model">
+              <option value=""></option>
+              {% for model in models %}
+              <option value="{{ model.id }}" series="{{ model.series }}" wheel_type="{{ model.wheel_type }}" {% if panelset.model_id == model.id %} selected="selected" {% endif %}>{{ model.name }}({{ model.desc }})</option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="layui-col-xs1">
+        <button class="layui-btn" type="button" onclick="xadmin.open('新建型号','{% url 'standard:models' %}',900,600)">添加型号</button>
+      </div>
+      <div class="layui-col-xs6">
+        <div class="layui-form-item">
+            <label class="layui-form-label">轮子</label>
+            <div class="layui-input-block">
+              <select name="wheel" lay-verify="required" id="wheel">
+                <option value=""></option>
+              </select>
+            </div>
+        </div>
+      </div>
+      <div class="layui-col-xs6">
+        <div class="layui-form-item">
+            <label class="layui-form-label">隔音测试</label>
+            <div class="layui-input-block">
+              <select name="sound_test" lay-verify="required" id="sound_test">
+                <option value=""></option>
+                {% for key, value in Panelsets.SOUND_TEST_CHOICES %}
+                  <option value="{{ key }}" {% if panelset.sound_test == key %} selected="selected" {% endif %} >{{ value }}</option>
+                {% endfor %}
+              </select>
+            </div>
+        </div>
+      </div>
+      <div class="layui-col-xs6">
+        <div class="layui-form-item">
+            <label class="layui-form-label">边框颜色</label>
+            <div class="layui-input-block">
+                <input type="text" name="frame_color" placeholder="请输入" class="layui-input huf-data" lay-verify="required" value="{{ panelset.frame_color }}" list="frame">
+                <datalist id="frame">
+                  <option value="Clear Anodized(银白色)">
+                </datalist>
+            </div>
+        </div>
+      </div>
+      <div class="layui-col-xs6">
+        <div class="layui-form-item">
+            <label class="layui-form-label">横驳条分别</label>
+            <div class="layui-input-block">
+                <input type="text" name="splicer" placeholder="请输入" class="layui-input huf-data" lay-verify="required" value="{{ panelset.splicer }}" list="splicer">
+                <datalist id="splicer">
+                  <option value="None(无横驳条)">
+                  <option value="Aline with top of I.P.D.(与门中门门顶平齐)">
+                  <option value="2400">
+                  <option value="4800">
+                  <option value="7200">
+                  <option value="2400 , 4800">
+                </datalist>
+            </div>
+        </div>
+      </div>
+      <div class="layui-col-xs6" id="structure" style="display:none;">
+        <div class="layui-form-item">
+            <label class="layui-form-label">屏风结构</label>
+            <div class="layui-input-block">
+              <select name="face_structure" lay-verify="required" id="face_structure">
+                <option value=""></option>
+                {% for key, value in Panelsets.FACE_STRUCTURE_CHOICES %}
+                  <option value="{{ key }}" {% if panelset.face_structure == key %} selected="selected" {% endif %} >{{ value }}</option>
+                {% endfor %}
+              </select>
+            </div>
+        </div>
+      </div>
+    </div>
+    <fieldset class="layui-elem-field layui-field-title"><legend>装饰面细节</legend></fieldset>
+    <div class="layui-row">
+        <div class="layui-col-xs6">
+            <div class="layui-form-item">
+                <label class="layui-form-label">装饰面厚度</label>
+                <div class="layui-input-block">
+                <input type="text" name="decoration_thickness" placeholder="请输入" class="layui-input huf-data" lay-verify="required" value="{{ panelset.decoration_thickness }}">
+                </div>
+            </div>
+        </div>
+        <div class="layui-col-xs6">
+            <div class="layui-form-item">
+                <label class="layui-form-label">装饰面做法</label>
+                <div class="layui-input-block">
+                <input type="text" name="decoration_text" placeholder="请输入" class="layui-input huf-data" lay-verify="required" value="{{ panelset.decoration_text }}" list="decoration">
+                <datalist id="decoration">
+                  <option value="装饰面由客户负责">
+                  <option value="防火板完成面">
+                  <option value="软包装修面，布由客户提供，厂部安装">
+                  <option value="硬包装饰面，布由客户提供，厂部安装">
+                </datalist>
+                </div>
+            </div>
+        </div>
+    </div>
+    <fieldset class="layui-elem-field layui-field-title"><legend>屏风种类，数量</legend></fieldset>
+    <div class="layui-row">
+      <div class="layui-row">
+        <div class="layui-btn-group">
+          <button class="layui-btn" type="button" id="add-panel-btm">添加图例</button>
+          <button class="layui-btn" type="button" onclick="xadmin.open('新建图元','{% url 'standard:pics' %}',800,550)">新建图例</button>
+          <button class="layui-btn">加载模板</button>
+          <button class="layui-btn">保存模板</button>
+        </div>
+      </div>
+      {% for panel in panel_li%}
+      {% if forloop.counter0|divisibleby:5 %}
+      <div class="layui-col-xs1" style="width:10%">
+        <table class="layui-table" lay-size="sm" style="text-align: center;">
+          <tbody>
+            <tr><td height=30>编号</td></tr>
+            <tr><td height=30>数量</td></tr>
+            <tr><td height=30>轮距</td></tr>
+            <tr><td height=135>图例</td></tr>
+            <tr><td height=30>长度</td></tr>
+            <tr><td height=30>类型</td></tr>
+            <tr><td height=30>操作列</td></tr>
+          </tbody>
+        </table>
+      </div>
+      {% endif %}
+      <div class="layui-col-xs2" style="width:18%">
+        <table class="layui-table" lay-size="sm" style="text-align: center;" panel-index="{{ forloop.counter0 }}" pictype = "{{ panel.pictype }}">
+          <tbody>
+            <tr><td height=30>
+              <div class="layui-show-xs-block">
+                <input type="text" name="panle_no" placeholder="只可输入数字 , ~" panle_no_list="" class="layui-input excel-input input-panle_no" value="{{ panel.panle_no }}"></div>
+            </td></tr>
+            <tr><td height=30>
+              <div class="layui-show-xs-block">
+                <input type="text" name="quantity" placeholder="自动输入" disabled class="layui-input excel-input input-quantity" value="{{ panel.quantity }}"></div>
+            </td></tr>
+            <tr><td height=30>
+              <div class="layui-show-xs-block">
+                <input type="text" name="carrier_space" placeholder="请选择，或者输入" class="layui-input excel-input input-panel" value="{{ panel.carrier_space }}" list="carrier_choices">
+                <datalist id="carrier_choices">
+                  <option value="991">
+                  <option value="838">
+                  <option value="686">
+                  <option value="533">
+                  <option value="381">
+                  <option value="轮边距/轮距/轮边距">
+                  <option value="EQ/EQ">
+                </datalist>
+              </div>
+            </td></tr>
+            <tr><td height=135>
+              <div>
+                <svg xmlns='http://www.w3.org/2000/svg' version='1.1' height='128' width='128'>
+                  <g stroke='black' stroke-width='1.5' fill='none'>{{ panel.svgcode | safe }}</g>
+                </svg>
+              </div>
+            </td></tr>
+            <tr><td height=30>
+              <div class="layui-show-xs-block">
+                <input type="text" name="panel_width" placeholder="只可输入数字" class="layui-input excel-input input-mm input-panel" value="{{ panel.panel_width }}"></div>
+            </td></tr>
+            <tr><td height=30><b>{{ panel.pictype_name }}</b></td></tr>
+            <tr><td height=30>
+              <div class="layui-btn-group">
+                {% if not forloop.first %}
+                  <button type="button" class="layui-btn layui-btn-sm move-left-btn"><i class="layui-icon">&#xe603;</i></button>
+                {% endif %}
+                  <button type="button" class="layui-btn layui-btn-sm remove-btn"><i class="layui-icon">&#xe640;</i></button>
+                {% if not forloop.last %}
+                  <button type="button" class="layui-btn layui-btn-sm move-right-btn"><i class="layui-icon">&#xe602;</i></button>
+                {% endif %}
+              </div>
+            </td></tr>
+          </tbody>
+        </table>
+      </div>
+      {% empty %}
+      <h2><i>没有屏风，请按 "添加图例" 按钮添加</i></h2>
+      {% endfor %}
+      </div>
+    {% if panelset.ipd_qu %}
+    <fieldset class="layui-elem-field layui-field-title"><legend>门中门细节</legend></fieldset>
+    <div class="layui-row">
+        <div class="layui-col-xs6">
+            <div class="layui-form-item">
+                <label class="layui-form-label">门中门高度</label>
+                <div class="layui-input-block">
+                <input type="text" name="doorheight" placeholder="请输入" class="layui-input huf-data" lay-verify="required" value="{{ panelset.doorheight }}">
+                </div>
+            </div>
+        </div>
+        <div class="layui-col-xs6">
+            <div class="layui-form-item">
+                <label class="layui-form-label">A面锁类型</label>
+                <div class="layui-input-block">
+                  <select name="lockeyoption_a" lay-verify="required">
+                    <option value=""></option>
+                    {% for key, value in Panelsets.LOCKER_OPTION_CHOICES %}
+                      <option value="{{ key }}" {% if panelset.lockeyoption_a == key %} selected="selected" {% endif %} >{{ value }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+            </div>
+        </div>
+        <div class="layui-col-xs6">
+            <div class="layui-form-item">
+                <label class="layui-form-label">B面锁类型</label>
+                <div class="layui-input-block">
+                  <select name="lockeyoption_b" lay-verify="required">
+                    <option value=""></option>
+                    {% for key, value in Panelsets.LOCKER_OPTION_CHOICES %}
+                      <option value="{{ key }}" {% if panelset.lockeyoption_b == key %} selected="selected" {% endif %} >{{ value }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    <fieldset class="layui-elem-field layui-field-title"><legend>其他资料，备注</legend></fieldset>
+    <div class="layui-row">
+      <div class="layui-col-xs6">
+        <div class="layui-form-item">
+          <label class="layui-form-label">备注说明</label>
+          <div class="layui-input-block">
+            <textarea name="note"  class="layui-textarea huf-data">{{ panelset.note }}</textarea>
+          </div>
+        </div>
+      </div>
+      <div class="layui-col-xs6">
+        <div class="layui-form-item">
+          <label class="layui-form-label">摇手柄数量</label>
+          <div class="layui-input-block">
+            <input type="text" name="handle_quantity" placeholder="请输入" class="layui-input huf-data" lay-verify="required" value="{{ panelset.handle_quantity }}">
+          </div>
+        </div>
+      </div>
+    </div>
+    <div style="text-align:center;">
+      <div class="layui-btn-group">
+        <button class="layui-btn" >预览</button>
+        <button class="layui-btn" lay-submit lay-filter="add">保存</button>
+        <button class="layui-btn" >关闭</button>
+      </div>
+    </div>
+  </form>
+  </div>
+</div>
+{% endblock boby %}
+{# 网页主体块 #}
+
+{% block bottomfiles %}
+<script>
+  layui.use(['form', 'layer', 'jquery', 'laydate'], function () {
+    var $ = layui.jquery, form = layui.form, layer = layui.layer, laydate = layui.laydate;
+    // wrongLayer()
+    add_wheel_option()
+    structure()
+
+    //执行一个laydate实例
+    laydate.render({
+      elem: '#production_time' //指定元素
+      , min: 0 //限制时间
+      ,done: function(value){
+        var data = {'mod':'set_di'};
+        data.production_time = value;
+        // 调用函数
+        dataPost(data)
+      }
+    });
+
+    function wrongLayer() {
+      var index = layer.open({
+        title: '错误提示'
+        , type: 1
+        , area: ['16.66%', '100%']
+        , offset: 'r'
+        , shade: 0
+        , anim: -1
+        , isOutAnim: false
+        , shadeClose: false
+        , content: ''
+        , success: function () {
+          $('#main_div').removeClass("layui-col-xs12");
+          $('#main_div').addClass("layui-col-xs10");
+          $('#btm_div').hide();
+        }
+        , cancel: function () {
+          $('#main_div').removeClass("layui-col-xs10");
+          $('#main_div').addClass("layui-col-xs12");
+          $('#btm_div').show();
+        }
+      });
+    }
+
+    function add_wheel_option() {
+      $("#wheel").empty();
+      $("#wheel").append("<option value=''></option>");
+      if ($('#model').find('option:selected').attr('wheel_type') == "0") {
+        {% for key, value in Panelsets.OMNI_WHEEL_CHOICES %}
+        $("#wheel").append("<option value='{{ key }}'{% if panelset.wheel == key %} selected='selected'{% endif %}>{{ value }}</option>");
+        {% endfor %}
+      } 
+      if ($('#model').find('option:selected').attr('wheel_type') == "1") {
+        {% for key, value in Panelsets.PAIR_WHEEL_CHOICES %}
+        $("#wheel").append("<option value='{{ key }}'{% if panelset.wheel == key %} selected='selected'{% endif %}>{{ value }}</option>");
+        {% endfor %}
+      }
+      form.render()
+    }
+    //隐藏600易面固面选择。 
+    function structure() {
+      if ($('#model').find('option:selected').attr('series') == "2") {
+        $("#structure").attr("style", "display:block");
+      }
+      else {
+        $("#structure").attr("style", "display:none");
+        $("[name='face_structure']").val("0");
+      }
+      form.render()
+    }
+
+    // 顶部按钮事件
+    $('#wrong_btn').click(function () {
+      wrongLayer()
+    })
+
+    // input data post
+    $('.huf-data').change(function () {
+      var data = {'mod':'set_di'};
+      data[$(this).attr("name")] = $(this).val();
+      // 调用函数
+      dataPost(data)
+    })
+    // select data post
+    form.on('select', function(obj){
+      var data = {'mod':'set_di'};
+      data[obj.elem.name] = obj.value
+      dataPost(data)
+    }); 
+    
+    form.on('select(model)', function(obj){
+      add_wheel_option()
+      structure()
+    }); 
+
+    // 不做刷新的post
+    function dataPost(data) {
+      // ajax请求
+      data.csrfmiddlewaretoken = $("[name='csrfmiddlewaretoken']").val();
+      $.post("{% url 'PDS:workspace' %}", data, function (data) {
+        if (data.res == 2) {
+        } else {
+        }
+      })
+    }
+
+    // 刷新的post
+    function dataPostReload(data) {
+      // ajax请求
+      data.csrfmiddlewaretoken = $("[name='csrfmiddlewaretoken']").val();
+      $.post("{% url 'PDS:workspace' %}", data, function (data) {
+        if (data.res == 2) {
+          location.reload()
+        } else {
+        }
+      })
+    }
+    // 添加屏风按钮
+    $("#add-panel-btm").click(function () {
+      var index = layer.open({
+        title: '添加型号'
+        , type: 2
+        , area: ['450px', '100%']
+        , offset: 'r'
+        , shade: 0
+        , anim: 2
+        , shadeClose: false
+        , content: '{% url "PDS:panel_sel" %}'
+      });
+    })
+    // 删除按钮
+    $(".remove-btn").click(function () {
+      var data = { 'mod': 'remove' };
+      data.index = $(this).parents(".layui-table").attr("panel-index")
+      data.pictype = $(this).parents(".layui-table").attr("pictype")
+      dataPostReload(data)
+    })
+    // 屏风左移按钮
+    $(".move-left-btn").click(function () {
+      var data = { 'mod': 'move_left' };
+      data.index = $(this).parents(".layui-table").attr("panel-index")
+      dataPostReload(data)
+    })
+
+    // 屏风右移按钮
+    $(".move-right-btn").click(function () {
+      var data = { 'mod': 'move_right' };
+      data.index = $(this).parents(".layui-table").attr("panel-index")
+      dataPostReload(data)
+    })
+
+    //验证屏风编号数据，禁止输入其他字符
+    $(".input-panle_no").keyup(function () {
+      // 获取ipout数据
+      str = $(this).val();
+      // 如果数据不为空
+      if (str != "") {
+        //  数据进行正表达式比较
+        if (!/^[\d\~\,\s]+$/.test(str)) {
+          // 如果出现其他字符 令input为空
+          $(this).val("");
+        }
+      }
+    })
+
+    // 数据改变后,生成列表，并把数量输入
+    $(".input-panle_no").change(function () {
+      str = $(this).val();
+      // 建立空列表
+      var panle_no_list = [];
+      // 如果str有“，”
+      if (str.indexOf(",") >= 0) {
+        // 使用,分割,生成列表
+        tmp_list = str.split(",");
+        // 如果没有，就添加把自身做成列表，方便统一操作
+      } else {
+        tmp_list = [];
+        tmp_list.push(str);
+      }
+      // 循环
+      $.each(tmp_list, function (index, value) {
+        // 如果有~,进行分割，并取前后的取做 递增操作
+        if (value.indexOf("~") > 0) {
+          i = value.split("~");
+          // i1为小值，i2为大值
+          i1 = parseInt(i[0]);
+          i2 = parseInt(i[1]);
+          // 递增
+          if ((i1 != "") & (i2 != "") & (i2 > i1)) {
+            for (j = i1; j <= i2; j++) {
+              // 元素添加到列表
+              panle_no_list.push(j);
+            }
+          }
+        } else {
+          // 直接添加列表
+          if (value != "") {
+            panle_no_list.push(parseInt(value));
+          }
+        }
+      });
+      // 获取列表数量
+      quantity = panle_no_list.length;
+      // 把列表赋值到表单
+      $(this).attr("panle_no_list", panle_no_list)
+      // 把数量赋值到表单
+      $(this).parents(".layui-table").find('.input-quantity').val(quantity)
+      //后台更新数据
+      var data = {'mod':'panel_li'};
+      data.index = $(this).parents(".layui-table").attr("panel-index");
+      data.panle_no = str;
+      data.quantity = quantity;
+      dataPost(data)
+    })
+
+    //验证输入数字，禁止输入其他字符
+    $(".input-mm").keyup(function () {
+      // 获取ipout数据
+      str = $(this).val();
+      // 如果数据不为空
+      if (str != "") {
+        //  数据进行正表达式比较
+        if (!/^[\d\s]+$/.test(str)) {
+          // 如果出现其他字符 令input为空
+          $(this).val("");
+        }
+      }
+    })
+
+    $('.input-panel').change(function () {
+      //后台更新数据
+      var data = { 'mod': 'panel_li' };
+      data[$(this).attr("name")] = $(this).val()
+      data.index = $(this).parents(".layui-table").attr("panel-index");
+      dataPost(data)
+    })
+
+  });
+</script>
+{% endblock bottomfiles %}
+{# 网页底部引入块 #}

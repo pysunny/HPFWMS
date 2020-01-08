@@ -202,7 +202,7 @@
       elem: '#demo'
       , height: 400
       , url: "{% url 'standard:modelsdata' %}" //数据接口
-      , page: true //开启分页
+      // , page: true //开启分页
       ,parseData: function(res){ //res 即为原始返回的数据
       // console.log(res)
         model_id = $("[name='model_id']").val();

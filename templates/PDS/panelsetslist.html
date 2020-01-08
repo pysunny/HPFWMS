@@ -68,9 +68,9 @@
         table.render({
             elem: '#pds_id'
             , height: 400
-            , url: "{% url 'PDS:panelsetsdata' %}" //数据接口
-            , where:{'project_id':$("[name='project_id']").val()}
-            , page: true //开启分页
+            , url: "{% url 'PDS:panelsetsdata' project.project_id %}" //数据接口
+            // , where:{'project_id':$("[name='project_id']").val()}
+            // , page: true //开启分页
             , cols: [[ //表头
                 {type:'checkbox'}
                 , { field: 'xieliehao', width: 80, title: '序列号', type: 'numbers' }
@@ -93,7 +93,7 @@
             var layEvent = obj.event; //获得 lay-event 对应的值（也可以是表头的 event 参数对应的值）
 
             if (layEvent === 'edit') { //编辑
-                top.xadmin.add_tab('{{project.name}}-'+data.mark+'-编辑',"{% url 'PDS:panelsetsadd' %}?project_id={{project.project_id}}&panelset_id="+ data.id)
+                top.xadmin.add_tab('{{ project.name }}-'+data.mark+'-编辑','/PDS/setadd/{{ project.project_id }}/'+ data.id)
             }
 
             else if (layEvent === 'del') { //删除
@@ -121,19 +121,19 @@
             var checkStatus = table.checkStatus(obj.config.id); //获取选中行状态
             switch (obj.event) {
                 case 'newPanel':
-                    top.xadmin.add_tab('{{project.name}}-新建','{% url 'PDS:panelsetsadd' %}?project_id={{project.project_id}}')
+                    top.xadmin.add_tab('{{project.name}}-新建','{% url 'PDS:setadd' project.project_id 'new' %}')
                 break;
-                case 'printSelectPanel':
-                var data = checkStatus.data;
-                // 合成id_list 方便传递
-                panelset_id_list=[];
-                $.each(data, function (i, value) {
-                    panelset_id_list.push(value['id'])
-                })
-                panelset_id_list = String(panelset_id_list)
-                top.xadmin.add_tab('{{project.name}}'+'-打印页', "{% url 'PDS:pdsprint' %}?panelset_id="+ panelset_id_list)
+                // case 'printSelectPanel':
+                // var data = checkStatus.data;
+                // // 合成id_list 方便传递
+                // panelset_id_list=[];
+                // $.each(data, function (i, value) {
+                //     panelset_id_list.push(value['id'])
+                // })
+                // panelset_id_list = String(panelset_id_list)
+                //{# top.xadmin.add_tab('{{project.name}}'+'-打印页', "{% url 'PDS:pdsprint' %}?panelset_id="+ panelset_id_list) #}
 
-                break;
+                // break;
             };
         });
     });
@@ -157,7 +157,7 @@
         {% else %}
         <button class = "layui-btn layui-btn-disabled " disabled lay-event="newPanel" > 新建组 </button>
         {% endif %}
-        <button class = "layui-btn" lay-event="printSelectPanel"> 打印选中</button>
+        <!-- <button class = "layui-btn" lay-event="printSelectPanel"> 打印选中</button> -->
     </div > 
 </script>
 

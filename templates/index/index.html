@@ -134,3 +134,23 @@
 <!-- 右侧主体结束 -->
 {% endblock boby %}
 {# 网页主体块 #}
+
+{% block bottomfiles %}
+<script>
+    layui.use('util', function(){
+        var util = layui.util;
+        
+        //执行
+        util.fixbar({
+          bar1: '<i class="layui-icon"style="font-size: 30px;">&#xe642</i>'
+          ,click: function(type){
+            if(type === 'bar1'){
+            //   alert('恭喜你发现这个按钮，这是一个新功能,COMING SOON')
+            xadmin.add_tab('工作区','{% url 'PDS:workspace' %}')
+            }
+          }
+        });
+      });
+</script>
+{% endblock bottomfiles %}
+{# 网页底部引入文件块 #}
