@@ -1,0 +1,199 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% block titlename %}HPFWMS-项目列表{% endblock titlename %}
+
+{% block nav %}
+<div class="x-nav">
+    <span class="layui-breadcrumb">
+        <a href="">首页</a>
+        <a href="">项目</a>
+        <a><cite>版本编辑</cite></a>
+    </span>
+    <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right"
+        onclick="location.reload()" title="刷新">
+        <i class="layui-icon layui-icon-refresh" style="line-height:30px"></i>
+    </a>
+</div>
+{% endblock nav %}
+{# 网页主体上侧块 #}
+
+{% block boby %}
+<div class="layui-fluid">
+    {% csrf_token %}
+    <div class="layui-row">
+        <fieldset class="layui-elem-field layui-field-title">
+            <legend>屏风资料</legend>
+        </fieldset>
+        <input type="hidden" name="project_id" value="{{project.project_id}}">
+        <table class="layui-table" lay-size="sm">
+            <tbody>
+                <tr>
+                    <td width="12.5%">工程编号</td>
+                    <td>{{ project.project_id }}</td>
+                    <td width="12.5%">用户</td>
+                    <td>{{ project.user }}</td></tr>
+                <tr>
+                    <td>工程名称</td>
+                    <td>{{ project.name }}</td>
+                    <td>区域</td>
+                    <td>{{ project.projectlocation }}</td></tr>
+                <tr>
+                    <td>工程地址</td>
+                    <td>{{ project.address }}</td>
+                    <td>创建时间</td>
+                    <td>{{ project.create_time }}</td></tr>
+            </tbody>
+        </table>
+        <fieldset class="layui-elem-field layui-field-title"><legend>开工纸</legend></fieldset>
+        <table id="pds_id" lay-filter="pds_if"></table>
+        <div style="text-align:center;">
+            <div class="layui-btn-group">
+              <button class="layui-btn" type="button" id="saveversion">保存版本</button>
+              <button class="layui-btn" type="button">关闭页面</button>
+            </div>
+          </div>
+    </div>
+</div>
+{% endblock boby %}
+{# 网页主体块 #}
+
+{% block bottomfiles %}
+<script>
+    layui.use('table', function () {
+        var table = layui.table, $ = layui.$;
+        table.render({
+            elem: '#pds_id'
+            , height: 400
+            , url: "{% url 'PDS:setdata' %}" //数据接口
+            // , where:{'project_id':$("[name='project_id']").val()}
+            // , page: true //开启分页
+            , cols: [[ //表头
+                {type:'checkbox'}
+                , { field: 'xieliehao', width: 80, title: '序列号', type: 'numbers' }
+                , { field: 'location', width: 80, title: '区域' }
+                , { field: 'mark', title: '编号' , width: 80}
+                , { field: 'sets', title: '组数' , width: 80}
+                , { field: 'model_id', title: '型号' , width: 80}
+                , { field: 'production_time', title: '出厂时间' , width: 100}
+                , { field: 'height', title: '高度' , width: 80}
+                , { field: 'width', title: '宽度', width: 80 }
+                , { field: 'wheel', title: '轮子' , width: 80}
+                , { field: 'splicer', title: '横驳条分布' , width: 120}
+                , { fixed: 'right', title: '操作', width: 200, align: 'center', toolbar: '#barPds' }
+            ]]
+            , toolbar: '#toolbarDemo'
+        });
+        
+        table.on('tool(pds_if)', function (obj) { //注：tool 是工具条事件名，test 是 table 原始容器的属性 lay-filter="对应的值"
+            var data = obj.data; //获得当前行数据
+            var layEvent = obj.event; //获得 lay-event 对应的值（也可以是表头的 event 参数对应的值）
+            var set_index = data.set_index //计算所在行
+            var mark = data.mark
+            if (layEvent === 'edit') { //编辑
+                // #/PDS/workspace/"+str(set_index)
+                top.xadmin.add_tab_panel('屏风编辑页面', '/PDS/workspace/' + set_index)
+            }
+
+            else if (layEvent === 'del') { //删除
+                layer.confirm('真的删除行么', function (index) {
+                    var data = { 'mod': 'delete' };
+                    data.csrfmiddlewaretoken = $("[name='csrfmiddlewaretoken']").val();
+                    data.set_index = set_index;
+                    $.post("{% url 'PDS:editpage' %}", data, function (data) {
+                        if (data.res == 2) {
+                            layer.close(index);
+                            location.reload();
+                        }
+                        else {
+                        }
+                    })
+                });
+            }
+            else if (layEvent === 'copy') { //删除
+                layer.confirm('确定要复制此组？', function (index) {
+                    // 获取编号名称，如果没有就退出
+                    if (mark == undefined) {
+                        layer.close(index);
+                        layer.msg("请完善这一组数据", {
+                            time: 2000, //2s后自动关闭
+                        });
+                        return false;
+                    }
+                    // 建立数据字典
+                    var data = { 'mod': 'copy' };
+                    data.csrfmiddlewaretoken = $("[name='csrfmiddlewaretoken']").val();
+                    data.set_index = set_index;
+
+                    $.post("{% url 'PDS:editpage' %}", data, function (data) {
+                        if (data.res == 2) {
+                            layer.close(index);
+                            location.reload();
+                        }
+                        else {
+                        }
+                    })
+                });
+            }
+        });
+
+        //头工具栏事件
+        table.on('toolbar(pds_if)', function (obj) {
+            var checkStatus = table.checkStatus(obj.config.id); //获取选中行状态
+            switch (obj.event) {
+                case 'newPanel':
+                    top.xadmin.add_tab_panel('屏风编辑页面','{% url 'PDS:setedit' 'new' %}')
+                break;
+
+                case 'printSelectPanel':
+                    var data = checkStatus.data;
+                    // 合成set_index_list方便传递
+                    set_index_list=[];
+                    $.each(data, function (i, value) {
+                        set_index_list.push(value['set_index'])
+                    })
+                    set_index_list = String(set_index_list)
+                    top.xadmin.add_tab('打印预览', '{% url "PDS:pdspreview"%}?set_index='+set_index_list)
+                break;
+            };
+        });
+    });
+
+    $('#saveversion').click(function () {
+        // 建立数据字典
+        var data = {};
+        data.csrfmiddlewaretoken = $("[name='csrfmiddlewaretoken']").val();
+        $.post("{% url 'project:saveversion' %}", data, function (data) {
+            if (data.res == 2) {
+                layer.msg("保存成功", {
+                    time: 2000, //2s后自动关闭
+                });
+            }
+            else {
+                layer.msg(data.errmsg, {
+                    time: 2000, //2s后自动关闭
+                });
+            }
+        })
+    })
+
+
+</script>
+
+<!-- 操作列 -->
+<script type="text/html" id="barPds">
+    <div class="layui-btn-group">
+        <button class="layui-btn layui-btn-xs" lay-event="edit">编辑</button>
+        <button class="layui-btn layui-btn-normal layui-btn-xs" lay-event="copy">复制</button>
+        <button class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</button>
+    </div > 
+    </script>
+<!-- 表头工具 -->
+<script type="text/html" id="toolbarDemo">
+    <div class="layui-btn-group">
+        <button class = "layui-btn" lay-event="newPanel" > 新建组 </button>
+        <button class = "layui-btn" lay-event="printSelectPanel" > 打印选择 </button>
+    </div > 
+</script>
+
+{% endblock bottomfiles %}
+{# 网页底部引入块 #}

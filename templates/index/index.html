@@ -146,7 +146,7 @@
           ,click: function(type){
             if(type === 'bar1'){
             //   alert('恭喜你发现这个按钮，这是一个新功能,COMING SOON')
-            xadmin.add_tab('工作区','{% url 'PDS:workspace' %}')
+            top.xadmin.add_tab_version('版本编辑页面',"{% url 'PDS:editpage' %}")
             }
           }
         });

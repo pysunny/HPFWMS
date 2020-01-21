@@ -10,3 +10,5 @@
 # postdata = {'a':1,'b':2}
 # a = checkPanel(**postdata)
 
+for i in range(65,91):
+    print(chr(i))

@@ -17,6 +17,7 @@ class Projects(BaseModel):
     address = models.CharField(max_length=256, default="", verbose_name='工程地址')
     projectlocation = models.SmallIntegerField(default=0, choices=LOCATION_CHOICES, verbose_name='项目区域')
     is_public = models.BooleanField(default=False, verbose_name='是否公开')
+    is_newversion = models.BooleanField(default=True, verbose_name='是否新项目')
 
     class Meta:
         db_table = 'df_projects'
@@ -34,20 +35,20 @@ class Favorites(BaseModel):
         verbose_name = '项目个人收藏夹'
         verbose_name_plural = verbose_name
 
-class pdsVersion(BaseModel):
+class PdsVersion(BaseModel):
     """ 开工纸版本模型类 """
     project = models.ForeignKey('project.Projects', on_delete=models.CASCADE, verbose_name='所属项目')
     name = models.CharField(max_length=16, verbose_name='版本名称')
     user = models.ForeignKey('user.User', on_delete=models.CASCADE, verbose_name='修改者')
     is_public = models.BooleanField(default=False, verbose_name='是否公开')
-    setsSum = models.SmallIntegerField(verbose_name='总组数')
-    areaSum = models.DecimalField(max_digits=5, decimal_places=2)
-    lengthSum = models.DecimalField(max_digits=5, decimal_places=2)
-    panelSum = models.SmallIntegerField(verbose_name='总件数')
-    lcpSum = models.SmallIntegerField(verbose_name='伸缩板件数')
-    bpSum = models.SmallIntegerField(verbose_name='基本板件数')
-    ipdSum = models.SmallIntegerField(verbose_name='门中门件数')
-    bspSum = models.SmallIntegerField(verbose_name='波胶板件数')
+    setsSum = models.SmallIntegerField(default=0, verbose_name='总组数')
+    areaSum = models.DecimalField(default=0, max_digits=5, decimal_places=2, verbose_name='总面积')
+    lengthSum = models.DecimalField(default=0, max_digits=5, decimal_places=2, verbose_name='总长度')
+    panelSum = models.SmallIntegerField(default=0, verbose_name='总件数')
+    lcpSum = models.SmallIntegerField(default=0, verbose_name='伸缩板件数')
+    bpSum = models.SmallIntegerField(default=0, verbose_name='基本板件数')
+    ipdSum = models.SmallIntegerField(default=0, verbose_name='门中门件数')
+    bspSum = models.SmallIntegerField(default=0, verbose_name='波胶板件数')
 
     class Meta:
         db_table = 'df_pdsversion'

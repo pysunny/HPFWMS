@@ -99,7 +99,7 @@
       data.csrfmiddlewaretoken = $("[name='csrfmiddlewaretoken']").val()
       data.pictype = $(obj.elem).attr("pictype")
       // ajax请求
-      $.post("{% url 'PDS:workspace' %}", data, function (data) {
+      $.post("{% url 'PDS:workspace' set_index %}", data, function (data) {
         if (data.res == 2) {
           //关闭当前frame
           xadmin.close();

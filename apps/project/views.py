@@ -1,10 +1,13 @@
 from django.shortcuts import render
 from django.views.generic import View
 from user.models import User
-from project.models import Projects, Favorites
+from project.models import Projects, Favorites, PdsVersion
+from PDS.models import Panelsets, Panels
 from django.http import JsonResponse, HttpResponse
 from datetime import datetime
 from utils.getData import getData
+from django_redis import get_redis_connection
+from django.db import transaction
 import json
 
 # /project/list 项目列表
@@ -115,11 +118,10 @@ class ProjectDataView(View):
             #获取收藏夹中名字是user的条目
             ret = Favorites.objects.filter(user=user, is_favorites=True).values("project_id")
             ret = Projects.objects.filter(project_id__in=ret)
-            print(ret)
 
         # 调用分页的方法 获取数据
         context = getData().getData(ret, page, limit)
-        # # 获取data
+        # 获取data
         data = context["data"]
         for tmp in data:
             if not page_name == "publiclist":
@@ -137,6 +139,7 @@ class ProjectDataView(View):
             
             tmp['user'] = User.objects.get(id=tmp['user']).username
 
+        print(context)
         # 使用ComplexEncoder格式化jason
         return HttpResponse(json.dumps(context))
 
@@ -190,5 +193,140 @@ class FavoritesActiveview(View):
             favorites.update(is_favorites=False)
         return JsonResponse({'res': 2})
 
+#/projectdetail/<project_id> 屏风细节
+class ProjectDetailView(View):
+    def get(self, request, project_id):
+        """ 显示页面 """
+        # 接收数据
+        # project_id = request.GET.get('project_id')
+        project = Projects.objects.get(project_id=project_id)
+        return render(request, 'project/projectdetail.html', {'project': project})
+
+#/project/saveversion 保存版本,组,屏风数据
+class saveVersionView(View):
+    @transaction.atomic
+    def post(self, request):
+        # 获取Redis数据
+        user = request.user
+        conn = get_redis_connection('default')
+        workspaceKeyName = 'workspace_%s' % user.id
+        # 获取第一个数据，也就是project_di
+        project_di = conn.lrange(workspaceKeyName, 0, -1)[0]
+        project = eval(project_di)
+        project_id = project.get("project_id")
+
+        # 查询这个项目最新的版本名称
+        try:
+            pdsversion = PdsVersion.objects.filter(project=project_id).latest('create_time')
+            name = chr(ord(pdsversion.name)+1)
+        except :
+            name = chr(65)
+        # 设置事务保存点
+        save_id = transaction.savepoint()
+        try:
+            # 创建一条新版本
+            newversion = PdsVersion.objects.create(project_id=project_id,name=name,user=user)
+
+            # 初始化统计数量
+            setsSum = areaSum = lengthSum = lcpSum = bpSum = ipdSum = bspSum = panelSum =0
+            
+            # 从redis数据库获取数据
+            workData =  conn.lrange(workspaceKeyName, 1, -1)
+            # 遍历Redis数据,创建组，屏风数据
+            for tmp_s in workData:
+                # 获取组属性，屏风列表，转化成可用数据
+                set_di = eval(tmp_s)
+                panel_li = set_di.get('panel_li')
+                
+                # 添加数据project_id,pdsversion
+                set_di.update({'pdsversion':newversion})
+                # 删除没有用的数据
+                set_di.pop("ipd_qu")
+                set_di.pop("panel_li")  
+
+                # 检验是否缺少数据
+                data = []
+                necessary_li = ['project_id', 'mark', 'sets', 'production_time', 'model_id', 'height', 'width', 'wheel', 'sound_test', 'frame_color', 'splicer', 'pdsversion', 'decoration_thickness', 'handle_quantity']
+
+                for tmp in necessary_li:
+                    ret = set_di.get(tmp)
+                    # 如果是0，转为文本
+                    if ret == 0:
+                        ret = str(ret)
+                    data.append(ret)
 
 
+                if not all(data):
+                    # 数据不完整，退回mysql节点
+                    transaction.savepoint_rollback(save_id)
+                    return JsonResponse({'res':1, 'errmsg':'参数不完整'})
+
+                # 创建一数据set
+                panelset = Panelsets.objects.create(**set_di)
+
+                # 计算数据setsSum,lengthSum,areaSum
+                setsSum += int(set_di.get('sets'))
+                lengthSum += int(set_di.get('width'))/1000
+                areaSum += int(set_di.get('width'))*int(set_di.get('height'))/1000000
+
+                # 创建数据panel
+                for tmp_p in panel_li:
+                    # 遍历计算每种屏风的数量
+                    pictype = tmp_p.get('pictype')
+                    quantity = int(tmp_p.get('quantity'))
+                    if int(pictype) == 1:
+                        lcpSum += quantity
+
+                    elif int(pictype) == 4 or pictype == 5:
+                        ipdSum += quantity
+
+                    elif int(pictype) == 2:
+                        bspSum += quantity 
+                    else:
+                        bpSum += quantity
+                    
+                    # 删除没有用的数据
+                    tmp_p.pop('pictype')
+                    # 添加组属性
+                    tmp_p.update({'panelset_id':panelset.id})
+                    Panels.objects.create(**tmp_p)
+
+            # 更新version数量
+            panelSum = lcpSum+bpSum+ipdSum+bspSum
+            newversion.setsSum = setsSum
+            newversion.areaSum = areaSum
+            newversion.lengthSum = lengthSum
+            newversion.panelSum = panelSum
+            newversion.lcpSum = lcpSum
+            newversion.bpSum = bpSum
+            newversion.ipdSum = ipdSum
+            newversion.bspSum = bspSum
+            newversion.save()
+
+        except :
+            # 发生错误，退回节点
+            transaction.savepoint_rollback(save_id)
+            return JsonResponse({'res': 1,'errmsg':'保存失败，数据有误'})
+        
+        # 修改项目的新项目标记
+        project = Projects.objects.get(project_id=project_id)
+        project.is_newversion = False
+        project.save()
+        # 提交事务
+        transaction.savepoint_commit(save_id)
+        return JsonResponse({'res': 2})
+
+#/project/pdsversiondata 版本数据
+class PdsversionDataView(View):
+    def get(self, request, project_id):
+        # 获取数据
+        ret = PdsVersion.objects.filter(project_id=project_id).order_by('-create_time')
+        # 调用分页的方法 获取数据
+        context = getData().getData(ret, 1, 99)
+        # 获取data
+        data = context["data"]
+        print(data)
+        for tmp in data:
+            tmp['user'] = User.objects.get(id=tmp['user']).username
+        # 使用ComplexEncoder格式化jason
+        return HttpResponse(json.dumps(context))

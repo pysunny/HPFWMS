@@ -74,8 +74,7 @@
                 , { field: 'address', title: '工程地址' }
                 , { field: 'create_time', title: '创建时间' }
                 , { field: 'is_favorites', title: '是否收藏' , templet: '#test-table-is_favorites', unresize: true}
-                , { field: 'is_public', title: '是否公开' , templet: '#test-table-is_public', unresize: true}
-                , { fixed: 'right', title: '操作', width: 200, align: 'center', toolbar: '#barDemo' }
+                , { fixed: 'right', title: '操作', width: 300, align: 'center', toolbar: '#barDemo' }
             ]]
         });
 
@@ -84,7 +83,7 @@
             var layEvent = obj.event; //获得 lay-event 对应的值（也可以是表头的 event 参数对应的值）
 
             if (layEvent === 'detail') { //查看
-                top.xadmin.add_tab(data.name, '/PDS/panelsetslist/' + data.project_id)
+                top.xadmin.add_tab(data.name, '/project/projectdetail/' + data.project_id)
 
             }
 
@@ -116,6 +115,23 @@
                     username: '123'
                     , title: 'xxx'
                 });
+            }
+
+            else if (layEvent === 'newVersion') { //新建
+                {% verbatim %}
+                layer.confirm('确认要新建版本？', function (index) {
+                    top.xadmin.add_tab_version('版本编辑页面',"/PDS/editpdsversion/" +  data.project_id +  '/new')
+                    layer.close(index);
+                });
+                {% endverbatim %}
+            }
+            else if (layEvent === 'viewLast') { //最后
+                {% verbatim %}
+                layer.confirm('确认加载最后版本？', function (index) {
+                    top.xadmin.add_tab_version('版本编辑页面',"/PDS/editpdsversion/" +  data.project_id +  '/last')
+                    layer.close(index);
+                });
+                {% endverbatim %}
             }
         });
 
@@ -165,9 +181,16 @@
 
 <!-- 操作列 -->
 <script type="text/html" id="barDemo">
-    <a class="layui-btn layui-btn-xs"  lay-event="detail" >查看</a>
-    <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
-    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+    <div class="layui-btn-group">
+        {% verbatim %}
+        {{ d.is_newversion == 1 ? '<a class="layui-btn layui-btn-xs layui-btn-normal" lay-event="newVersion">新建</a>':'' }}
+        {{ d.is_newversion == 1 ? '':'<a class="layui-btn layui-btn-xs layui-btn-normal" lay-event="viewLast">最后</a>' }}
+        {{ d.is_newversion == 1 ? '':'<a class="layui-btn layui-btn-xs layui-btn-normal" lay-event="viewPds">查看</a>' }}
+        <a class="layui-btn layui-btn-xs" lay-event="detail">全部</a>
+        <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+        <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+        {% endverbatim %}
+    </div > 
 </script>
 
 <!-- 新建项目按钮 -->

@@ -37,10 +37,7 @@
     <div class="layui-row" style="width:750px">
         <table border="1" width="100%" style="margin-top: 5px;font-size: 15px;text-align: center;border:1px solid #000; line-height:25px;">
             <tbody>
-                <tr>
-                    <td>Project(项目名称)</td>
-                    <td colspan=3><b>{{ panelset.project.name }}</b></td>
-                </tr>
+                <tr><td>Project(项目名称)</td><td colspan=3><b>{{ panelset.project.name }}</b></td></tr>
                 <tr>
                     <td width="25%">Location(所在区域)</td>
                     <td width="25%">Prodution time(出厂时间)</td>
@@ -49,7 +46,7 @@
                 </tr>
                 <tr>
                     <td>{{ panelset.location }}</td>
-                    <td><b>{{ panelset.production_time | date:"Y-m-j" }}</b></td>
+                    <td><b>{{ panelset.production_time }}</b></td>
                     <td><b>{{ panelset.update_time | date:"Y-m-j"}}</b></td>
                     <td></td>
                 </tr>
@@ -72,161 +69,84 @@
     <div class="layui-row" style="margin-top: 5px; width:750px">
         <table border="1" width="100%" style="font-size: 15px;text-indent: 5px;border:1px solid #000; line-height:25px;">
             <tbody>
-                <tr>
-                    <td>Modular Height(标准高度)</td>
-                    <td width="50%"><b>{{ panelset.height }}mm</b></td>
-                </tr>
-                <tr>
-                    <td>Modular Width(标准长度)</td>
-                    <td><b>{{ panelset.width }}mm</b></td>
-                </tr>
-                <tr>
-                    <td>Bottom Clearance(底虚位)</td>
-                    <td><b>{{ panelset.model.bottom_clearance }}mm</b></td>
-                </tr>
-                <tr>
-                    <td>Carrier(轮子)</td>
-                    <td><b>{{ panelset.get_wheel_display }}</b></td>
-                </tr>
-                <tr>
-                    <td>Steel Plate(镀锌钢板)</td>
-                    <td><b>{{ panelset.model.get_steel_plate_display }}</b></td>
-                </tr>
-                <tr>
-                    <td>Basic Material(基本板材)</td>
-                    <td><b>{{ panelset.model.get_basic_material_display }}</b></td>
-                </tr>
-                <tr>
-                    <td>Top(顶部)</td>
-                    <td><b>{{ panelset.model.get_top_option_display }}</b></td>
-                </tr>
-                <tr>
-                    <td>Bottom(底部)</td>
-                    <td><b>{{ panelset.model.get_bottom_option_display }}</b></td>
-                </tr>
-                <tr>
-                    <td>Decoration thickness(装饰面厚度)</td>
-                    <td><b>{{ panelset.decoration_thickness }}mm</b></td>
-                </tr>
-                <tr>
-                    <td>Decoration description(装饰面说明)</td>
-                    <td><b>{{ panelset.decoration_text }}</b></td>
-                </tr>
-                <tr>
-                    <td>Horizontal Splice(横驳条)</td>
-                    <td><b>{{ panelset.splicer }}</b></td>
-                </tr>
-                <tr>
-                    <td>Rockwool Infill(补充料材料)</td>
-                    <td><b>{{ panelset.model.get_rockwool_display }}</b></td>
-                </tr>
-                <tr>
-                    <td>No.Of Operating Handle(挍手数量)</td>
-                    <td><b>{{ panelset.handle_quantity }}</b></td>
-                </tr>
-                <tr>
-                    <td>Acoustics field test Y/N (是否需要做隔音测试)</td>
-                    <td><b>{{ panelset.get_sound_test_display }}</b></td>
-                </tr>
-                <tr>
-                    <td>600 Panel face structure(600屏风结构选项)</td>
-                    <td><b>{{ panelset.get_face_structure_display }}</b></td>
-                </tr>
-                <tr>
-                    <td>Frame Color(边框颜色)</td>
-                    <td> <b>{{ panelset.frame_color }}</b></td>
-                </tr>
-                {% if panelset.has_ipd %}
-                <tr>
-                    <td>IPD Door Clearare Height(门中门门高)</td>
-                    <td> <b>{{ panelset.doorheight }}</b></td>
-                </tr>
-                <tr>
-                    <td>IPD locker Options(门中门门锁选择)</td>
-                    <td> <b>{{ panelset.keyoption }}</b></td>
-                </tr>
+                <tr><td>Modular Height(标准高度)</td><td width="50%"><b>{{ panelset.height }}mm</b></td></tr>
+                <tr><td>Modular Width(标准长度)</td><td><b>{{ panelset.width }}mm</b></td></tr>
+                <tr><td>Bottom Clearance(底虚位)</td><td><b>{{ panelset.model.bottom_clearance }}mm</b></td></tr>
+                <tr><td>Carrier(轮子)</td><td><b>{{ panelset.wheel_text }}</b></td></tr>
+                <tr><td>Steel Plate(镀锌钢板)</td><td><b>{{ panelset.model.get_steel_plate_display }}</b></td></tr>
+                <tr><td>Basic Material(基本板材)</td><td><b>{{ panelset.model.get_basic_material_display }}</b></td></tr>
+                <tr><td>Top(顶部)</td><td><b>{{ panelset.model.get_top_option_display }}</b></td></tr>
+                <tr><td>Bottom(底部)</td><td><b>{{ panelset.model.get_bottom_option_display }}</b></td></tr>
+                <tr><td>Decoration thickness(装饰面厚度)</td><td><b>{{ panelset.decoration_thickness }}mm</b></td></tr>
+                <tr><td>Decoration description(装饰面说明)</td><td><b>{{ panelset.decoration_text }}</b></td></tr>
+                <tr><td>Horizontal Splice(横驳条)</td><td><b>{{ panelset.splicer }}</b></td></tr>
+                <tr><td>Rockwool Infill(补充料材料)</td><td><b>{{ panelset.model.get_rockwool_display }}</b></td></tr>
+                <tr><td>No.Of Operating Handle(挍手数量)</td><td><b>{{ panelset.handle_quantity }}</b></td></tr>
+                <tr><td>Acoustics field test Y/N (是否需要做隔音测试)</td><td><b>{{ panelset.sound_test_text }}</b></td></tr>
+                {% if panelset.face_structure %}
+                <tr><td>600 Panel face structure(600屏风结构选项)</td><td><b>{{ panelset.face_structure_text }}</b></td></tr>
+                {% endif %}
+                <tr><td>Frame Color(边框颜色)</td><td> <b>{{ panelset.frame_color }}</b></td></tr>
+                {% if panelset.ipd_qu %}
+                <tr><td>IPD Door Clearare Height(门中门门高)</td><td> <b>{{ panelset.doorheight }}</b></td></tr>
+                <tr><td>IPD locker Options(门中门门锁选择)</td><td> <b>{{ panelset.keyoption }}</b></td></tr>
                 {% endif %}
             </tbody>
         </table>
     </div>
     <!-- 屏风详细 -->
     <div class="layui-row" style="margin-top: 5px; width:750px">
+        {% for panel in panelset.panels %}
+        {% if forloop.counter0|divisibleby:5 %}
         <div class="layui-col-xs1" style="width:10%">
             <table border="1" width="100%"style="text-align:center;font-size: 8px;border:1px solid #000;line-height:25px;">
-                <tr>
-                    <td><i>NO.#(编号)</i></td>
-                </tr>
-                <tr>
-                    <td><i>Qty.(数量)</i></td>
-                </tr>
-                <tr>
-                    <td><i>C.Spa(轮距)</i></td>
-                </tr>
-                <tr>
-                    <td height=135><i>SideA<br>(A面)<br>----------<br>SideB<br>(B面)</i></td>
-                </tr>
-                <tr>
-                    <td><i>Width(长度)</i></td>
-                </tr>
-                <tr>
-                    <td><i>Type(类型)</i></td>
-                </tr>
+                <tr><td><i>NO.#(编号)</i></td></tr>
+                <tr><td><i>Qty.(数量)</i></td></tr>
+                <tr><td><i>C.Spa(轮距)</i></td></tr>
+                <tr><td height=135><i>SideA<br>(A面)<br>----------<br>SideB<br>(B面)</i></td></tr>
+                <tr><td><i>Width(长度)</i></td></tr>
+                <tr><td><i>Type(类型)</i></td></tr>
             </table>
         </div>
-        {% for panel in panelset.panels %}
+        {% endif %}
+
         <div class="layui-col-xs2" style="width:18%">
             <table border="1" width="100%" style="text-align:center;font-size: 15px;border:1px solid #000;line-height:25px;">
-                <tr>
-                    <td><b>{{ panel.panle_no }}</b></td>
-                </tr>
-                <tr>
-                    <td><b>{{ panel.quantity }}</b></td>
-                </tr>
-                <tr>
-                    <td><b>{{ panel.carrier_space }}</b></td>
-                </tr>
-                <tr>
-                    <td height=135>
-                        <svg xmlns='http://www.w3.org/2000/svg' version='1.1' height='128' width='128'>
-                            <g stroke='black' stroke-width='1.5' fill='none'>
-                                {{ panel.panel_pic.leftside.svgcode | safe }}
-                                {{ panel.panel_pic.middle.svgcode | safe }}
-                                {{ panel.panel_pic.rightside.svgcode | safe }}
-                                {{ panel.panel_pic.wheel.svgcode | safe }}
-                                {{ panel.panel_pic.text.svgcode | safe }}
-                            </g>
-                        </svg>
-                    </td>
-                </tr>
-                <tr>
-                    <td><b>{{ panel.panel_width }}</b></td>
-                </tr>
-                <tr>
-                    <td><b>{{ panel.get_panel_type_display }}</b></td>
-                </tr>
+                <tr><td><b>{{ panel.panle_no }}</b></td></tr>
+                <tr><td><b>{{ panel.quantity }}</b></td></tr>
+                <tr><td><b>{{ panel.carrier_space }}</b></td></tr>
+                <tr><td height=135>
+                    <svg xmlns='http://www.w3.org/2000/svg' version='1.1' height='128' width='128'>
+                        <g stroke='black' stroke-width='1.5' fill='none'>{{ panel.svgcode | safe }}</g>
+                    </svg>
+                </td></tr>
+                <tr><td><b>{{ panel.panel_width }}</b></td></tr>
+                <tr><td><b>{{ panel.pictype_name }}</b></td></tr>
             </table>
         </div>
+        {% if not forloop.last and forloop.counter == 5 %}
+        <div class="layui-row" style="page-break-after: always;">
+            <h1>接下页</h1>
+        </div>
+        <div class="layui-row">
+            <h1>接上页</h1>
+        </div>
+        {% endif %}
+        {% empty %}
+        <h2><i>没有屏风。</i></h2>
         {% endfor %}
     </div>
     <div class="layui-row" style="margin-top: 5px; width:750px">
         <div class="layui-col-xs1"style="width:64%">
-            <table border="1" width="100%" style="text-align:left;font-size: 8px;border:1px solid #000;line-height:25px;">
-                <tr>
-                    <td><b>Note(备注):</b></td>
-                </tr>
-                <tr> 
-                    <td height="130">{{ panelset.note|safe }}</td>
-                </tr>
+            <table border="1" width="100%" style="text-align:left;font-size: 8px;border:1px solid #000;line-height:25px;text-indent: 5px;">
+                <tr><td><b>Note(备注):</b></td></tr>
+                <tr><td height="130">{{ panelset.note }}</td></tr>
             </table>
         </div>
         <div class="layui-col-xs1" style="width:36%">
-            <table border="1" width="100%" style="text-align:left;font-size: 8px;border:1px solid #000;line-height:25px;">
-                <tr>
-                    <td><b>Confirm(确认):</b></td>
-                </tr>
-                <tr>
-                    <td height="130"></td>
-                </tr>
+            <table border="1" width="100%" style="text-align:left;font-size: 8px;border:1px solid #000;line-height:25px;text-indent: 5px;">
+                <tr><td><b>Confirm(确认):</b></td></tr>
+                <tr><td height="130"></td></tr>
             </table>
         </div>
     </div>

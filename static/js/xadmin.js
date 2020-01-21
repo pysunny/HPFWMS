@@ -45,8 +45,36 @@
 	    this.set_data(title,url,id);
 	    element.tabChange('xbs_tab', id);
 
-	}
+  }
+  
+	Xadmin.prototype.add_tab_version = function (title,url) {
+		var id = "versionedit";//指定ID，这样可以使tab变唯一
+		//重复点击,删除旧，新建
+		for (var i = 0; i <$('.x-iframe').length; i++) {
+            if($('.x-iframe').eq(i).attr('tab-id')==id){
+                element.tabDelete('xbs_tab', id);
+            }
+        };
 
+		this.add_lay_tab(title,url,id);
+	    this.set_data(title,url,id);
+	    element.tabChange('xbs_tab', id);
+  }
+
+	Xadmin.prototype.add_tab_panel = function (title,url) {
+		var id = "paneledit";//指定ID，这样可以使tab变唯一
+		//重复点击,删除旧，新建
+		for (var i = 0; i <$('.x-iframe').length; i++) {
+            if($('.x-iframe').eq(i).attr('tab-id')==id){
+                element.tabDelete('xbs_tab', id);
+            }
+        };
+
+		this.add_lay_tab(title,url,id);
+	    this.set_data(title,url,id);
+	    element.tabChange('xbs_tab', id);
+  }
+  
   Xadmin.prototype.del_tab = function (id) {
 
     if(id){
