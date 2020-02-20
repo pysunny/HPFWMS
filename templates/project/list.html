@@ -83,7 +83,7 @@
             var layEvent = obj.event; //获得 lay-event 对应的值（也可以是表头的 event 参数对应的值）
 
             if (layEvent === 'detail') { //查看
-                top.xadmin.add_tab(data.name, '/project/projectdetail/' + data.project_id)
+                top.xadmin.add_tab(data.name + '-全部版本', '/project/projectdetail/' + data.project_id)
 
             }
 
@@ -118,20 +118,19 @@
             }
 
             else if (layEvent === 'newVersion') { //新建
-                {% verbatim %}
                 layer.confirm('确认要新建版本？', function (index) {
                     top.xadmin.add_tab_version('版本编辑页面',"/PDS/editpdsversion/" +  data.project_id +  '/new')
                     layer.close(index);
                 });
-                {% endverbatim %}
             }
-            else if (layEvent === 'viewLast') { //最后
-                {% verbatim %}
+            else if (layEvent === 'viewLast') { //最后版本
                 layer.confirm('确认加载最后版本？', function (index) {
                     top.xadmin.add_tab_version('版本编辑页面',"/PDS/editpdsversion/" +  data.project_id +  '/last')
                     layer.close(index);
                 });
-                {% endverbatim %}
+            }
+            else if (layEvent === 'viewPds') { //最后开工纸
+                top.xadmin.add_tab_version(data.name + '-最新开工纸',"/project/viewpds/" +  data.project_id +  '/last')
             }
         });
 

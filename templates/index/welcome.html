@@ -34,14 +34,18 @@
                             <td>工程名称</td>
                             <td>区域</td>
                             <td>用户</td>
+                            <td>版本</td>
+                            <td>开工纸</td>
                         <tr>
-                        {% for project in project_li %}
+                        {% for pdsversion in pdsversion_li %}
                         <tr>
                             <td>{{ forloop.counter }}</td>
-                            <td><a href="#" onclick="top.xadmin.add_tab('{{ project.name }}', '{% url 'PDS:panelsetslist' project.project_id %}')">{{ project.project_id }}</a</td>
-                            <td>{{ project.name }}</td>
-                            <td>{{ project.get_projectlocation_display }}</td>
-                            <td>{{project.user.username}}</td>
+                            <td><a href="#" onclick="top.xadmin.add_tab('{{ pdsversion.project.name }}', '{% url 'project:projectdetail' pdsversion.project.project_id %}')">{{ pdsversion.project.project_id }}</a</td>
+                            <td>{{ pdsversion.project.name }}</td>
+                            <td>{{ pdsversion.project.get_projectlocation_display }}</td>
+                            <td>{{ pdsversion.project.user.username }}</td>
+                            <td><a href="#" onclick="top.xadmin.add_tab('版本编辑页面', '{% url 'PDS:editpdsversion' pdsversion.project.project_id pdsversion.id %}')">{{ pdsversion.name }}</a></td>
+                            <td><a href="#" onclick="top.xadmin.add_tab('{{ pdsversion.project.name }}-查看开工纸', '{% url 'project:viewpds' pdsversion.project.project_id pdsversion.id %}')">查看PDS</a></td>
                         <tr>
                         {% endfor %}
                     </tbody>

@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.urls import path
-from project.views import ProjectListView, ProjectAddView, ProjectDataView, ProjectDeleteView, FavoritesActiveview, PublicActiveView, PublicListView, FavoritesListView, ProjectDetailView, saveVersionView, PdsversionDataView
+from project.views import ProjectListView, ProjectAddView, ProjectDataView, ProjectDeleteView, FavoritesActiveview, PublicActiveView, PublicListView, FavoritesListView, ProjectDetailView, saveVersionView, PdsversionDataView, viewPdsView
 
 app_name = 'project'
 urlpatterns = [
@@ -18,5 +18,7 @@ urlpatterns = [
     path('projectdetail/<project_id>', ProjectDetailView.as_view(), name='projectdetail'),# 项目细节
     path('saveversion', saveVersionView.as_view(), name='saveversion'),# 保存版本
     path('pdsversiondata/<project_id>', PdsversionDataView.as_view(), name='pdsversiondata'),# 版本数据
+
+    path('viewpds/<project_id>/<pdsversion_id>', viewPdsView.as_view(), name='viewpds'),# 参看开工纸
     
 ]

@@ -139,7 +139,6 @@ class ProjectDataView(View):
             
             tmp['user'] = User.objects.get(id=tmp['user']).username
 
-        print(context)
         # 使用ComplexEncoder格式化jason
         return HttpResponse(json.dumps(context))
 
@@ -213,6 +212,7 @@ class saveVersionView(View):
         # 获取第一个数据，也就是project_di
         project_di = conn.lrange(workspaceKeyName, 0, -1)[0]
         project = eval(project_di)
+        print(project)
         project_id = project.get("project_id")
 
         # 查询这个项目最新的版本名称
@@ -255,7 +255,7 @@ class saveVersionView(View):
                         ret = str(ret)
                     data.append(ret)
 
-
+                print(data)
                 if not all(data):
                     # 数据不完整，退回mysql节点
                     transaction.savepoint_rollback(save_id)
@@ -325,8 +325,52 @@ class PdsversionDataView(View):
         context = getData().getData(ret, 1, 99)
         # 获取data
         data = context["data"]
-        print(data)
         for tmp in data:
             tmp['user'] = User.objects.get(id=tmp['user']).username
         # 使用ComplexEncoder格式化jason
         return HttpResponse(json.dumps(context))
+
+#/project/viewpds 查看某版本的全部PDS
+class viewPdsView(View):
+    def get(self, request, project_id, pdsversion_id):
+        # 获取项目详细
+        project = Projects.objects.get(project_id=project_id)
+        # 如果是最后，就直接获取最后版本
+        if pdsversion_id == 'last':
+            pdsversion = PdsVersion.objects.filter(project=project_id).latest('create_time')
+            pdsversion_id = pdsversion.id
+        else:
+            pdsversion = PdsVersion.objects.get(id=pdsversion_id)
+        # 获取全部组
+        panelsets = Panelsets.objects.filter(pdsversion=pdsversion)
+        # 遍历添加属性
+        panelcount = len(panelsets)
+        for tmp in panelsets:
+            panels = Panels.objects.filter(panelset=tmp)
+            for panel in panels:
+                # 添加全部组件的代码
+                panel.svgcode = "%s%s%s%s%s"% (panel.panel_pic.leftside.svgcode, panel.panel_pic.middle.svgcode, panel.panel_pic.rightside.svgcode, panel.panel_pic.wheel.svgcode, panel.panel_pic.text.svgcode)
+                panel.pictype_name = panel.panel_pic.get_pictype_display()
+            # 添加项目属性
+            tmp.project = project
+            # 添加屏风细节属性
+            tmp.panels = panels
+            tmp.panelcount = panelcount
+
+        # 添加浏览记录(查看版本及打印)
+        user = request.user
+        conn = get_redis_connection('default')
+        history_key = 'history_%d' % user.id
+        # 移除
+        conn.lrem(history_key, 0, pdsversion_id)
+        # 插入
+        conn.lpush(history_key, pdsversion_id)
+        # 只保存20条
+        conn.ltrim(history_key, 0 ,19)
+
+        # 组织上下文
+        context = {
+            'panelsets': panelsets
+        }
+        # 返回应答
+        return render(request, 'PDS/view_pds.html', context)
