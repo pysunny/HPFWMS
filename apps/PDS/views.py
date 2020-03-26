@@ -126,7 +126,7 @@ class workspaceView(View):
             # 更新字典，添加添加svgcode
             panel.update({'svgcode':svgcode, 'pictype_name':pictype_name})
         
-        # 获取全部的模式，并传到前端
+        # 获取全部的屏风型号数据，并传到前端
         models = PanelModels.objects.all()
 
         # 获取第一个数据，也就是project_di
@@ -197,7 +197,6 @@ class workspaceView(View):
                     for tmp in ['lockeyoption_a', 'lockeyoption_b', 'doorheight']:
                         set_di.pop(tmp)
 
-
         if postData.get('mod') == 'move_left':
             #元素向左移
             index = int(postData.get('index'))
@@ -237,12 +236,26 @@ class workspaceView(View):
 
 class panelSelView(View):
     def get(self, request, set_index):
-        # 获取全部屏风图元
-        pics = PicsModels.objects.all()
+        # 获取paneltype, wheel_type, pictype
+        paneltype = request.GET.get('paneltype')
+        wheel_type = request.GET.get('wheel_type')
+        pictype = request.GET.get('pictype')
+        # 计算轮子数量, 多向式是两个，或者 0 ,单向式 是 1 
+        wheelquantity = [0,2] if wheel_type == '0' else [1]
+
+        pics = ""
+        if not pictype == None:
+            # 获取全部屏风图元
+            pics = PicsModels.objects.filter(paneltype=paneltype, wheelquantity__in=wheelquantity, pictype=pictype)
+
         # 组织上下文
         context = {
+            'PicsModels':PicsModels,
             'pics':pics,
-            'set_index':set_index
+            'set_index':set_index,
+            'paneltype':paneltype,
+            'wheel_type':wheel_type,
+            'pictype':pictype if pictype == None else int(pictype)
         }
         return render(request, 'PDS/panel_sel.html', context)
 
@@ -374,7 +387,7 @@ class EditPdsVersionView(View):
             set_di.update({'panel_li':panels,'ipd_qu':ipd_qu})
             # 数据转换成Redis   
             workData = str(set_di)
-            conn.rpush(workspaceKeyName, workData)
+            conn.rpush(workspaceKeyName, workData) 
 
         # 添加浏览记录(查看版本及打印)
         history_key = 'history_%d' % user.id

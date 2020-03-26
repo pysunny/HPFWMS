@@ -16,33 +16,16 @@
   <div class="layui-row layui-col-space15">
     {% csrf_token %}
     <div class="layui-row">
-      {% csrf_token %}
       <div class="layui-card">
         <div class="layui-card-body ">
           <form class="layui-form layui-col-space5">
-            <div class="layui-col-xs12">
-              <div class="layui-show-xs-block">
-                <input type="text" name="username" placeholder="请输入搜索" autocomplete="off" class="layui-input"></div>
-            </div>
-            <div class="layui-col-xs6">
-              <div class="layui-show-xs-block">
-                <select name="paneltype" lay-verify="required">
-                  <option value="">选择图元分类</option>
-                  {% for key, value in PicsModels.PANEL_TYPE_CHOICES %}
-                  <option value="{{ key }}" {% if pic.pictype == key %} selected="selected" {% endif %}>{{ value }}</option>
-                  {% endfor %}
-                </select>
-              </div>
-            </div>
-            <div class="layui-col-xs6">
-              <div class="layui-show-xs-block">
-                <select name="pictype" lay-verify="required">
-                  <option value="">选择屏风种类</option>
-                  {% for key, value in PicsModels.PIC_TYPE_CHOICES %}
-                  <option value="{{ key }}" {% if pic.paneltype == key %} selected="selected" {% endif %}>{{ value }}</option>
-                  {% endfor %}
-                </select>
-              </div>
+            <div class="layui-show-xs-block">
+              <select name="pictype" lay-verify="required">
+                <option value="">选择图种类</option>
+                {% for key, value in PicsModels.PIC_TYPE_CHOICES %}
+                <option value="{{ key }}" {% if pictype == key %} selected="selected" {% endif %}>{{ value }}</option>
+                {% endfor %}
+              </select>
             </div>
           <table>
             <tbody>
@@ -75,6 +58,8 @@
                 {% if forloop.last %}
                   </tr>
                 {% endif %}
+                {% empty %}
+                <h2><i>没有找到图块,请完整输入,或者新建</i></h2>
               {% endfor %}
             </tbody>
           </table>
@@ -98,6 +83,7 @@
       data.panel_pic_id = obj.value;
       data.csrfmiddlewaretoken = $("[name='csrfmiddlewaretoken']").val()
       data.pictype = $(obj.elem).attr("pictype")
+      console.log(data)
       // ajax请求
       $.post("{% url 'PDS:workspace' set_index %}", data, function (data) {
         if (data.res == 2) {
@@ -110,6 +96,12 @@
         }
       })
     });
+
+    form.on('select', function(data){
+      pictype = data.value;
+      window.location.href = '{% url "PDS:panel_sel" set_index%}?paneltype={{ paneltype }}&wheel_type={{ wheel_type }}&pictype=' + pictype
+      // console.log(pictype); //得到被选中的值
+    }); 
   });
 
 </script>

@@ -7,7 +7,12 @@ class PanelModels(BaseModel):
     SERIES_CHOICES = (
         (0,'CT680'),
         (1,'5000'),
-        (2,'600')
+        (2,'600'),
+        (3,'Gl'),
+        (4,'GF'),
+        (5,'CTK'),
+        (6,'P5K'),
+        (7,'P6K')
     )
     BASIC_MATERIAL_CHOICES = (
         (0,'Gypsum Board(石膏板)'),
@@ -43,6 +48,12 @@ class PanelModels(BaseModel):
         (1, '无岩棉')
     )
 
+    PANEL_TYPE_CHOICES = (
+        (0,'普通屏风'),
+        (1,'玻璃屏风'),
+        (2,'收板间门')
+    )
+
     name = models.CharField(max_length=128, verbose_name='型号名称')
     series = models.SmallIntegerField(choices=SERIES_CHOICES, verbose_name='系列')
     desc = models.CharField(max_length=256, verbose_name='型号描述')
@@ -56,6 +67,7 @@ class PanelModels(BaseModel):
     wheel_type = models.SmallIntegerField(choices=WHEEL_TYPE_CHOICES, verbose_name='屏风类型', default=0)
     is_activate = models.BooleanField(default=False, verbose_name='激活标记')
     user = models.ForeignKey('user.User', on_delete=models.CASCADE, verbose_name='创建者')
+    paneltype = models.SmallIntegerField(choices=PANEL_TYPE_CHOICES, verbose_name='屏风种类', default=0)
 
     class Meta:
         db_table = 'df_models'
@@ -66,11 +78,7 @@ class PanelModels(BaseModel):
 class PartPicModels(BaseModel):
     """ 屏风图元组件类型类 """
     # 屏风种类选择
-    PANEL_TYPE_CHOICES = (
-        (0,'普通屏风'),
-        (1,'玻璃屏风'),
-        (2,'收板间门')
-    )
+    PANEL_TYPE_CHOICES = PanelModels.PANEL_TYPE_CHOICES
     # 组件位置选择
     PIC_PART_CHOICES = (
         (0,'左边'),
@@ -95,7 +103,7 @@ class PartPicModels(BaseModel):
 class PicsModels(BaseModel):
     """ 屏风图元类型类 """
     # 屏风种类选择
-    PANEL_TYPE_CHOICES = PartPicModels.PANEL_TYPE_CHOICES
+    PANEL_TYPE_CHOICES = PanelModels.PANEL_TYPE_CHOICES
     WHEEL_QUANTITY_CHOICES = (
         (0,"双轮"),
         (1,"单轮"),

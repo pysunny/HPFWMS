@@ -82,6 +82,18 @@ class ModelsView(View):
             return JsonResponse({'res': 1, 'errmsg': '此型号结构已经存在'})
         
         # 业务处理
+        # 添加屏风类型,根据屏风系列
+        series = int(postData.get('series'))
+        if series in [0,1,2]:
+            paneltype = 0
+        if series in [3,4]:
+            paneltype = 1
+        if series in [5,6,7]:
+            paneltype = 2
+        
+        # 更新字典
+        postData.update({'paneltype':paneltype})
+
         # 生成字典，排除csrfmiddlewaretoken,model_id
         exclude_li = ["csrfmiddlewaretoken", "model_id"]
         data_di = {key: value for key, value in postData.items() if key not in exclude_li}
@@ -180,7 +192,7 @@ class PicsView(View):
         # 根据轮子代码定义单向式或者多向式,注意 修改了数据库 可能要更新。
         if request.POST.get('wheel') == '41':
             wheelquantity = "0"
-        elif request.POST.get('wheel') == '47':
+        elif request.POST.get('wheel') == '46':
             wheelquantity = "2"
         else:
             wheelquantity = "1"

@@ -44,7 +44,7 @@
                             <td>{{ pdsversion.project.name }}</td>
                             <td>{{ pdsversion.project.get_projectlocation_display }}</td>
                             <td>{{ pdsversion.project.user.username }}</td>
-                            <td><a href="#" onclick="top.xadmin.add_tab('版本编辑页面', '{% url 'PDS:editpdsversion' pdsversion.project.project_id pdsversion.id %}')">{{ pdsversion.name }}</a></td>
+                            <td><a href="#" onclick="top.xadmin.add_tab_version('版本编辑页面', '{% url 'PDS:editpdsversion' pdsversion.project.project_id pdsversion.id %}')">{{ pdsversion.name }}</a></td>
                             <td><a href="#" onclick="top.xadmin.add_tab('{{ pdsversion.project.name }}-查看开工纸', '{% url 'project:viewpds' pdsversion.project.project_id pdsversion.id %}')">查看PDS</a></td>
                         <tr>
                         {% endfor %}
@@ -56,3 +56,4 @@
 </div>
 {% endblock boby %}
 {# 网页主体右侧文件块 #}
+

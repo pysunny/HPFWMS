@@ -23,27 +23,25 @@
         <div class="layui-col-md12">
             <div class="layui-card">
                 <div class="layui-card-body ">
-                    <form class="layui-form layui-col-space5">
+                    <form class="layui-form layui-col-space5" autocomplete="off">
                         <div class="layui-inline layui-show-xs-block">
-                            <input class="layui-input" autocomplete="off" placeholder="开始日" name="start" id="start">
+                            <input class="layui-input" placeholder="开始日" name="start" id="start">
                         </div>
                         <div class="layui-inline layui-show-xs-block">
-                            <input class="layui-input" autocomplete="off" placeholder="截止日" name="end" id="end"></div>
+                            <input class="layui-input" placeholder="截止日" name="end" id="end">
+                        </div>
                         <div class="layui-inline layui-show-xs-block">
-                            <input type="text" name="username" placeholder="请输入项目名称" autocomplete="off"
-                                class="layui-input"></div>
-                        <div class="layui-inline layui-show-xs-block">
-                            <button class="layui-btn" lay-submit="" lay-filter="sreach">
-                                <i class="layui-icon">&#xe615;</i></button>
+                            <input type="text" name="name" placeholder="请输入项目名称" class="layui-input" id="name">
+                        </div>
+                        <div class="layui-inline layui-show-xs-block"> 
+                            <button class="layui-btn" type="button" id="search-btn"><i class="layui-icon">&#xe615;</i></button>
+                            <button class="layui-btn" type="button" id="reset-btn">重置</button>
                         </div>
                     </form>
                     <table id="demo" lay-filter="test"></table>
                     {% verbatim %}
                     <script type="text/html" id="test-table-is_favorites">
                         <input type="checkbox" name="is_favorites" lay-skin="switch" lay-text="已收藏|未收藏" lay-filter="test-table-is_favorites" value="{{ d.project_id }}" {{ d.is_favorites == 1 ? 'checked' : '' }}>
-                    </script>
-                    <script type="text/html" id="test-table-is_public">
-                        <input type="checkbox" name="is_public" lay-skin="switch" lay-text="已发布|未公开" lay-filter="test-table-is_public" value="{{ d.project_id }}" {{ d.is_public == 1 ? 'checked' : '' }}>
                     </script>
                     {% endverbatim %}
                 </div>
@@ -58,23 +56,22 @@
 <script>
     layui.use('table', function () {
         var table = layui.table, form = layui.form,$ = layui.$;
-        table.render({
+        var table_data = table.render({
             elem: '#demo'
             , height: 500
             , url: "{% url 'project:data' %}" //数据接口
-            , where:{page_name: 'list'}
             , page: true //开启分页
             , toolbar: '#toolbarDemo'
             , cols: [[ //表头
                 { field: 'xieliehao', width: 80, title: '序列号', type: 'numbers' }
-                , { field: 'project_id', title: '工程编号' }
+                , { field: 'project_id', width: 160, title: '工程编号' }
                 , { field: 'name', title: '工程名称' }
                 , { field: 'user', title: '用户' }
                 , { field: 'projectlocation', title: '区域' }
                 , { field: 'address', title: '工程地址' }
                 , { field: 'create_time', title: '创建时间' }
-                , { field: 'is_favorites', title: '是否收藏' , templet: '#test-table-is_favorites', unresize: true}
-                , { fixed: 'right', title: '操作', width: 300, align: 'center', toolbar: '#barDemo' }
+                , { field: 'is_favorites', title: '是否收藏' , templet: '#test-table-is_favorites'}
+                , { fixed: 'right', title: '操作', width: 250, align: 'center', toolbar: '#barDemo' }
             ]]
         });
 
@@ -155,26 +152,29 @@
             })
         });
 
-        //监听发布激活操作
-        form.on('switch(test-table-is_public)', function(obj){
-            var json = {};
-            json.csrfmiddlewaretoken = $("[name='csrfmiddlewaretoken']").val()
-            json.is_public = obj.elem.checked;
-            json.project_id = this.value;
-            // console.log(json)
-            $.post("{% url 'project:publicactive' %}", json, function (data) {
-                if (data.res == 2) {
-                    layer.tips(obj.elem.checked, obj.othis);
+
+        // 搜索按钮
+        $('#search-btn').click(function () {
+            table_data.reload({
+                where: { //设定异步数据接口的额外参数，任意设
+                    start: $('#start').val()
+                    , end: $('#end').val()
+                    , name: $('#name').val()
                 }
-                else {
-                    // 数据验证有问题
-                    // layer.tips(obj.othis.checked, obj.elem);
-                    layer.msg(data.errmsg, {
-                        time: 2000, //2s后自动关闭
-                    });
+            });
+        })
+
+        // 重置按钮
+        $('#reset-btn').click(function () {
+            $('#start').val("");
+            $('#end').val("");
+            $('#name').val("")
+            table_data.reload({
+                where: { //设定异步数据接口的额外参数，任意设
                 }
-            })
-        });
+            });
+        })
+
     });
 </script>
 

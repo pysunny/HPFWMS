@@ -96,7 +96,7 @@
             <select name="model_id" lay-verify="required" id="model" lay-search lay-filter="model">
               <option value=""></option>
               {% for model in models %}
-              <option value="{{ model.id }}" series="{{ model.series }}" wheel_type="{{ model.wheel_type }}" {% if panelset.model_id == model.id %} selected="selected" {% endif %}>{{ model.name }}({{ model.desc }})</option>
+              <option value="{{ model.id }}" series="{{ model.series }}" paneltype="{{ model.paneltype }}" wheel_type="{{ model.wheel_type }}" {% if panelset.model_id == model.id %} selected="selected" {% endif %}>{{ model.name }}({{ model.desc }})</option>
               {% endfor %}
             </select>
           </div>
@@ -188,7 +188,7 @@
                   <option value="装饰面由客户负责">
                   <option value="防火板完成面">
                   <option value="软包装修面，布由客户提供，厂部安装">
-                  <option value="硬包装饰面，布由客户提供，厂部安装">
+                  <option value="硬包装修面，布由客户提供，厂部安装">
                 </datalist>
                 </div>
             </div>

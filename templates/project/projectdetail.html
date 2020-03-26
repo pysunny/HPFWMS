@@ -44,6 +44,11 @@
         </table>
         <fieldset class="layui-elem-field layui-field-title"><legend>开工纸</legend></fieldset>
         <table id="pds_id" lay-filter="pds_if"></table>
+        {% verbatim %}
+        <script type="text/html" id="test-table-is_public">
+            <input type="checkbox" name="is_favorites" lay-skin="switch" lay-text="已公开|未公开" lay-filter="test-table-is_public" value="{{ d.project_id }}" {{ d.is_public == 1 ? 'checked' : '' }}>
+        </script>
+        {% endverbatim %}
         <fieldset class="layui-elem-field layui-field-title"><legend>领料单列表</legend></fieldset>
         <!-- <h2>COMING SOON</h2> -->
         <fieldset class="layui-elem-field layui-field-title"><legend>非标物料，装饰面报价列表</legend></fieldset>
@@ -75,7 +80,7 @@
                 , { field: 'bpSum', title: '基本板' , width: 80}
                 , { field: 'ipdSum', title: '门中门' , width: 80}
                 , { field: 'bspSum', title: '波胶板' , width: 80}
-                , { field: 'is_public', title: '是否公开', width: 120}
+                , { field: 'is_public', title: '是否公开', width: 120, templet: '#test-table-is_public'}
                 , { fixed: 'right', title: '操作', width: 120, align: 'center', toolbar: '#barPds' }
             ]]
             , toolbar: '#toolbarDemo'
@@ -100,12 +105,33 @@
         table.on('toolbar(pds_if)', function (obj) {
             switch (obj.event) {
                 case 'newVersion':
-                layer.confirm('确认要新建版本？', function (index) {
-                    top.xadmin.add_tab_version('版本编辑页面',"{% url 'PDS:editpdsversion' project.project_id 'new' %}")
-                    layer.close(index);
-                });
-                break;
+                    layer.confirm('确认要新建版本？', function (index) {
+                        top.xadmin.add_tab_version('版本编辑页面', "{% url 'PDS:editpdsversion' project.project_id 'new' %}")
+                        layer.close(index);
+                    });
+                    break;
             };
+        });
+
+        //监听收藏激活操作
+        form.on('switch(test-table-is_favorites)', function (obj) {
+            var json = {};
+            json.csrfmiddlewaretoken = $("[name='csrfmiddlewaretoken']").val()
+            json.is_favorites = obj.elem.checked;
+            json.project_id = this.value;
+            // console.log(json)
+            $.post("{% url 'project:favoritesactive' %}", json, function (data) {
+                if (data.res == 2) {
+                    layer.tips(obj.elem.checked, obj.othis);
+                }
+                else {
+                    // 数据验证有问题
+                    // layer.tips(obj.othis.checked, obj.elem);
+                    layer.msg(data.errmsg, {
+                        time: 2000, //2s后自动关闭
+                    });
+                }
+            })
         });
     });
 </script>

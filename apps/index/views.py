@@ -12,7 +12,7 @@ class IndexView(LoginRequiredMixin, View):
         return render(request, 'index/index.html')
 
 
-class WelcomeView(LoginRequiredMixin, View):
+class WelcomeView(View):
     def get(self, request):
         # 获取用户的个人信息
         user = request.user

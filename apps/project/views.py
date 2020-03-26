@@ -4,11 +4,12 @@ from user.models import User
 from project.models import Projects, Favorites, PdsVersion
 from PDS.models import Panelsets, Panels
 from django.http import JsonResponse, HttpResponse
-from datetime import datetime
 from utils.getData import getData
 from django_redis import get_redis_connection
 from django.db import transaction
 import json
+import time
+import datetime
 
 # /project/list 项目列表
 class ProjectListView(View):
@@ -82,7 +83,7 @@ class ProjectAddView(View):
         
         # 下面是新建模式
         # 生产项目编号
-        project_id = location + str(user.id) + datetime.now().strftime('%Y%m%d%H%M%S')
+        project_id = location + str(user.id) + datetime.datetime.now().strftime('%Y%m%d%H%M%S')
         # 保存数据到数据库
         project = Projects.objects.create(
             project_id=project_id,
@@ -95,47 +96,122 @@ class ProjectAddView(View):
         # 返回应答
         return JsonResponse({'res': 2})
 
-# /project/data 数据接口
-class ProjectDataView(View):
+# # /project/data 数据接口
+# class ProjectDataView(View):
+#     def get(self, request):
+#         # 获取全部用户的数据
+#         user = request.user
+#         page = int(request.GET.get('page'))
+#         limit = int(request.GET.get('limit'))
+#         page_name = request.GET.get('page_name')
+#         # 如果页面名是list，就返回个人地区的项目列表
+#         if page_name == "list":
+#             # 获取的区域权限
+#             location_permiss = eval(user.location_permiss)
+#             # 获取用户区域的全部项目
+#             ret = Projects.objects.filter(projectlocation__in=location_permiss, is_delete=False)
+#         # 如果页面名是publiclist，就返回公开项目的列表
+#         if page_name == "publiclist":
+#             ret = Projects.objects.filter(is_public=True, is_delete=False)
+
+#         # 如果页面名是favorites，就返回收藏的项目列表
+#         if page_name == "favoriteslist":
+#             #获取收藏夹中名字是user的条目
+#             ret = Favorites.objects.filter(user=user, is_favorites=True).values("project_id")
+#             ret = Projects.objects.filter(project_id__in=ret)
+
+#         # 调用分页的方法 获取数据
+#         context = getData().getData(ret, page, limit)
+#         # 获取data
+#         data = context["data"]
+#         for tmp in data:
+#             if not page_name == "publiclist":
+#                 # 初始值为false
+#                 tmp['is_favorites'] = False
+#                 # 获取收藏数据user project
+#                 project = Projects.objects.get(project_id=tmp['project_id'])
+#                 # 在收藏夹模型找，如果有数据就返回ture
+#                 try:
+#                     favorites = Favorites.objects.filter(user=user, project=project, is_favorites=True)
+#                 except:
+#                     favorites = None
+#                 if favorites:
+#                     tmp['is_favorites'] = True
+            
+#             tmp['user'] = User.objects.get(id=tmp['user']).username
+
+#         # 使用ComplexEncoder格式化jason
+#         return HttpResponse(json.dumps(context))
+
+# /project/favoritesdata 数据接口
+class FavoritesDataView(View):
     def get(self, request):
         # 获取全部用户的数据
         user = request.user
-        page = int(request.GET.get('page'))
-        limit = int(request.GET.get('limit'))
-        page_name = request.GET.get('page_name')
-        # 如果页面名是list，就返回个人地区的项目列表
-        if page_name == "list":
-            # 获取的区域权限
-            location_permiss = eval(user.location_permiss)
-            # 获取用户区域的全部项目
-            ret = Projects.objects.filter(projectlocation__in=location_permiss, is_delete=False)
-        # 如果页面名是publiclist，就返回公开项目的列表
-        if page_name == "publiclist":
-            ret = Projects.objects.filter(is_public=True, is_delete=False)
+        page = 1
+        limit = 20
 
         # 如果页面名是favorites，就返回收藏的项目列表
-        if page_name == "favoriteslist":
-            #获取收藏夹中名字是user的条目
-            ret = Favorites.objects.filter(user=user, is_favorites=True).values("project_id")
-            ret = Projects.objects.filter(project_id__in=ret)
+        #获取收藏夹中名字是user的条目
+        ret = Favorites.objects.filter(user=user, is_favorites=True).values("project_id")
+        ret = Projects.objects.filter(project_id__in=ret).order_by('-update_time')
 
         # 调用分页的方法 获取数据
         context = getData().getData(ret, page, limit)
         # 获取data
         data = context["data"]
         for tmp in data:
-            if not page_name == "publiclist":
-                # 初始值为false
-                tmp['is_favorites'] = False
-                # 获取收藏数据user project
-                project = Projects.objects.get(project_id=tmp['project_id'])
-                # 在收藏夹模型找，如果有数据就返回ture
-                try:
-                    favorites = Favorites.objects.filter(user=user, project=project, is_favorites=True)
-                except:
-                    favorites = None
-                if favorites:
-                    tmp['is_favorites'] = True
+            tmp['is_favorites'] = False
+            # 获取收藏数据user project
+            project = Projects.objects.get(project_id=tmp['project_id'])
+            # 在收藏夹模型找，如果有数据就返回ture
+            try:
+                favorites = Favorites.objects.filter(user=user, project=project, is_favorites=True)
+            except:
+                favorites = None
+            if favorites:
+                tmp['is_favorites'] = True
+            
+            tmp['user'] = User.objects.get(id=tmp['user']).username
+
+        # 使用ComplexEncoder格式化jason
+        return HttpResponse(json.dumps(context))
+
+# /project/list_data 全部项目数据接口
+class ProjectDataView(View):
+    def get(self, request):
+        # 获取全部用户的数据
+        user = request.user
+        page = int(request.GET.get('page'))
+        limit = int(request.GET.get('limit'))
+        # 获取开始时间，如果为空，时间为2019-01-01, 否则为输入时间
+        start = datetime.date(2019, 1, 1) if not request.GET.get('start') else datetime.datetime.strptime(request.GET.get('start'),'%Y-%m-%d')
+        # 获取结束时间，如果为空，时间为今天, 否则为输入时间
+        end = datetime.date.today() if not request.GET.get('end') else datetime.datetime.strptime(request.GET.get('end'),'%Y-%m-%d')
+        name = request.GET.get('name')
+        # 获取的区域权限
+        location_permiss = eval(user.location_permiss)
+        # 如果搜索名称有值
+        if name:
+            ret = Projects.objects.filter(projectlocation__in=location_permiss, name__icontains=name, create_time__range=[start, end + datetime.timedelta(days=1)], is_delete=False).order_by('-create_time')
+        # 如果为空,为全部数据
+        else:
+            ret = Projects.objects.filter(projectlocation__in=location_permiss, create_time__range=[start, end + datetime.timedelta(days=1)], is_delete=False).order_by('-create_time')
+        # 调用分页的方法 获取数据
+        context = getData().getData(ret, page, limit)
+        # 获取data
+        data = context["data"]
+        for tmp in data:
+            tmp['is_favorites'] = False
+            # 获取收藏数据user project
+            project = Projects.objects.get(project_id=tmp['project_id'])
+            # 在收藏夹模型找，如果有数据就返回ture
+            try:
+                favorites = Favorites.objects.filter(user=user, project=project, is_favorites=True)
+            except:
+                favorites = None
+            if favorites:
+                tmp['is_favorites'] = True
             
             tmp['user'] = User.objects.get(id=tmp['user']).username
 
@@ -152,22 +228,6 @@ class ProjectDeleteView(View):
         # 返回应答
         return JsonResponse({'res': 2})
         
-# /project/publicactive 删除项目
-class PublicActiveView(View):
-    def post(self, request):
-        # 获取要删除的项目ID
-        project_id = request.POST.get('project_id')
-        is_public = request.POST.get('is_public')
-        # 转换数据
-        if is_public == "true":
-            is_public = True
-        else:
-            is_public = False
-        # 更新数据库
-        Projects.objects.filter(project_id=project_id).update(is_public=is_public)
-        # 返回应答
-        return JsonResponse({'res': 2})
-
 # /project/favorites 验证收藏
 class FavoritesActiveview(View):
     def post(self, request):
@@ -178,18 +238,20 @@ class FavoritesActiveview(View):
         project = Projects.objects.get(project_id=project_id)
         # 先判断是否条目，如果没有就想创建
         try:
-            favorites = Favorites.objects.filter(user=user, project=project)
+            favorites = Favorites.objects.get(user=user, project=project)
         except:
             favorites = None
         if not favorites:
             Favorites.objects.create(user=user, project=project, is_favorites=False)
-            favorites = Favorites.objects.filter(user=user, project=project)
+            favorites = Favorites.objects.get(user=user, project=project)
 
         # 根据is_favorites去修改数据库
         if is_favorites == "true":
-            favorites.update(is_favorites=True)
+            favorites.is_favorites=True
+            favorites.save()
         else:
-            favorites.update(is_favorites=False)
+            favorites.is_favorites=False
+            favorites.save()
         return JsonResponse({'res': 2})
 
 #/projectdetail/<project_id> 屏风细节

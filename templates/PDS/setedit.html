@@ -96,7 +96,7 @@
             <select name="model_id" lay-verify="required" id="model" lay-search lay-filter="model">
               <option value=""></option>
               {% for model in models %}
-              <option value="{{ model.id }}" series="{{ model.series }}" wheel_type="{{ model.wheel_type }}" {% if panelset.model_id == model.id %} selected="selected" {% endif %}>{{ model.name }}({{ model.desc }})</option>
+              <option value="{{ model.id }}" series="{{ model.series }}" paneltype="{{ model.paneltype }}" wheel_type="{{ model.wheel_type }}" {% if panelset.model_id == model.id %} selected="selected" {% endif %}>{{ model.name }}({{ model.desc }})</option>
               {% endfor %}
             </select>
           </div>
@@ -472,16 +472,24 @@
     }
     // 添加屏风按钮
     $("#add-panel-btm").click(function () {
-      var index = layer.open({
-        title: '添加型号'
-        , type: 2
-        , area: ['450px', '100%']
-        , offset: 'r'
-        , shade: 0
-        , anim: 2
-        , shadeClose: false
-        , content: '{% url "PDS:panel_sel" set_index%}'
-      });
+      if ($('#model').val() == "") {
+        alert("请选择屏风型号");
+        return false;
+      } else {
+        var wheel_type = $('#model').find('option:selected').attr('wheel_type');
+        var paneltype = $('#model').find('option:selected').attr('paneltype');
+        var index = layer.open({
+          title: '添加型号'
+          , id :'panel_sel'
+          , type: 2
+          , area: ['450px', '100%']
+          , offset: 'r'
+          , shade: 0
+          , anim: 2
+          , shadeClose: false
+          , content: '{% url "PDS:panel_sel" set_index%}?paneltype=' + paneltype + '&wheel_type=' + wheel_type
+        });
+      }
     })
     // 删除按钮
     $(".remove-btn").click(function () {

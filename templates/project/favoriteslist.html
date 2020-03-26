@@ -29,9 +29,6 @@
                     <script type="text/html" id="test-table-is_favorites">
                         <input type="checkbox" name="is_favorites" lay-skin="switch" lay-text="已收藏|未收藏" lay-filter="test-table-is_favorites" value="{{ d.project_id }}" {{ d.is_favorites == 1 ? 'checked' : '' }}>
                     </script>
-                    <script type="text/html" id="test-table-is_public">
-                        <input type="checkbox" name="is_public" lay-skin="switch" lay-text="已发布|未公开" lay-filter="test-table-is_public" value="{{ d.project_id }}" {{ d.is_public == 1 ? 'checked' : '' }}>
-                    </script>
                     {% endverbatim %}
                 </div>
             </div>
@@ -47,22 +44,17 @@
         var table = layui.table, form = layui.form,$ = layui.$;
         table.render({
             elem: '#demo'
-            , height: 500
-            , url: "{% url 'project:data' %}" //数据接口
-            , where:{page_name: 'favoriteslist'}
-            , page: true //开启分页
-            , toolbar: '#toolbarDemo'
+            , url: "{% url 'project:favoritesdata' %}" //数据接口
             , cols: [[ //表头
                 { field: 'xieliehao', width: 80, title: '序列号', type: 'numbers' }
-                , { field: 'project_id', title: '工程编号' }
+                , { field: 'project_id', width: 160, title: '工程编号' }
                 , { field: 'name', title: '工程名称' }
                 , { field: 'user', title: '用户' }
                 , { field: 'projectlocation', title: '区域' }
                 , { field: 'address', title: '工程地址' }
                 , { field: 'create_time', title: '创建时间' }
-                , { field: 'is_favorites', title: '是否收藏' , templet: '#test-table-is_favorites', unresize: true}
-                , { field: 'is_public', title: '是否公开' , templet: '#test-table-is_public', unresize: true}
-                , { fixed: 'right', title: '操作', width: 200, align: 'center', toolbar: '#barDemo' }
+                , { field: 'is_favorites', title: '是否收藏' , templet: '#test-table-is_favorites' }
+                , { fixed: 'right', title: '操作', width: 250, align: 'center', toolbar: '#barDemo' }
             ]]
         });
 
@@ -71,7 +63,7 @@
             var layEvent = obj.event; //获得 lay-event 对应的值（也可以是表头的 event 参数对应的值）
 
             if (layEvent === 'detail') { //查看
-                top.xadmin.add_tab(data.name, '/PDS/panelsetslist/' + data.project_id)
+                top.xadmin.add_tab(data.name + '-全部版本', '/project/projectdetail/' + data.project_id)
 
             }
 
@@ -104,6 +96,22 @@
                     , title: 'xxx'
                 });
             }
+
+            else if (layEvent === 'newVersion') { //新建
+                layer.confirm('确认要新建版本？', function (index) {
+                    top.xadmin.add_tab_version('版本编辑页面',"/PDS/editpdsversion/" +  data.project_id +  '/new')
+                    layer.close(index);
+                });
+            }
+            else if (layEvent === 'viewLast') { //最后版本
+                layer.confirm('确认加载最后版本？', function (index) {
+                    top.xadmin.add_tab_version('版本编辑页面',"/PDS/editpdsversion/" +  data.project_id +  '/last')
+                    layer.close(index);
+                });
+            }
+            else if (layEvent === 'viewPds') { //最后开工纸
+                top.xadmin.add_tab_version(data.name + '-最新开工纸',"/project/viewpds/" +  data.project_id +  '/last')
+            }
         });
 
         //监听收藏激活操作
@@ -126,57 +134,21 @@
                 }
             })
         });
-
-        //监听发布激活操作
-        form.on('switch(test-table-is_public)', function(obj){
-            var json = {};
-            json.csrfmiddlewaretoken = $("[name='csrfmiddlewaretoken']").val()
-            json.is_public = obj.elem.checked;
-            json.project_id = this.value;
-            // console.log(json)
-            $.post("{% url 'project:publicactive' %}", json, function (data) {
-                if (data.res == 2) {
-                    layer.tips(obj.elem.checked, obj.othis);
-                }
-                else {
-                    // 数据验证有问题
-                    // layer.tips(obj.othis.checked, obj.elem);
-                    layer.msg(data.errmsg, {
-                        time: 2000, //2s后自动关闭
-                    });
-                }
-            })
-        });
     });
 </script>
 
 <!-- 操作列 -->
 <script type="text/html" id="barDemo">
-    <a class="layui-btn layui-btn-xs"  lay-event="detail" >查看</a>
-    <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
-    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
-</script>
-
-<!-- 新建项目按钮 -->
-<script type="text/html" id="toolbarDemo">
-</script>
-
-<!-- 定义新建tabs函数 -->
-<script>layui.use('laydate',
-        function () {
-            var laydate = layui.laydate;
-
-            //执行一个laydate实例
-            laydate.render({
-                elem: '#start' //指定元素
-            });
-
-            //执行一个laydate实例
-            laydate.render({
-                elem: '#end' //指定元素
-            });
-
-        });
+    <div class="layui-btn-group">
+        {% verbatim %}
+        {{ d.is_newversion == 1 ? '<a class="layui-btn layui-btn-xs layui-btn-normal" lay-event="newVersion">新建</a>':'' }}
+        {{ d.is_newversion == 1 ? '':'<a class="layui-btn layui-btn-xs layui-btn-normal" lay-event="viewLast">最后</a>' }}
+        {{ d.is_newversion == 1 ? '':'<a class="layui-btn layui-btn-xs layui-btn-normal" lay-event="viewPds">查看</a>' }}
+        <a class="layui-btn layui-btn-xs" lay-event="detail">全部</a>
+        <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+        <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+        {% endverbatim %}
+    </div > 
 </script>
 
 {% endblock bottomfiles %}

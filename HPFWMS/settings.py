@@ -81,7 +81,6 @@ WSGI_APPLICATION = 'HPFWMS.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 
-# 测试不使用mysql
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
